@@ -3,8 +3,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
-from .models import BusinessProfile
-from .utils.file_upload import handle_license_upload
+from ..models import BusinessProfile
+from ..utils.file_upload import handle_license_upload
 
 User = get_user_model()
 
@@ -79,7 +79,6 @@ class RegisterB2BSerializer(serializers.Serializer):
             try:
                 license_url = handle_license_upload(license_file)
             except Exception as e:
-                # If upload fails, the transaction will rollback automatically due to exception
                 raise serializers.ValidationError(f"Failed to upload license file: {str(e)}")
 
             # 3. Create Business Profile
