@@ -158,7 +158,11 @@ MINIO_ACCESS_KEY = env("MINIO_ROOT_USER", default="minioadmin")
 MINIO_SECRET_KEY = env("MINIO_ROOT_PASSWORD", default="minioadmin")
 MINIO_BUCKET_NAME = env("MINIO_BUCKET_NAME", default="banthuoc-media")
 
+# Frontend URL
+NEXT_PUBLIC_FRONTEND_URL = env("NEXT_PUBLIC_FRONTEND_URL", default="http://localhost:3000")
+
 # Default primary key field type
+
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -186,4 +190,18 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+# Swagger Settings
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    },
+    'USE_SESSION_AUTH': False,
+    'PERSIST_AUTH': True,
+}
+
 

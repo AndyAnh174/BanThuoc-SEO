@@ -69,7 +69,7 @@ class AdminUserStatusUpdateView(generics.UpdateAPIView):
             try:
                 subject = ""
                 template = ""
-                frontend_url = "http://localhost:3000" 
+                frontend_url = getattr(settings, 'NEXT_PUBLIC_FRONTEND_URL', 'http://localhost:3000') 
                 
                 context = {
                     'user': user, 
