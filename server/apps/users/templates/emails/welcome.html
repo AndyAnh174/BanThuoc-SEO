@@ -1,53 +1,29 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-      }
-      .container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      .header {
-        background-color: #f8f9fa;
-        padding: 10px;
-        text-align: center;
-      }
-      .content {
-        padding: 20px;
-      }
-      .footer {
-        font-size: 12px;
-        color: #666;
-        text-align: center;
-        margin-top: 20px;
-      }
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #f8f9fa; padding: 10px; text-align: center; }
+        .content { padding: 20px; }
+        .footer { font-size: 12px; color: #666; text-align: center; margin-top: 20px; }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="container">
-      <div class="header">
-        <h2>Welcome to BanThuoc!</h2>
-      </div>
-      <div class="content">
-        <p>Dear {{ user.full_name }},</p>
-        <p>Thank you for registering with BanThuoc.</p>
-        <p>
-          Your account ({{ user.email }}) has been created successfully and is
-          currently <strong>PENDING APPROVAL</strong>.
-        </p>
-        <p>
-          Our team will review your business license and information shortly.
-          You will receive another notification once your account is activated.
-        </p>
-        <p>If you have any questions, please contact our support team.</p>
-      </div>
-      <div class="footer">
-        <p>&copy; 2026 BanThuoc. All rights reserved.</p>
-      </div>
+        <div class="header">
+            <h2>Chào mừng đến với BanThuoc!</h2>
+        </div>
+        <div class="content">
+            <p>Xin chào {{ user.full_name }},</p>
+            <p>Cảm ơn bạn đã đăng ký tài khoản tại BanThuoc.</p>
+            <p>Tài khoản của bạn ({{ user.email }}) đã được tạo thành công và hiện đang ở trạng thái <strong>CHỜ DUYỆT</strong>.</p>
+            <p>Đội ngũ của chúng tôi sẽ xem xét giấy phép kinh doanh và thông tin của bạn sớm nhất có thể. Bạn sẽ nhận được thông báo ngay khi tài khoản được kích hoạt.</p>
+            <p>Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với bộ phận hỗ trợ của chúng tôi.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 BanThuoc. Đã đăng ký bản quyền.</p>
+        </div>
     </div>
-  </body>
+</body>
 </html>

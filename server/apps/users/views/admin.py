@@ -78,10 +78,10 @@ class AdminUserStatusUpdateView(generics.UpdateAPIView):
                 }
 
                 if new_status == User.Status.ACTIVE:
-                    subject = "BanThuoc - Account Approved"
+                    subject = "BanThuoc - Tài khoản đã được phê duyệt"
                     template = "users/emails/approved.html"
                 elif new_status == User.Status.REJECTED:
-                    subject = "BanThuoc - Account Application Update"
+                    subject = "BanThuoc - Cập nhật trạng thái đăng ký"
                     template = "users/emails/rejected.html"
                 
                 if template:

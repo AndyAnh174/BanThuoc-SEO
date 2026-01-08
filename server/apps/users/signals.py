@@ -19,7 +19,7 @@ def send_welcome_email(sender, instance, created, **kwargs):
         # Define the email sending logic
         def _send():
             try:
-                subject = "Welcome to BanThuoc - Registration Received"
+                subject = "Chào mừng đến với BanThuoc - Đăng ký thành công"
                 # Simple HTML content for now
                 html_message = render_to_string('emails/welcome.html', {'user': instance})
                 plain_message = strip_tags(html_message)
