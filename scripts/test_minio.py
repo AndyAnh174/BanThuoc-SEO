@@ -8,20 +8,23 @@ MINIO_ACCESS_KEY = "minioadmin"
 MINIO_SECRET_KEY = "minioadmin"
 BUCKET_NAME = "banthuoc-media"
 
+
 def main():
     # Initialize MinIO client
     client = Minio(
         MINIO_ENDPOINT,
         access_key=MINIO_ACCESS_KEY,
         secret_key=MINIO_SECRET_KEY,
-        secure=False  # HTTP
+        secure=False,  # HTTP
     )
 
     print(f"Connecting to MinIO at {MINIO_ENDPOINT}...")
 
     # Check if bucket exists
     if not client.bucket_exists(BUCKET_NAME):
-        print(f"Bucket '{BUCKET_NAME}' does not exist. Please run docker-compose up first.")
+        print(
+            f"Bucket '{BUCKET_NAME}' does not exist. Please run docker-compose up first."
+        )
         return
     else:
         print(f"Bucket '{BUCKET_NAME}' found.")
@@ -41,9 +44,10 @@ def main():
 
         # Test Public Access (since we set policy to download for public folder)
         import requests
+
         public_url = f"http://{MINIO_ENDPOINT}/{BUCKET_NAME}/{object_name}"
         print(f"Testing public access at: {public_url}")
-        
+
         response = requests.get(public_url)
         if response.status_code == 200:
             print("Public retrieval successful! Content:")
@@ -59,6 +63,7 @@ def main():
         # Cleanup local file
         if os.path.exists(test_file):
             os.remove(test_file)
+
 
 if __name__ == "__main__":
     main()

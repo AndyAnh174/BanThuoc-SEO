@@ -62,7 +62,6 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
-      MINIO_ENDPOINT: http://minio:9000
     entrypoint: >
       /bin/sh -c "
       echo 'Waiting for MinIO to be ready...';
