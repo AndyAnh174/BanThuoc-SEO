@@ -43,7 +43,7 @@ Ensure your `.env` contains:
 ## Running the Server
 
 ### Development
-The `manage.py` file is configured to use `core.settings.dev` by default.
+The `manage.py` file is configured to use `core.settings.local` by default.
 
 ```bash
 python manage.py migrate
