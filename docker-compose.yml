@@ -38,7 +38,7 @@ services:
       - app_network
 
   minio:
-    image: minio/minio:RELEASE.2024-01-13T07-53-03Z
+    image: minio/minio:latest
     container_name: banthuoc_minio
     restart: always
     command: server /data --console-address ":9001"
@@ -54,7 +54,7 @@ services:
       - app_network
 
   createbuckets:
-    image: minio/mc:RELEASE.2024-01-13T08-44-48Z
+    image: minio/mc:latest
     container_name: banthuoc_mc
     depends_on:
       - minio
