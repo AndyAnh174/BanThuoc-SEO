@@ -30,3 +30,8 @@ export const registerUser = async (data: RegisterFormValues) => {
 
     return response;
 };
+
+export const loginUser = async (credentials: any) => {
+  const response = await axios.post(`${API_URL}/api/auth/token/`, credentials);
+  return response;
+};

@@ -127,7 +127,12 @@ export function RegisterForm() {
         onClose={handleSuccessClose} 
     />
     
-    <div className="flex flex-col lg:flex-row w-full max-w-[1200px] h-auto lg:min-h-[700px] bg-white rounded-[30px] shadow-xl overflow-hidden ring-1 ring-black/5 mx-4">
+    <motion.div 
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="flex flex-col lg:flex-row w-full max-w-[1200px] h-auto lg:min-h-[700px] bg-white rounded-[30px] shadow-xl overflow-hidden ring-1 ring-black/5"
+    >
         
         {/* LEFT SIDE - BRANDING */}
         <div className="lg:w-[450px] bg-green-600 p-8 lg:p-12 text-white flex flex-col justify-between relative overflow-hidden shrink-0">
@@ -163,7 +168,7 @@ export function RegisterForm() {
         </div>
 
         {/* RIGHT SIDE - FORM */}
-        <div className="flex-1 p-6 md:p-8 lg:p-14 relative bg-white">
+        <div className="flex-1 p-6 lg:p-14 relative bg-white">
             <div className="absolute top-6 right-6 lg:top-8 lg:right-8 flex items-center gap-2">
                  {/* Step Indicator (Minimal) */}
                  <span className={`text-sm font-bold ${step === 1 ? 'text-green-600' : 'text-gray-300'}`}>01</span>
@@ -371,7 +376,7 @@ export function RegisterForm() {
             </form>
             </Form>
         </div>
-    </div>
+    </motion.div>
     </>
   );
 }

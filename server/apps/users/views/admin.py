@@ -1,4 +1,5 @@
 from rest_framework import generics, permissions
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
@@ -18,6 +19,11 @@ class IsAdminUser(permissions.BasePermission):
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated and request.user.role in [User.Role.ADMIN, User.Role.STAFF])
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class AdminUserListView(generics.ListAPIView):
     """
     List all business customers.
@@ -25,6 +31,7 @@ class AdminUserListView(generics.ListAPIView):
     """
     serializer_class = AdminUserSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminUser]
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         queryset = User.objects.filter(role=User.Role.CUSTOMER).order_by('-date_joined')
