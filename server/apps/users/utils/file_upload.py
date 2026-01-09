@@ -3,7 +3,7 @@ import uuid
 from django.conf import settings
 from minio import Minio
 from minio.error import S3Error
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class MinioHandler:
     def __init__(self):
@@ -55,6 +55,24 @@ class MinioHandler:
         except S3Error as e:
             print(f"MinIO Upload Error: {e}")
             raise e
+
+    def get_presigned_url(self, object_name):
+        """
+        Generates a presigned URL for GET request.
+        """
+        try:
+             # Check if object exists (optional, but good for safety) or just sign it.
+             # Presigned GET
+             url = self.client.get_presigned_url(
+                 "GET",
+                 self.bucket_name,
+                 object_name,
+                 expires=timedelta(hours=1)
+             )
+             return url
+        except Exception as e:
+             print(f"Error generating presigned URL: {e}")
+             return None
 
 def handle_license_upload(file_obj):
     handler = MinioHandler()

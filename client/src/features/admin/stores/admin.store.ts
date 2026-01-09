@@ -86,7 +86,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
         try {
             await updateUserStatus(userId, { 
                 status: UserStatus.REJECTED,
-                rejection_reason: reason 
+                reason: reason 
             });
             
             toast.success("User rejected");

@@ -40,6 +40,15 @@ class AdminUserListView(generics.ListAPIView):
             queryset = queryset.filter(status=status_param.upper())
         return queryset
 
+class AdminUserDetailView(generics.RetrieveAPIView):
+    """
+    Get details of a specific user.
+    """
+    serializer_class = AdminUserSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdminUser]
+    queryset = User.objects.all()
+    lookup_field = 'id'
+
 class AdminUserStatusUpdateView(generics.UpdateAPIView):
     """
     Approve or Reject a user.

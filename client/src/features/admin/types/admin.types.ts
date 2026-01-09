@@ -41,5 +41,5 @@ export interface UserListResponse {
 
 export interface UserStatusUpdate {
     status: UserStatus;
-    rejection_reason?: string;
+    reason?: string;
 }

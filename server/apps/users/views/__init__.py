@@ -1,2 +1,2 @@
 from .registration import RegisterB2BView
-from .admin import AdminUserListView, AdminUserStatusUpdateView
+from .admin import AdminUserListView, AdminUserStatusUpdateView, AdminUserDetailView

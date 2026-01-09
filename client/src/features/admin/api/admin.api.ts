@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { UserListResponse, UserStatusUpdate } from '../types/admin.types';
+import { User, UserListResponse, UserStatusUpdate } from '../types/admin.types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -24,6 +24,13 @@ export const fetchUsers = async (page = 1, status = '', search = ''): Promise<Us
     const response = await axios.get<UserListResponse>(`${API_URL}/api/admin/users`, {
         params: params,
         headers: getAuthHeader() // We need to ensure we send the token
+    });
+    return response.data;
+};
+
+export const fetchUserDetail = async (userId: number): Promise<User> => {
+    const response = await axios.get<User>(`${API_URL}/api/admin/users/${userId}`, {
+        headers: getAuthHeader()
     });
     return response.data;
 };
