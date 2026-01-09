@@ -60,9 +60,9 @@ export const useAdminStore = create<AdminState>((set, get) => ({
         } catch (error: any) {
             set({ 
                 isLoading: false, 
-                error: error.message || "Failed to load users" 
+                error: error.message || "Không thể tải danh sách người dùng" 
             });
-            toast.error("Error loading users");
+            toast.error("Lỗi khi tải danh sách người dùng");
         }
     },
 
@@ -71,13 +71,13 @@ export const useAdminStore = create<AdminState>((set, get) => ({
              // Optimistic Update can be done here, but safer to wait for API
             await updateUserStatus(userId, { status: UserStatus.ACTIVE });
             
-            toast.success("User approved successfully");
+            toast.success("Đã phê duyệt người dùng thành công");
             
             // Refresh list
             get().loadUsers();
             return true;
         } catch (error: any) {
-            toast.error("Failed to approve user");
+            toast.error("Không thể phê duyệt người dùng");
             return false;
         }
     },
@@ -89,11 +89,11 @@ export const useAdminStore = create<AdminState>((set, get) => ({
                 reason: reason 
             });
             
-            toast.success("User rejected");
+            toast.success("Đã từ chối người dùng");
             get().loadUsers();
             return true;
         } catch (error: any) {
-             toast.error("Failed to reject user");
+             toast.error("Không thể từ chối người dùng");
              return false;
         }
     }

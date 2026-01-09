@@ -18,7 +18,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
             const data = await fetchUserDetail(parseInt(resolvedParams.id));
             setUser(data);
         } catch (error) {
-            toast.error("Failed to load user details");
+            toast.error("Không thể tải thông tin người dùng");
         } finally {
             setIsLoading(false);
         }
@@ -31,20 +31,20 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
     const handleApprove = async (id: number) => {
         try {
             await updateUserStatus(id, { status: UserStatus.ACTIVE });
-            toast.success("User approved!");
+            toast.success("Đã phê duyệt người dùng!");
             loadUser(); // Refresh
         } catch (error) {
-            toast.error("Failed to approve user");
+            toast.error("Không thể phê duyệt người dùng");
         }
     };
 
     const handleReject = async (id: number, reason: string) => {
         try {
             await updateUserStatus(id, { status: UserStatus.REJECTED, reason: reason });
-            toast.success("User rejected!");
+            toast.success("Đã từ chối người dùng!");
             loadUser(); // Refresh
         } catch (error) {
-            toast.error("Failed to reject user");
+            toast.error("Không thể từ chối người dùng");
         }
     };
 

@@ -12,12 +12,12 @@ export default function AdminLayout({
         <AdminSidebar />
         <main className="flex-1 ml-64 flex flex-col h-full overflow-hidden">
              {/* Header */}
-            <header className="h-16 border-b bg-white flex items-center justify-between px-8 shrink-0">
-                <h1 className="text-xl font-bold text-gray-800">Admin Dashboard</h1>
+            <header className="h-16 border-b bg-green-600 flex items-center justify-between px-8 shrink-0 shadow-sm">
+                <h1 className="text-xl font-bold text-white">Quản trị hệ thống</h1>
                 <div className="flex items-center gap-4">
-                    <span className="text-sm text-gray-500">Welcome, Admin</span>
-                    <Button variant="ghost" size="icon" className="rounded-full">
-                         <UserCircle className="h-8 w-8 text-gray-400" />
+                    <span className="text-sm text-green-50">Xin chào, Admin</span>
+                    <Button variant="ghost" size="icon" className="rounded-full text-green-100 hover:text-white hover:bg-green-500">
+                         <UserCircle className="h-8 w-8" />
                     </Button>
                 </div>
             </header>

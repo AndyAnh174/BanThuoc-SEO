@@ -17,11 +17,11 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const sidebarItems = [
-    { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
-    { label: "User Management", href: "/admin/users", icon: Users },
-    { label: "Orders", href: "/admin/orders", icon: ShoppingCart },
-    { label: "Products", href: "/admin/products", icon: Package },
-    { label: "Settings", href: "/admin/settings", icon: Settings },
+    { label: "Tổng quan", href: "/admin", icon: LayoutDashboard },
+    { label: "Quản lý người dùng", href: "/admin/users", icon: Users },
+    { label: "Đơn hàng", href: "/admin/orders", icon: ShoppingCart },
+    { label: "Sản phẩm", href: "/admin/products", icon: Package },
+    { label: "Cài đặt", href: "/admin/settings", icon: Settings },
 ];
 
 export function AdminSidebar() {
@@ -58,7 +58,7 @@ export function AdminSidebar() {
             {/* Bottom Actions */}
             <div className="absolute bottom-4 left-0 w-full px-4">
                  <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
-                    <LogOut className="mr-2 h-4 w-4" /> Log out
+                    <LogOut className="mr-2 h-4 w-4" /> Đăng xuất
                  </Button>
             </div>
         </aside>

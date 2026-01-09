@@ -57,20 +57,20 @@ export function UserListTable() {
                 <div className="flex items-center gap-2 flex-1 max-w-sm">
                     <Search className="w-4 h-4 text-gray-400" />
                     <Input 
-                        placeholder="Search by name, email..." 
+                        placeholder="Tìm kiếm theo tên, email..." 
                         className="border-none shadow-none focus-visible:ring-0 pl-0"
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
                 <Select value={filterStatus} onValueChange={setFilterStatus}>
                     <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="All Status" />
+                        <SelectValue placeholder="Tất cả trạng thái" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value={UserStatus.PENDING}>Pending</SelectItem>
-                        <SelectItem value={UserStatus.ACTIVE}>Active</SelectItem>
-                        <SelectItem value={UserStatus.REJECTED}>Rejected</SelectItem>
+                        <SelectItem value="all">Tất cả</SelectItem>
+                        <SelectItem value={UserStatus.PENDING}>Chờ duyệt</SelectItem>
+                        <SelectItem value={UserStatus.ACTIVE}>Đang hoạt động</SelectItem>
+                        <SelectItem value={UserStatus.REJECTED}>Đã từ chối</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
@@ -81,21 +81,21 @@ export function UserListTable() {
                     <TableHeader className="bg-gray-50/50">
                         <TableRow>
                             <TableHead className="w-[80px]">ID</TableHead>
-                            <TableHead>User Info</TableHead>
-                            <TableHead>Business Info</TableHead>
-                            <TableHead>Role</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Action</TableHead>
+                            <TableHead>Thông tin người dùng</TableHead>
+                            <TableHead>Thông tin doanh nghiệp</TableHead>
+                            <TableHead>Vai trò</TableHead>
+                            <TableHead>Trạng thái</TableHead>
+                            <TableHead className="text-right">Hành động</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {isLoading ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="h-24 text-center">Loading...</TableCell>
+                                <TableCell colSpan={6} className="h-24 text-center">Đang tải...</TableCell>
                             </TableRow>
                         ) : users.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="h-24 text-center text-gray-500">No users found</TableCell>
+                                <TableCell colSpan={6} className="h-24 text-center text-gray-500">Không tìm thấy người dùng nào</TableCell>
                             </TableRow>
                         ) : (
                             users.map((user) => (
@@ -112,17 +112,17 @@ export function UserListTable() {
                                         {user.business_profile ? (
                                             <div className="flex flex-col">
                                                 <span className="font-medium text-gray-900">{user.business_profile.business_name}</span>
-                                                <span className="text-gray-500 text-xs">Lic: {user.business_profile.license_number}</span>
+                                                <span className="text-gray-500 text-xs">GPKD: {user.business_profile.license_number}</span>
                                             </div>
                                         ) : (
-                                            <span className="text-gray-400 italic">No Profile</span>
+                                            <span className="text-gray-400 italic">Không có hồ sơ</span>
                                         )}
                                     </TableCell>
                                     <TableCell>
-                                        <Badge variant="outline" className="capitalize">{user.role.toLowerCase()}</Badge>
+                                        <Badge variant="outline" className="capitalize">{user.role === 'ADMIN' ? 'Quản trị viên' : user.role === 'CUSTOMER' ? 'Khách hàng' : user.role}</Badge>
                                     </TableCell>
                                     <TableCell>
-                                        <Badge className={getStatusColor(user.status)}>{user.status}</Badge>
+                                        <Badge className={getStatusColor(user.status)}>{user.status === 'PENDING' ? 'Chờ duyệt' : user.status === 'ACTIVE' ? 'Hoạt động' : user.status === 'REJECTED' ? 'Đã từ chối' : user.status}</Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleViewDetail(user); }}>
@@ -144,10 +144,10 @@ export function UserListTable() {
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
                 >
-                    Previous
+                    Trước
                 </Button>
                 <div className="text-sm text-gray-500">
-                    Page {page} of {Math.ceil(totalCount / 10)}
+                    Trang {page} trên {Math.ceil(totalCount / 10)}
                 </div>
                 <Button
                     variant="outline"
@@ -155,7 +155,7 @@ export function UserListTable() {
                     onClick={() => setPage(page + 1)}
                     disabled={page >= Math.ceil(totalCount / 10)}
                 >
-                    Next
+                    Sau
                 </Button>
             </div>
         </div>
