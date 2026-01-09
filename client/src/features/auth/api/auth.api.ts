@@ -7,12 +7,13 @@ export const registerUser = async (data: RegisterFormValues) => {
     const formData = new FormData();
     formData.append('email', data.email);
     formData.append('password', data.password);
+    formData.append('confirm_password', data.confirmPassword);
     formData.append('full_name', data.fullName);
-    formData.append('phone_number', data.phone);
-    formData.append('role', 'pharmacy'); // Default role for this form
+    formData.append('phone', data.phone);
+    // formData.append('role', 'pharmacy'); // Backend defaults role to CUSTOMER/PHARMACY internally mostly.
 
     // Enterprise/Pharmacy specific fields
-    formData.append('pharmacy_name', data.businessName);
+    formData.append('business_name', data.businessName);
     formData.append('license_number', data.licenseNumber);
     formData.append('tax_id', data.taxId);
     formData.append('address', data.address);
