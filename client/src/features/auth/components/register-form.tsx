@@ -4,8 +4,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, CheckCircle2, Leaf, ArrowRight } from "lucide-react";
+import { Loader2, Leaf, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useAuthStore } from "../stores/auth.store";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,9 +18,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { registerSchema, type RegisterFormValues } from "../types/register.schema";
 import { DropzoneUpload } from "@/components/ui/dropzone-upload";
+import { SuccessModal } from "@/components/ui/success-modal";
 
 // Custom Floating Label Input Component
 const FloatingLabelInput = ({ field, label, type = "text" }: any) => {
@@ -46,6 +48,9 @@ const FloatingLabelInput = ({ field, label, type = "text" }: any) => {
 export function RegisterForm() {
   const [step, setStep] = useState(1);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const { register, isLoading } = useAuthStore();
+  const router = useRouter();
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -102,14 +107,26 @@ export function RegisterForm() {
   };
 
   const onSubmit = async (data: RegisterFormValues) => {
-    console.log("Form Data:", data);
-    alert(JSON.stringify(data, null, 2));
+    const success = await register(data);
+    if (success) {
+        setShowSuccessModal(true);
+    }
   };
 
-
-
+  const handleSuccessClose = () => {
+      setShowSuccessModal(false);
+      // Redirect to login or stay on page? User said "Congradulations... Continue". 
+      // Usually "Continue" leads to Login or Dashboard.
+      router.push("/auth/login"); 
+  };
 
   return (
+    <>
+    <SuccessModal 
+        isOpen={showSuccessModal} 
+        onClose={handleSuccessClose} 
+    />
+    
     <div className="flex flex-col lg:flex-row w-full max-w-[1200px] h-auto lg:min-h-[700px] bg-white rounded-[30px] shadow-xl overflow-hidden ring-1 ring-black/5 mx-4">
         
         {/* LEFT SIDE - BRANDING */}
@@ -334,11 +351,18 @@ export function RegisterForm() {
                     />
 
                     <div className="pt-8 flex justify-between items-center">
-                        <Button type="button" variant="ghost" onClick={handlePrevStep} className="text-gray-500 hover:text-green-700 hover:bg-green-50 rounded-full px-6 h-12 text-base font-medium">
+                        <Button type="button" variant="ghost" onClick={handlePrevStep} disabled={isLoading} className="text-gray-500 hover:text-green-700 hover:bg-green-50 rounded-full px-6 h-12 text-base font-medium">
                              Quay lại
                         </Button>
-                        <Button type="submit" className="h-14 px-10 rounded-full bg-green-700 hover:bg-green-800 text-white shadow-lg shadow-green-200 transition-all hover:scale-105 active:scale-95 text-lg font-semibold inline-flex items-center justify-center">
-                            Hoàn tất đăng ký
+                        <Button type="submit" disabled={isLoading} className="h-14 px-10 rounded-full bg-green-700 hover:bg-green-800 text-white shadow-lg shadow-green-200 transition-all hover:scale-105 active:scale-95 text-lg font-semibold inline-flex items-center justify-center">
+                            {isLoading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                    Đang xử lý...
+                                </>
+                            ) : (
+                                "Hoàn tất đăng ký"
+                            )}
                         </Button>
                     </div>
                     </motion.div>
@@ -348,5 +372,6 @@ export function RegisterForm() {
             </Form>
         </div>
     </div>
+    </>
   );
 }
