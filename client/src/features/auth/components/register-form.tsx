@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, ChevronLeft, Upload, CheckCircle2, Leaf, ArrowRight } from "lucide-react";
+import { Upload, CheckCircle2, Leaf, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -18,10 +18,34 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { registerSchema, type RegisterFormValues } from "../types/register.schema";
+import { DropzoneUpload } from "@/components/ui/dropzone-upload";
+
+// Custom Floating Label Input Component
+const FloatingLabelInput = ({ field, label, type = "text" }: any) => {
+  return (
+      <div className="relative group">
+          <input
+              {...field}
+              id={`input-${field.name}`}
+              type={type}
+              placeholder=" "
+              className="peer block w-full px-6 h-14 rounded-full border border-gray-200 bg-green-50/30 text-base text-gray-900 focus:border-green-600 focus:ring-1 focus:ring-green-600 focus:bg-white transition-all outline-none placeholder-shown:pt-0 pt-0"
+          />
+          <label
+              htmlFor={`input-${field.name}`}
+              className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 text-base transition-all duration-300 pointer-events-none 
+              peer-focus:top-0 peer-focus:translate-y-[-50%] peer-focus:text-xs peer-focus:text-green-700 peer-focus:bg-white peer-focus:px-2 peer-focus:ml-[-8px]
+              peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:translate-y-[-50%] peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:text-green-700 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:px-2 peer-not-placeholder-shown:ml-[-8px]"
+          >
+              {label}
+          </label>
+      </div>
+  )
+}
 
 export function RegisterForm() {
   const [step, setStep] = useState(1);
-  const [filePreview, setFilePreview] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -56,19 +80,24 @@ export function RegisterForm() {
     setStep(1);
   };
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const onFileSelect = (file: File | null) => {
     if (file) {
-      setValue("licenseFile", file);
-      if (file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setFilePreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        setFilePreview(null);
-      }
+      setValue("licenseFile", file, { shouldValidate: true });
+      
+      // Fake progress animation for UX
+      setUploadProgress(0);
+      const interval = setInterval(() => {
+        setUploadProgress((prev) => {
+            if (prev >= 100) {
+                clearInterval(interval);
+                return 100;
+            }
+            return prev + 10;
+        });
+      }, 100);
+    } else {
+        setValue("licenseFile", undefined as any);
+        setUploadProgress(0);
     }
   };
 
@@ -78,28 +107,7 @@ export function RegisterForm() {
   };
 
 
-  // Custom Floating Label Input Component
-  const FloatingLabelInput = ({ field, label, type = "text" }: any) => {
-    return (
-        <div className="relative group">
-            <input
-                {...field}
-                id={`input-${field.name}`}
-                type={type}
-                placeholder=" "
-                className="peer block w-full px-6 h-14 rounded-full border border-gray-200 bg-green-50/30 text-base text-gray-900 focus:border-green-600 focus:ring-1 focus:ring-green-600 focus:bg-white transition-all outline-none placeholder-shown:pt-0 pt-0"
-            />
-            <label
-                htmlFor={`input-${field.name}`}
-                className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 text-base transition-all duration-300 pointer-events-none 
-                peer-focus:-top-0 peer-focus:translate-y-[-50%] peer-focus:text-xs peer-focus:text-green-700 peer-focus:bg-white peer-focus:px-2 peer-focus:ml-[-8px]
-                peer-[&:not(:placeholder-shown)]:-top-0 peer-[&:not(:placeholder-shown)]:translate-y-[-50%] peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-green-700 peer-[&:not(:placeholder-shown)]:bg-white peer-[&:not(:placeholder-shown)]:px-2 peer-[&:not(:placeholder-shown)]:ml-[-8px]"
-            >
-                {label}
-            </label>
-        </div>
-    )
-  }
+
 
   return (
     <div className="flex flex-col lg:flex-row w-full max-w-[1200px] h-auto lg:min-h-[700px] bg-white rounded-[30px] shadow-xl overflow-hidden ring-1 ring-black/5 mx-4">
@@ -312,39 +320,13 @@ export function RegisterForm() {
                         name="licenseFile"
                         render={({ field: { value, onChange, ...field } }) => (
                         <FormItem>
-                             <FormLabel className="ml-6 text-sm font-semibold text-gray-700 block mb-2">Giấy phép kinh doanh</FormLabel>
+                             <FormLabel className="ml-1 text-sm font-semibold text-gray-700 block mb-2">Giấy phép kinh doanh</FormLabel>
                             <FormControl>
-                            <div className="group flex items-center gap-4 p-3 pl-6 border-2 border-dashed border-green-200 rounded-full bg-green-50/30 hover:bg-green-50/70 hover:border-green-400 transition-all cursor-pointer relative overflow-hidden h-16">
-                                <input 
-                                    type="file" 
-                                    className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                                    accept=".jpg,.png,.jpeg,.pdf"
-                                    onChange={onFileChange}
-                                    {...field}
+                                <DropzoneUpload 
+                                    onFileChange={onFileSelect}
+                                    value={value as File}
+                                    progress={uploadProgress}
                                 />
-                                <div className="flex-1 min-w-0 flex items-center justify-between pr-2">
-                                    {value ? (
-                                        <div className="flex items-center gap-3 text-green-700">
-                                            <div className="bg-green-100 p-1.5 rounded-full">
-                                                <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
-                                            </div>
-                                            <span className="truncate text-sm font-medium">{(value as File).name}</span>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center gap-3 text-gray-500 group-hover:text-green-600 transition-colors">
-                                            <div className="bg-white p-1.5 rounded-full shadow-sm">
-                                                <Upload className="w-5 h-5 flex-shrink-0" />
-                                            </div>
-                                            <span className="text-sm font-medium">Nhấn để tải lên (PDF/Ảnh)</span>
-                                        </div>
-                                    )}
-                                </div>
-                                {filePreview && (
-                                     <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm flex-shrink-0 mr-2">
-                                        <img src={filePreview} className="w-full h-full object-cover" />
-                                     </div>
-                                )}
-                            </div>
                             </FormControl>
                              <FormMessage className="ml-4" />
                         </FormItem>
