@@ -47,8 +47,10 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_yasg",
     "rest_framework_simplejwt",
+    "mptt",
     # Local apps
     "users",
+    "products",
 ]
 
 MIDDLEWARE = [
