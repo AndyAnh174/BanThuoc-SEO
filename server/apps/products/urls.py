@@ -16,6 +16,18 @@ from products.views.public import (
     OnSaleProductsView,
     ProductSearchView,
 )
+from products.views.search import (
+    ElasticsearchProductSearchView,
+    ElasticsearchSuggestView,
+)
+from products.views.flash_sale import (
+    GetCurrentFlashSaleView,
+    FlashSaleSessionListView,
+    FlashSaleSessionDetailView,
+    FlashSaleItemListView,
+    FlashSaleItemDetailView,
+    CheckFlashSaleForProductView,
+)
 
 app_name = 'products'
 
@@ -34,4 +46,18 @@ urlpatterns = [
     path('products/on-sale/', OnSaleProductsView.as_view(), name='product-on-sale'),
     path('products/search/', ProductSearchView.as_view(), name='product-search'),
     path('products/<slug:slug>/', ProductDetailView.as_view(), name='product-detail'),
+    
+    # Elasticsearch Search (Fuzzy)
+    path('search/', ElasticsearchProductSearchView.as_view(), name='es-search'),
+    path('search/suggest/', ElasticsearchSuggestView.as_view(), name='es-suggest'),
+    
+    # Flash Sale
+    path('flash-sale/', GetCurrentFlashSaleView.as_view(), name='flash-sale-current'),
+    path('flash-sale/sessions/', FlashSaleSessionListView.as_view(), name='flash-sale-sessions'),
+    path('flash-sale/sessions/<slug:slug>/', FlashSaleSessionDetailView.as_view(), name='flash-sale-session-detail'),
+    path('flash-sale/items/', FlashSaleItemListView.as_view(), name='flash-sale-items'),
+    path('flash-sale/items/<uuid:pk>/', FlashSaleItemDetailView.as_view(), name='flash-sale-item-detail'),
+    path('flash-sale/check/', CheckFlashSaleForProductView.as_view(), name='flash-sale-check'),
 ]
+
+

@@ -52,4 +52,6 @@ urlpatterns = [
     # API Routes
     path('api/', include('users.urls')),
     path('api/', include('products.urls')),
+    path('api/vouchers/', include('vouchers.urls')),
 ]
+

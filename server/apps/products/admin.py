@@ -1,6 +1,6 @@
 from django.contrib import admin
 from mptt.admin import MPTTModelAdmin, DraggableMPTTAdmin
-from .models import Category, Manufacturer, Product, ProductImage
+from .models import Category, Manufacturer, Product, ProductImage, FlashSaleSession, FlashSaleItem
 
 
 class ProductImageInline(admin.TabularInline):
@@ -87,3 +87,81 @@ class ProductImageAdmin(admin.ModelAdmin):
     list_filter = ['is_primary', 'created_at']
     search_fields = ['product__name', 'alt_text']
     ordering = ['product', 'sort_order']
+
+
+# =============================================================================
+# Flash Sale Admin
+# =============================================================================
+
+class FlashSaleItemInline(admin.TabularInline):
+    """Inline for FlashSaleItem in FlashSaleSession admin"""
+    model = FlashSaleItem
+    extra = 1
+    fields = [
+        'product', 'original_price', 'flash_sale_price', 
+        'total_quantity', 'remaining_quantity', 'sold_quantity',
+        'max_per_user', 'sort_order', 'is_active'
+    ]
+    readonly_fields = ['sold_quantity']
+    autocomplete_fields = ['product']
+
+
+@admin.register(FlashSaleSession)
+class FlashSaleSessionAdmin(admin.ModelAdmin):
+    """Admin for FlashSaleSession"""
+    list_display = [
+        'name', 'status', 'start_time', 'end_time', 
+        'is_currently_active', 'total_items', 'is_active'
+    ]
+    list_filter = ['status', 'is_active', 'start_time']
+    search_fields = ['name', 'slug']
+    prepopulated_fields = {'slug': ('name',)}
+    inlines = [FlashSaleItemInline]
+    date_hierarchy = 'start_time'
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('name', 'slug', 'description', 'banner_image')
+        }),
+        ('Time Range', {
+            'fields': ('start_time', 'end_time')
+        }),
+        ('Settings', {
+            'fields': ('status', 'max_items_per_user', 'is_active')
+        }),
+    )
+    
+    readonly_fields = ['created_at', 'updated_at', 'created_by']
+    
+    def is_currently_active(self, obj):
+        return obj.is_currently_active
+    is_currently_active.boolean = True
+    is_currently_active.short_description = 'Active Now?'
+    
+    def total_items(self, obj):
+        return obj.total_items
+    total_items.short_description = 'Items'
+    
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
+
+@admin.register(FlashSaleItem)
+class FlashSaleItemAdmin(admin.ModelAdmin):
+    """Admin for FlashSaleItem"""
+    list_display = [
+        'product', 'session', 'flash_sale_price', 'original_price',
+        'discount_percentage', 'remaining_quantity', 'sold_quantity', 'is_active'
+    ]
+    list_filter = ['is_active', 'session', 'created_at']
+    search_fields = ['product__name', 'session__name']
+    autocomplete_fields = ['product', 'session']
+    
+    readonly_fields = ['sold_quantity', 'discount_percentage']
+    
+    def discount_percentage(self, obj):
+        return f"{obj.discount_percentage}%"
+    discount_percentage.short_description = 'Discount'
+

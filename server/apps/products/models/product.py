@@ -1,75 +1,12 @@
+"""
+Product and ProductImage models.
+"""
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
-from mptt.models import MPTTModel, TreeForeignKey
 import uuid
 
-
-class Category(MPTTModel):
-    """
-    Category model using MPTT for tree structure.
-    Supports hierarchical categories like:
-    - Thuốc -> Thuốc kháng sinh -> Kháng sinh nhóm Beta-lactam
-    - Thực phẩm chức năng -> Vitamin -> Vitamin C
-    """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=200, help_text=_("Category name"))
-    slug = models.SlugField(max_length=200, unique=True, help_text=_("URL-friendly name"))
-    description = models.TextField(blank=True, help_text=_("Category description"))
-    image = models.CharField(max_length=500, blank=True, null=True, help_text=_("URL to category image"))
-    parent = TreeForeignKey(
-        'self',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name='children',
-        help_text=_("Parent category")
-    )
-    is_active = models.BooleanField(default=True, help_text=_("Is this category active?"))
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class MPTTMeta:
-        order_insertion_by = ['name']
-
-    class Meta:
-        verbose_name = _("Category")
-        verbose_name_plural = _("Categories")
-        db_table = "products_category"
-
-    def __str__(self):
-        return self.name
-
-    def get_full_path(self):
-        """Returns full category path like 'Thuốc > Kháng sinh > Beta-lactam'"""
-        ancestors = self.get_ancestors(include_self=True)
-        return ' > '.join([cat.name for cat in ancestors])
-
-
-class Manufacturer(models.Model):
-    """
-    Manufacturer/Brand model for products.
-    E.g., Dược Hậu Giang, Sanofi, Pfizer, etc.
-    """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=200, help_text=_("Manufacturer name"))
-    slug = models.SlugField(max_length=200, unique=True, help_text=_("URL-friendly name"))
-    description = models.TextField(blank=True, help_text=_("Manufacturer description"))
-    logo = models.CharField(max_length=500, blank=True, null=True, help_text=_("URL to manufacturer logo"))
-    website = models.URLField(blank=True, null=True, help_text=_("Manufacturer website"))
-    country = models.CharField(max_length=100, blank=True, help_text=_("Country of origin"))
-    is_active = models.BooleanField(default=True, help_text=_("Is this manufacturer active?"))
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = _("Manufacturer")
-        verbose_name_plural = _("Manufacturers")
-        db_table = "products_manufacturer"
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
+from products.utils.slug import generate_unique_slug
 
 
 class Product(models.Model):
@@ -102,13 +39,13 @@ class Product(models.Model):
     
     # Relationships
     category = models.ForeignKey(
-        Category,
+        'products.Category',
         on_delete=models.PROTECT,
         related_name='products',
         help_text=_("Product category")
     )
     manufacturer = models.ForeignKey(
-        Manufacturer,
+        'products.Manufacturer',
         on_delete=models.PROTECT,
         related_name='products',
         help_text=_("Product manufacturer")
@@ -176,6 +113,12 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.sku})"
+
+    def save(self, *args, **kwargs):
+        """Auto-generate slug from name if not provided"""
+        if not self.slug:
+            self.slug = generate_unique_slug(Product, self.name, self)
+        super().save(*args, **kwargs)
 
     @property
     def is_on_sale(self):

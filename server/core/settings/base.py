@@ -48,9 +48,11 @@ INSTALLED_APPS = [
     "drf_yasg",
     "rest_framework_simplejwt",
     "mptt",
+    "django_elasticsearch_dsl",
     # Local apps
     "users",
     "products",
+    "vouchers",
 ]
 
 MIDDLEWARE = [
@@ -212,4 +214,20 @@ SWAGGER_SETTINGS = {
     'PERSIST_AUTH': True,
 }
 
+# Elasticsearch DSL Configuration
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': env('ELASTICSEARCH_HOST', default='localhost:9200'),
+        'http_auth': (
+            env('ELASTICSEARCH_USER', default=''),
+            env('ELASTICSEARCH_PASSWORD', default=''),
+        ) if env('ELASTICSEARCH_USER', default='') else None,
+    },
+}
+
+# Elasticsearch index settings
+ELASTICSEARCH_INDEX_SETTINGS = {
+    'number_of_shards': 1,
+    'number_of_replicas': 0,
+}
 
