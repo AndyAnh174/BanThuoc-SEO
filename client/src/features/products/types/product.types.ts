@@ -7,7 +7,19 @@ import { z } from 'zod';
 // Category Types
 // ============================================================================
 
-export const categorySchema = z.object({
+export interface CategoryType {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string | null;
+  parent?: string | null;
+  isActive: boolean;
+  children?: CategoryType[];
+  productCount?: number;
+}
+
+export const categorySchema: z.ZodType<CategoryType> = z.object({
   id: z.string().uuid(),
   name: z.string(),
   slug: z.string(),
@@ -15,7 +27,7 @@ export const categorySchema = z.object({
   image: z.string().url().optional().nullable(),
   parent: z.string().uuid().optional().nullable(),
   isActive: z.boolean().default(true),
-  children: z.array(z.lazy(() => categorySchema)).optional(),
+  children: z.lazy(() => z.array(categorySchema)).optional(),
   productCount: z.number().optional(),
 });
 
@@ -198,7 +210,7 @@ export const searchResponseSchema = z.object({
   pageSize: z.number(),
   totalPages: z.number(),
   results: z.array(productSchema),
-  facets: z.record(z.any()).optional(),
+  facets: z.record(z.string(), z.any()).optional(),
 });
 
 export type SearchResponse = z.infer<typeof searchResponseSchema>;
