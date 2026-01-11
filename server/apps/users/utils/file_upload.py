@@ -29,6 +29,10 @@ class MinioHandler:
             # Ensure bucket exists
             if not self.client.bucket_exists(self.bucket_name):
                 self.client.make_bucket(self.bucket_name)
+                self._set_public_policy()
+            
+            # Check/Set policy if needed (simple check for existing buckets in dev)
+            self._set_public_policy() # Uncomment to force update existing bucket
 
             # Upload
             self.client.put_object(
@@ -40,12 +44,6 @@ class MinioHandler:
             )
 
             # Generate URL (assuming public bucket or presigned)
-            # For now returning the relative path or absolute URL depending on requirement.
-            # Requirement says "return URL". Let's construct a direct URL if public.
-            # If using localhost, constructing full URL might be tricky with Docker,
-            # so often returning the object path or a proxy URL is better.
-            # Let's return the full URL assuming it's accessible.
-            
             base_url = settings.MINIO_ENDPOINT
             if not base_url.startswith('http'):
                  base_url = f"http://{base_url}"
@@ -55,6 +53,24 @@ class MinioHandler:
         except S3Error as e:
             print(f"MinIO Upload Error: {e}")
             raise e
+
+    def _set_public_policy(self):
+        import json
+        policy = {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {"AWS": ["*"]},
+                    "Action": ["s3:GetObject"],
+                    "Resource": [f"arn:aws:s3:::{self.bucket_name}/*"]
+                }
+            ]
+        }
+        try:
+            self.client.set_bucket_policy(self.bucket_name, json.dumps(policy))
+        except Exception as e:
+            print(f"Error setting bucket policy: {e}")
 
     def get_presigned_url(self, object_name):
         """

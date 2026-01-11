@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { 
     LayoutDashboard, 
     Users, 
@@ -11,21 +11,37 @@ import {
     Settings, 
     LogOut,
     Menu,
-    Leaf
+    Leaf,
+    FolderTree
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const sidebarItems = [
     { label: "Tổng quan", href: "/admin", icon: LayoutDashboard },
     { label: "Quản lý người dùng", href: "/admin/users", icon: Users },
-    { label: "Đơn hàng", href: "/admin/orders", icon: ShoppingCart },
+    { label: "Danh mục sản phẩm", href: "/admin/categories", icon: FolderTree },
     { label: "Sản phẩm", href: "/admin/products", icon: Package },
+    { label: "Đơn hàng", href: "/admin/orders", icon: ShoppingCart },
     { label: "Cài đặt", href: "/admin/settings", icon: Settings },
 ];
 
 export function AdminSidebar() {
     const pathname = usePathname();
+    const router = useRouter();
+
+    const handleLogout = () => {
+        // Clear all auth tokens
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user');
+        
+        toast.success('Đăng xuất thành công');
+        
+        // Redirect to login page
+        router.push('/auth/login');
+    };
 
     return (
         <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r bg-white transition-transform">
@@ -57,10 +73,15 @@ export function AdminSidebar() {
 
             {/* Bottom Actions */}
             <div className="absolute bottom-4 left-0 w-full px-4">
-                 <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
+                 <Button 
+                    variant="outline" 
+                    className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                    onClick={handleLogout}
+                 >
                     <LogOut className="mr-2 h-4 w-4" /> Đăng xuất
                  </Button>
             </div>
         </aside>
     );
 }
+

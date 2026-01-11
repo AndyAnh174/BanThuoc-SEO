@@ -9,10 +9,15 @@ export {
   ProductCard, 
   ProductList, 
   CategorySidebar,
+  ProductGallery,
+  ProductInfo,
+  AddToCart,
+  ProductDetailLayout,
   type ProductCardProps,
   type ProductListProps,
   type CategorySidebarProps,
   type FilterState,
+  type ProductImage,
 } from './components';
 
 // Re-export component types with prefixes to avoid conflicts
@@ -57,7 +62,7 @@ export {
   type CategoryType,
   type Manufacturer,
   type Product,
-  type ProductImage,
+  // ProductImage is exported from components
   type ProductStatus,
   type ProductType,
   type FlashSaleSession,
