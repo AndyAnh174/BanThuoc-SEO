@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useFlashSaleStore } from '@/features/admin/stores/flash-sale.store';
-import { FlashSaleList } from '@/features/admin/components/flash-sale/flash-sale-list';
-import { FlashSaleModal } from '@/features/admin/components/flash-sale/flash-sale-modal';
+import { useFlashSaleStore } from '@/src/features/admin/stores/flash-sale.store';
+import { FlashSaleList } from '@/src/features/admin/components/flash-sale/flash-sale-list';
+import { FlashSaleModal } from '@/src/features/admin/components/flash-sale/flash-sale-modal';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { AdminHeader } from '@/features/admin/components/admin-header';
+import { AdminHeader } from '@/src/features/admin/components/admin-header';
 
 export default function AdminFlashSalesPage() {
     const { fetchSessions, fetchSessionDetail } = useFlashSaleStore();

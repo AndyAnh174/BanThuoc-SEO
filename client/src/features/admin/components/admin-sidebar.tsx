@@ -24,6 +24,7 @@ const sidebarItems = [
     { label: "Quản lý người dùng", href: "/admin/users", icon: Users },
     { label: "Danh mục sản phẩm", href: "/admin/categories", icon: FolderTree },
     { label: "Sản phẩm", href: "/admin/products", icon: Package },
+    { label: "Flash Sale", href: "/admin/flash-sales", icon: Zap },
     { label: "Đơn hàng", href: "/admin/orders", icon: ShoppingCart },
     { label: "Cài đặt", href: "/admin/settings", icon: Settings },
 ];
