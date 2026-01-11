@@ -89,5 +89,14 @@ urlpatterns = [
     path('flash-sale/check/', CheckFlashSaleForProductView.as_view(), name='flash-sale-check'),
 ]
 
+# --- Admin ViewSets (Router) ---
+from rest_framework.routers import DefaultRouter
+from products.views.manufacturer import ManufacturerAdminViewSet
+
+router = DefaultRouter()
+router.register(r'admin/manufacturers', ManufacturerAdminViewSet, basename='admin-manufacturers')
+
+urlpatterns += router.urls
+
 
 

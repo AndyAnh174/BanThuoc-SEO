@@ -8,6 +8,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
         model = ProductImage
         fields = ['id', 'image_url', 'alt_text', 'is_primary', 'sort_order']
         read_only_fields = ['id']
+        ref_name = 'AdminProductImage'
 
 
 class ProductAdminListSerializer(serializers.ModelSerializer):

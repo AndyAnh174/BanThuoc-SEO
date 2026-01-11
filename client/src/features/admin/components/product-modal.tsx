@@ -314,22 +314,49 @@ export function ProductModal() {
                     
                     <div className="space-y-2">
                         <Label>Nhà sản xuất *</Label>
-                        <Controller
-                            control={control}
-                            name="manufacturer"
-                            render={({ field }) => (
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Chọn nhà sản xuất" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {manufacturers.map((m: any) => (
-                                            <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            )}
-                        />
+                        <div className="flex gap-2">
+                            <Controller
+                                control={control}
+                                name="manufacturer"
+                                render={({ field }) => (
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <SelectTrigger className="flex-1">
+                                            <SelectValue placeholder="Chọn nhà sản xuất" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {manufacturers.map((m: any) => (
+                                                <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                             <Button 
+                                type="button" 
+                                variant="outline" 
+                                size="icon"
+                                onClick={async () => {
+                                    const name = prompt("Nhập tên Nhà sản xuất mới:");
+                                    if (name) {
+                                        try {
+                                            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+                                            const res = await axios.post(`${API_URL}/api/admin/manufacturers/`, { name }, {
+                                                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
+                                            });
+                                            const newM = res.data;
+                                            setManufacturers(prev => [...prev, newM]);
+                                            setValue('manufacturer', newM.id);
+                                            toast.success(`Đã thêm NSX: ${name}`);
+                                        } catch (e) {
+                                            console.error(e);
+                                            toast.error('Lỗi thêm NSX. Vui lòng thử lại.');
+                                        }
+                                    }
+                                }}
+                            >
+                                <Plus className="h-4 w-4" />
+                            </Button>
+                        </div>
                         {errors.manufacturer && <p className="text-red-500 text-sm">{errors.manufacturer.message}</p>}
                     </div>
                 </div>
