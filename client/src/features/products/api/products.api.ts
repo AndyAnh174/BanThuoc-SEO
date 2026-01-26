@@ -1,27 +1,9 @@
 /**
  * API functions for products
  */
-import axios from 'axios';
+import { http as api } from '@/lib/http';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Request interceptor to add auth token
-api.interceptors.request.use((config) => {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
-  return config;
-});
 
 // Types
 export interface ProductListParams {
@@ -68,7 +50,7 @@ export const getSuggestions = async (query: string) => {
 
 // Category APIs
 export const getCategories = async (params?: CategoryListParams) => {
-  return api.get('/categories/', { params });
+  return api.get('/categories/tree/', { params });
 };
 
 export const getCategory = async (slug: string) => {

@@ -93,13 +93,16 @@ urlpatterns = [
 from rest_framework.routers import DefaultRouter
 from products.views.manufacturer import ManufacturerAdminViewSet
 from products.views.flash_sale_admin import FlashSaleSessionAdminViewSet, FlashSaleItemAdminViewSet
+from products.views.banner import BannerViewSet
 
 router = DefaultRouter()
 router.register(r'admin/manufacturers', ManufacturerAdminViewSet, basename='admin-manufacturers')
 router.register(r'admin/flash-sales', FlashSaleSessionAdminViewSet, basename='admin-flash-sales')
 router.register(r'admin/flash-sale-items', FlashSaleItemAdminViewSet, basename='admin-flash-sale-items')
+router.register(r'banners', BannerViewSet, basename='banners')
 
 urlpatterns += router.urls
+
 
 
 

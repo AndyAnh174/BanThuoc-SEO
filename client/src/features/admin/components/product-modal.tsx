@@ -35,6 +35,7 @@ import { Loader2, Plus, X } from 'lucide-react';
 import { useProductsStore } from '../stores/products.store';
 import { useCategoriesStore } from '../stores/categories.store';
 import { ImageUpload } from './image-upload';
+import { CategorySelector } from './category-selector';
 import type { ProductCreateInput, ProductType, ProductStatus } from '../types/product.types';
 import axios from 'axios';
 
@@ -46,12 +47,40 @@ const productSchema = z.object({
   slug: z.string().min(1, 'Slug là bắt buộc'),
   category: z.string().min(1, 'Danh mục là bắt buộc'),
   manufacturer: z.string().min(1, 'Nhà sản xuất là bắt buộc'),
-  price: z.coerce.number().min(0, 'Giá phải lớn hơn hoặc bằng 0'),
-  sale_price: z.coerce.number().min(0).optional().nullable(),
-  stock_quantity: z.coerce.number().int().min(0),
-  low_stock_threshold: z.coerce.number().int().min(0).default(10),
+  price: z.preprocess(
+    (val) => {
+        if (val === '' || val === null || val === undefined) return 0;
+        const n = Number(val);
+        return isNaN(n) ? 0 : n;
+    },
+    z.number().min(0, 'Giá phải lớn hơn hoặc bằng 0')
+  ),
+  sale_price: z.preprocess(
+    (val) => {
+        if (val === '' || val === null || val === undefined) return null;
+        const n = Number(val);
+        return isNaN(n) ? null : n;
+    },
+    z.number().min(0).nullable().optional()
+  ),
+  stock_quantity: z.preprocess(
+    (val) => {
+        if (val === '' || val === null || val === undefined) return 0;
+        const n = Number(val);
+        return isNaN(n) ? 0 : n;
+    },
+    z.number().int().min(0)
+  ),
+  low_stock_threshold: z.preprocess(
+     (val) => {
+        if (val === '' || val === null || val === undefined) return 10;
+        const n = Number(val);
+        return isNaN(n) ? 10 : n;
+     },
+     z.number().int().min(0).default(10)
+  ),
   product_type: z.enum(['MEDICINE', 'SUPPLEMENT', 'MEDICAL_DEVICE', 'COSMETIC', 'OTHER']),
-  unit: z.string().default('Hộp'),
+  unit: z.string().min(1, 'Đơn vị tính là bắt buộc').default('Hộp'),
   quantity_per_unit: z.string().optional(),
   status: z.enum(['DRAFT', 'ACTIVE', 'INACTIVE', 'OUT_OF_STOCK']),
   description: z.string().optional(),
@@ -152,6 +181,7 @@ export function ProductModal() {
                     : 'DRAFT',
                  // Ensure optional keys exist
                  stock_quantity: selectedProduct.stock_quantity ?? 0,
+                 unit: selectedProduct.unit || 'Hộp',
              });
          } else {
              reset({
@@ -294,19 +324,12 @@ export function ProductModal() {
                             control={control}
                             name="category"
                             render={({ field }) => (
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Chọn danh mục" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="none" disabled>Chọn danh mục</SelectItem>
-                                        {categoryOptions.map((cat) => (
-                                            <SelectItem key={cat.id} value={cat.id}>
-                                               {'—'.repeat(cat.level)} {cat.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <CategorySelector 
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    tree={categoryTree}
+                                    error={errors.category?.message}
+                                />
                             )}
                         />
                         {errors.category && <p className="text-red-500 text-sm">{errors.category.message}</p>}
@@ -372,12 +395,12 @@ export function ProductModal() {
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label>Giá bán lẻ (VNĐ) *</Label>
-                        <Input type="number" {...register('price')} />
+                        <Input type="number" step="1000" {...register('price')} />
                         {errors.price && <p className="text-red-500 text-sm">{errors.price.message}</p>}
                     </div>
                     <div className="space-y-2">
                         <Label>Giá khuyến mãi (VNĐ)</Label>
-                        <Input type="number" {...register('sale_price')} />
+                        <Input type="number" step="1000" {...register('sale_price')} />
                     </div>
                  </div>
 

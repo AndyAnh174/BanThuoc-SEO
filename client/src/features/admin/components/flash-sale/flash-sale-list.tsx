@@ -78,8 +78,7 @@ export const FlashSaleList = ({ onEdit, onManage }: FlashSaleListProps) => {
                             </TableCell>
                             <TableCell>
                                 <Button variant="link" onClick={() => onManage(session)}>
-                                    {/* @ts-ignore */}
-                                    {session.items_count || session.total_items || 0} sản phẩm
+                                    {session.total_items || session.items_count || 0} sản phẩm
                                 </Button>
                             </TableCell>
                             <TableCell className="text-right">

@@ -26,6 +26,8 @@ export interface FlashSaleSession {
     is_active: boolean;
     is_currently_active?: boolean;
     items?: FlashSaleItem[];
+    total_items?: number;
+    items_count?: number;
 }
 
 export interface FlashSaleFormData {

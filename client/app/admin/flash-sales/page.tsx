@@ -1,37 +1,33 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useFlashSaleStore } from '@/src/features/admin/stores/flash-sale.store';
 import { FlashSaleList } from '@/src/features/admin/components/flash-sale/flash-sale-list';
-import { FlashSaleModal } from '@/src/features/admin/components/flash-sale/flash-sale-modal';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { AdminHeader } from '@/src/features/admin/components/admin-header';
 
 export default function AdminFlashSalesPage() {
-    const { fetchSessions, fetchSessionDetail } = useFlashSaleStore();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalMode, setModalMode] = useState<'create' | 'edit' | 'manage'>('create');
+    const { fetchSessions } = useFlashSaleStore();
+    const router = useRouter();
 
     useEffect(() => {
         fetchSessions();
     }, []);
 
     const handleCreate = () => {
-        setModalMode('create');
-        setIsModalOpen(true);
+        router.push('/admin/flash-sales/create');
     };
 
-    const handleEdit = async (session: any) => {
-        await fetchSessionDetail(session.id);
-        setModalMode('edit');
-        setIsModalOpen(true);
+    const handleEdit = (session: any) => {
+        router.push(`/admin/flash-sales/${session.id}`);
     };
 
-    const handleManage = async (session: any) => {
-        await fetchSessionDetail(session.id);
-        setModalMode('manage');
-        setIsModalOpen(true);
+    const handleManage = (session: any) => {
+        // Manage also goes to detail page, maybe defaults to products tab?
+        // Currently page defaults to 'info', but we can add query param ?tab=products later if needed.
+        router.push(`/admin/flash-sales/${session.id}`);
     };
 
     return (
@@ -47,12 +43,6 @@ export default function AdminFlashSalesPage() {
             />
 
             <FlashSaleList onEdit={handleEdit} onManage={handleManage} />
-
-            <FlashSaleModal 
-                isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
-                mode={modalMode} 
-            />
         </div>
     );
 }

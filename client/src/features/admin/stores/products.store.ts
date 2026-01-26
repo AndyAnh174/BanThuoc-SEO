@@ -127,7 +127,16 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
       return true;
     } catch (error: any) {
       console.error('Error updating product:', error);
-      const message = error.response?.data?.detail || 'Không thể cập nhật sản phẩm';
+      let message = 'Không thể cập nhật sản phẩm';
+      if (error.response?.data) {
+        if (typeof error.response.data.detail === 'string') {
+          message = error.response.data.detail;
+        } else if (typeof error.response.data === 'object') {
+             message = Object.entries(error.response.data)
+               .map(([k, v]: any) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
+               .join('\n');
+        }
+      }
       toast.error(message);
       set({ isUpdating: false });
       return false;

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { http } from '@/lib/http';
 import { RegisterFormValues } from '../types/register.schema';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -10,7 +10,7 @@ export const registerUser = async (data: RegisterFormValues) => {
     formData.append('confirm_password', data.confirmPassword);
     formData.append('full_name', data.fullName);
     formData.append('phone', data.phone);
-    // formData.append('role', 'pharmacy'); // Backend defaults role to CUSTOMER/PHARMACY internally mostly.
+    // formData.append('role', 'pharmacy'); 
 
     // Enterprise/Pharmacy specific fields
     formData.append('business_name', data.businessName);
@@ -22,7 +22,10 @@ export const registerUser = async (data: RegisterFormValues) => {
         formData.append('license_file', data.licenseFile);
     }
 
-    const response = await axios.post(`${API_URL}/api/auth/register`, formData, {
+    // Register usually doesn't need auth header, but using http is fine (no token). 
+    // However, multipart/form-data needs specific header override or let axios handle it.
+    // http instance has default json type. We override here.
+    const response = await http.post('/auth/register', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -32,6 +35,7 @@ export const registerUser = async (data: RegisterFormValues) => {
 };
 
 export const loginUser = async (credentials: any) => {
-  const response = await axios.post(`${API_URL}/api/auth/token/`, credentials);
+  // Login doesn't need auth header
+  const response = await http.post('/auth/token/', credentials);
   return response;
 };

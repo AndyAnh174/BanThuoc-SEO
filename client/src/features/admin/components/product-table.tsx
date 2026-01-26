@@ -142,11 +142,15 @@ export function ProductTable() {
                     <div className="text-xs text-muted-foreground">{product.manufacturer_name}</div>
                   </TableCell>
                   <TableCell>
-                    <div className="font-bold">{formatPrice(product.price)}</div>
-                    {product.sale_price && (
-                        <div className="text-xs text-green-600 line-through">
-                            {formatPrice(product.sale_price)}
-                        </div>
+                    {product.sale_price ? (
+                        <>
+                            <div className="font-bold text-red-600">{formatPrice(product.sale_price)}</div>
+                            <div className="text-xs text-muted-foreground line-through">
+                                {formatPrice(product.price)}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="font-bold">{formatPrice(product.price)}</div>
                     )}
                   </TableCell>
                   <TableCell>

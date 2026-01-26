@@ -13,7 +13,8 @@ import {
     Menu,
     Leaf,
     FolderTree,
-    Zap
+    Zap,
+    Image
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ const sidebarItems = [
     { label: "Danh mục sản phẩm", href: "/admin/categories", icon: FolderTree },
     { label: "Sản phẩm", href: "/admin/products", icon: Package },
     { label: "Flash Sale", href: "/admin/flash-sales", icon: Zap },
+    { label: "Banner", href: "/admin/banners", icon: Image },
     { label: "Đơn hàng", href: "/admin/orders", icon: ShoppingCart },
     { label: "Cài đặt", href: "/admin/settings", icon: Settings },
 ];

@@ -22,7 +22,8 @@ class FlashSaleSessionAdminViewSet(viewsets.ModelViewSet):
     """
     Admin ViewSet for managing Flash Sale Sessions.
     """
-    queryset = FlashSaleSession.objects.all().order_by('-start_time')
+    from django.db.models import Count
+    queryset = FlashSaleSession.objects.all().annotate(total_items_count=Count('items', distinct=True)).prefetch_related('items').order_by('-start_time')
     serializer_class = FlashSaleSessionAdminSerializer
     permission_classes = [permissions.IsAdminUser]
     pagination_class = StandardResultsSetPagination

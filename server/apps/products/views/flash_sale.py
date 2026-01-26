@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.utils import timezone
-from django.db.models import F
+from django.db.models import F, Count
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -109,7 +109,7 @@ class FlashSaleSessionListView(generics.ListAPIView):
         
         queryset = FlashSaleSession.objects.filter(
             is_active=True
-        ).prefetch_related('items')
+        ).annotate(total_items_count=Count('items', distinct=True)).prefetch_related('items')
         
         if status_filter:
             queryset = queryset.filter(status=status_filter)

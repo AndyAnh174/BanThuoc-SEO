@@ -16,6 +16,7 @@ class FlashSaleItemAdminSerializer(serializers.ModelSerializer):
 class FlashSaleSessionAdminSerializer(serializers.ModelSerializer):
     """Admin CRUD for FlashSaleSession"""
     items = FlashSaleItemAdminSerializer(many=True, read_only=True)
+    total_items = serializers.IntegerField(source='total_items_count', read_only=True)
 
     class Meta:
         model = FlashSaleSession

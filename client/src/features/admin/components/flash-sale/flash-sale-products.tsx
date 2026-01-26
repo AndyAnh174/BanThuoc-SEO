@@ -134,7 +134,7 @@ export const FlashSaleProducts = ({ session }: FlashSaleProductsProps) => {
                             <Plus className="mr-2 h-4 w-4" /> Thêm sản phẩm
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
+                    <DialogContent className="max-w-5xl max-h-[85vh] flex flex-col">
                         <DialogHeader>
                             <DialogTitle>Thêm sản phẩm vào Flash Sale</DialogTitle>
                             <DialogDescription>

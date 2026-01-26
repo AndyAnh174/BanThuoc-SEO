@@ -50,7 +50,7 @@ class FlashSaleSessionListSerializer(serializers.ModelSerializer):
     is_upcoming = serializers.BooleanField(read_only=True)
     is_ended = serializers.BooleanField(read_only=True)
     time_remaining = serializers.FloatField(read_only=True)
-    total_items = serializers.IntegerField(read_only=True)
+    total_items = serializers.IntegerField(source='total_items_count', read_only=True)
     items_count = serializers.SerializerMethodField()
 
     class Meta:

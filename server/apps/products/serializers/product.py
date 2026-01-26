@@ -23,6 +23,7 @@ class ProductAdminListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'sku', 'name', 'slug', 'category', 'category_name',
             'manufacturer', 'manufacturer_name',
+            'product_type', 'short_description', 
             'price', 'sale_price', 'stock_quantity',
             'status', 'is_featured', 'primary_image', 'images', 'created_at'
         ]
