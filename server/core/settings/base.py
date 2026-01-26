@@ -54,10 +54,12 @@ INSTALLED_APPS = [
     "users",
     "products",
     "vouchers",
+    "files",
 ]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    "core.middleware.RequestLoggingMiddleware", # Custom logging
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",

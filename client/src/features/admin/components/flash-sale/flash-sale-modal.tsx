@@ -43,40 +43,45 @@ export const FlashSaleModal = ({ isOpen, onClose, mode }: FlashSaleModalProps) =
         }
     });
 
+    // Effect 1: Handle Modal Open/Close & Tab Initialization
     useEffect(() => {
         if (isOpen) {
             if (mode === 'create') {
-                reset({
-                    name: '',
-                    description: '',
-                    start_time: '',
-                    end_time: '',
-                    is_active: true,
-                });
                 setActiveTab('info');
-            } else if (currentSession) {
-                // Convert Date to DateTime-Local string format (YYYY-MM-DDTHH:mm)
-                const formatDate = (dateStr: string) => {
-                    if (!dateStr) return '';
-                    const d = new Date(dateStr);
-                    // Adjust to local ISO string roughly
-                    const pad = (n:number) => n < 10 ? '0'+n : n;
-                    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-                };
-
-                reset({
-                    name: currentSession.name,
-                    description: currentSession.description || '',
-                    start_time: formatDate(currentSession.start_time),
-                    end_time: formatDate(currentSession.end_time),
-                    is_active: currentSession.is_active,
-                });
-                
+            } else {
                 if (mode === 'manage') setActiveTab('products');
                 else setActiveTab('info');
             }
         }
-    }, [isOpen, mode, currentSession, reset]);
+    }, [isOpen, mode]);
+
+    // Effect 2: Update Form Data when currentSession changes
+    useEffect(() => {
+        if (isOpen && currentSession && mode !== 'create') {
+            const formatDate = (dateStr: string) => {
+                if (!dateStr) return '';
+                const d = new Date(dateStr);
+                const pad = (n:number) => n < 10 ? '0'+n : n;
+                return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+            };
+
+            reset({
+                name: currentSession.name,
+                description: currentSession.description || '',
+                start_time: formatDate(currentSession.start_time),
+                end_time: formatDate(currentSession.end_time),
+                is_active: currentSession.is_active,
+            });
+        } else if (isOpen && mode === 'create') {
+             reset({
+                name: '',
+                description: '',
+                start_time: '',
+                end_time: '',
+                is_active: true,
+            });
+        }
+    }, [currentSession, isOpen, mode, reset]);
 
     const onSubmit = async (data: any) => {
         // Convert local time back to ISO if needed, but backend handles ISO strings well usually.
@@ -103,7 +108,7 @@ export const FlashSaleModal = ({ isOpen, onClose, mode }: FlashSaleModalProps) =
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
                         {mode === 'create' ? 'Tạo đợt Flash Sale mới' : `Chi tiết Flash Sale: ${currentSession?.name}`}
@@ -113,7 +118,7 @@ export const FlashSaleModal = ({ isOpen, onClose, mode }: FlashSaleModalProps) =
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="info">Thông tin chung</TabsTrigger>
-                        <TabsTrigger value="products" disabled={mode === 'create'}>Sản phẩm bán</TabsTrigger>
+                        <TabsTrigger value="products" disabled={!currentSession?.id}>Sản phẩm bán</TabsTrigger>
                     </TabsList>
                     
                     <TabsContent value="info">

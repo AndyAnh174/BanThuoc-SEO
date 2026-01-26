@@ -8,7 +8,16 @@ from products.serializers.flash_sale_admin import (
     FlashSaleSessionAdminSerializer,
     FlashSaleItemAdminSerializer
 )
+from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
 
+@method_decorator(name='list', decorator=swagger_auto_schema(tags=['Flash Sale (Admin)']))
+@method_decorator(name='create', decorator=swagger_auto_schema(tags=['Flash Sale (Admin)']))
+@method_decorator(name='retrieve', decorator=swagger_auto_schema(tags=['Flash Sale (Admin)']))
+@method_decorator(name='update', decorator=swagger_auto_schema(tags=['Flash Sale (Admin)']))
+@method_decorator(name='partial_update', decorator=swagger_auto_schema(tags=['Flash Sale (Admin)']))
+@method_decorator(name='destroy', decorator=swagger_auto_schema(tags=['Flash Sale (Admin)']))
+@method_decorator(name='add_products', decorator=swagger_auto_schema(tags=['Flash Sale (Admin)']))
 class FlashSaleSessionAdminViewSet(viewsets.ModelViewSet):
     """
     Admin ViewSet for managing Flash Sale Sessions.
@@ -50,6 +59,12 @@ class FlashSaleSessionAdminViewSet(viewsets.ModelViewSet):
         }, status=status.HTTP_200_OK)
 
 
+@method_decorator(name='list', decorator=swagger_auto_schema(tags=['Flash Sale (Admin)']))
+@method_decorator(name='create', decorator=swagger_auto_schema(tags=['Flash Sale (Admin)']))
+@method_decorator(name='retrieve', decorator=swagger_auto_schema(tags=['Flash Sale (Admin)']))
+@method_decorator(name='update', decorator=swagger_auto_schema(tags=['Flash Sale (Admin)']))
+@method_decorator(name='partial_update', decorator=swagger_auto_schema(tags=['Flash Sale (Admin)']))
+@method_decorator(name='destroy', decorator=swagger_auto_schema(tags=['Flash Sale (Admin)']))
 class FlashSaleItemAdminViewSet(viewsets.ModelViewSet):
     """
     Admin ViewSet for managing Flash Sale Items within a session.

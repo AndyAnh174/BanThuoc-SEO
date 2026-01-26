@@ -66,14 +66,22 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
         tags=['Products (Admin)']
     )
     def put(self, request, *args, **kwargs):
-        return super().put(request, *args, **kwargs)
+        try:
+            return super().put(request, *args, **kwargs)
+        except Exception as e:
+            print(f"❌ Product Update Error (PUT): {e}")
+            raise e
 
     @swagger_auto_schema(
         operation_summary="Partial update product (Admin)",
         tags=['Products (Admin)']
     )
     def patch(self, request, *args, **kwargs):
-        return super().patch(request, *args, **kwargs)
+        # Add debug logging for 400 errors
+        response = super().patch(request, *args, **kwargs)
+        if response.status_code == 400:
+            print(f"❌ Product Update Validation Error (PATCH): {response.data}")
+        return response
 
     @swagger_auto_schema(
         operation_summary="Delete product (Admin)",
