@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { ShoppingCart, Minus, Plus, Heart, Loader2, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 interface AddToCartProps {
   productId: string;
@@ -143,6 +144,14 @@ export function AddToCart({
     }
   };
 
+  const router = useRouter();
+
+  const handleBuyNow = async () => {
+    if (isOutOfStock) return;
+    await handleAddToCart();
+    router.push('/checkout');
+  };
+
   return (
     <div className={cn('space-y-4', className)}>
       {/* Quantity selector */}
@@ -233,7 +242,8 @@ export function AddToCart({
       {/* Buy now button */}
       <Button
         variant="outline"
-        disabled={isOutOfStock}
+        onClick={handleBuyNow}
+        disabled={isOutOfStock || isLoading}
         className="w-full h-12 text-base font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
       >
         Mua ngay

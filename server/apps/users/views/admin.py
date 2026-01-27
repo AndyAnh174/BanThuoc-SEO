@@ -145,16 +145,32 @@ class AdminUserStatusUpdateView(generics.UpdateAPIView):
         reason = serializer.validated_data.get('reason', '')
 
         # Update user
-        user.status = new_status
         if new_status == User.Status.ACTIVE:
-            user.is_active = True
+            # Don't activate immediately - send verification email
+            # User will be activated after clicking email link
+            user.status = new_status
+            user.is_active = False  # Still inactive until email verified
+            user.is_verified = False
+            user.save()
+            
+            # Send verification email
+            from .verify_email import create_verification_token, send_verification_email
+            token_obj = create_verification_token(user)
+            send_verification_email(user, token_obj.token)
+            
+            return Response({
+                **AdminUserSerializer(user).data,
+                "message": "Đã gửi email xác thực cho người dùng"
+            })
         elif new_status in [User.Status.REJECTED, User.Status.LOCKED]:
+            user.status = new_status
             user.is_active = False
-        
-        user.save()
-
-        # Send Email in background
-        self._send_status_email(user, new_status, reason)
+            user.save()
+            # Send rejection email
+            self._send_status_email(user, new_status, reason)
+        else:
+            user.status = new_status
+            user.save()
         
         return Response(AdminUserSerializer(user).data)
 

@@ -124,7 +124,9 @@ export function RegisterForm() {
     <>
     <SuccessModal 
         isOpen={showSuccessModal} 
-        onClose={handleSuccessClose} 
+        onClose={handleSuccessClose}
+        title="ĐĂNG KÝ THÀNH CÔNG"
+        message="Tài khoản của bạn đã được tạo và đang chờ người kiểm duyệt phê duyệt. Sau khi được duyệt, bạn sẽ nhận được email xác thực để kích hoạt tài khoản."
     />
     
     <motion.div 

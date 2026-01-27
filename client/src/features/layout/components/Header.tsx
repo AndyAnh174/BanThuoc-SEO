@@ -29,9 +29,13 @@ import {
   Heart,
   Pill,
 } from 'lucide-react';
+import { useCartStore } from '@/src/features/cart/stores/cart.store';
+import { useAuthStore } from '@/src/features/auth/stores/auth.store';
+import { UserDropdownMenu } from './UserDropdownMenu';
+import { CartHoverContent } from '@/src/features/cart/components/CartHoverContent';
 
 interface HeaderProps {
-  cartItemCount?: number;
+  cartItemCount?: number; // Kept for backward compat but preferred store
 }
 
 interface Category {
@@ -42,28 +46,41 @@ interface Category {
   children?: Category[];
 }
 
-export function Header({ cartItemCount = 0 }: HeaderProps) {
+export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
+  
+  const { cart, fetchCart } = useCartStore();
+  const { checkAuth } = useAuthStore();
+  const displayCount = cart ? cart.total_items : initialCount;
 
   React.useEffect(() => {
-    async function fetchCategories() {
+    async function initData() {
         try {
-            const res = await getCategories({ active_only: true });
-             if (res.data?.results) {
-               setCategories(res.data.results);
-             } else if (Array.isArray(res.data)) {
-               setCategories(res.data);
-             }
+            checkAuth();
+            await Promise.all([
+                // Fetch categories
+                (async () => {
+                   // ... logic ...
+                   const res = await getCategories({ active_only: true });
+                    if (res.data?.results) {
+                        setCategories(res.data.results);
+                    } else if (Array.isArray(res.data)) {
+                        setCategories(res.data);
+                    }
+                })(),
+                // Fetch cart
+                fetchCart() // fetchCart should handle auth check internally or fail gracefully
+            ]);
         } catch (error) {
-            console.error("Failed to fetch categories for header", error);
+            console.error("Failed to fetch initial data for header", error);
         }
     }
-    fetchCategories();
-  }, []);
+    initData();
+  }, [fetchCart, checkAuth]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,46 +169,27 @@ export function Header({ cartItemCount = 0 }: HeaderProps) {
               </Button>
 
               {/* Cart */}
-              <Button variant="ghost" size="icon" className="relative rounded-full w-10 h-10 hover:bg-primary/10 hover:text-primary transition-colors" asChild>
-                <Link href="/cart">
-                  <ShoppingCart className="w-5 h-5" />
-                  {cartItemCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 h-5 w-5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold border-2 border-white shadow-xs animate-in zoom-in-50">
-                      {cartItemCount}
-                    </span>
-                  )}
-                </Link>
-              </Button>
+              {/* Cart */}
+              <div className="relative group z-50">
+                  <Button variant="ghost" size="icon" className="relative rounded-full w-10 h-10 hover:bg-primary/10 hover:text-primary transition-colors" asChild>
+                    <Link href="/cart" className="relative">
+                      <ShoppingCart className="w-5 h-5" />
+                      {displayCount > 0 && (
+                        <span className="absolute -top-0.5 -right-0.5 h-5 w-5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold border-2 border-white shadow-xs animate-in zoom-in-50">
+                          {displayCount}
+                        </span>
+                      )}
+                    </Link>
+                  </Button>
+
+                  {/* Hover Content */}
+                  <div className="absolute top-full right-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right translate-y-2 group-hover:translate-y-0">
+                      <CartHoverContent />
+                  </div>
+              </div>
 
               {/* User menu */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full w-10 h-10 hover:bg-gray-100 transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200">
-                      <User className="w-4 h-4 text-gray-600" />
-                    </div>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 p-2 rounded-xl shadow-xl border-gray-100/50 backdrop-blur-sm">
-                  <div className="px-2 py-1.5 text-xs text-muted-foreground font-medium">Tài khoản</div>
-                  <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
-                    <Link href="/auth/login" className="flex items-center gap-2 font-medium">
-                        <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center">
-                            <User className="w-3.5 h-3.5 text-primary" />
-                        </div>
-                        Đăng nhập
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
-                    <Link href="/auth/register" className="flex items-center gap-2 font-medium">
-                        <div className="w-6 h-6 rounded bg-emerald-100 flex items-center justify-center">
-                            <span className="text-xs font-bold text-emerald-600">+</span>
-                        </div>
-                        Đăng ký
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <UserDropdownMenu />
 
               {/* Mobile menu toggle */}
               <Button

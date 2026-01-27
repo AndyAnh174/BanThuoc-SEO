@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        background-color: #d4edda;
+        padding: 20px;
+        text-align: center;
+        color: #155724;
+      }
+      .content {
+        padding: 30px 20px;
+      }
+      .footer {
+        font-size: 12px;
+        color: #666;
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+      }
+      .button {
+        display: inline-block;
+        padding: 15px 30px;
+        background-color: #28a745;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+      .warning {
+        background-color: #fff3cd;
+        border: 1px solid #ffc107;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>🎉 Tài khoản của bạn đã được phê duyệt!</h2>
+      </div>
+      <div class="content">
+        <p>Xin chào <strong>{{ user.full_name }}</strong>,</p>
+        <p>
+          Chúc mừng! Tài khoản của bạn đã được quản trị viên
+          <strong>BanThuoc</strong> phê duyệt.
+        </p>
+        <p>
+          Để hoàn tất việc kích hoạt tài khoản, vui lòng click vào nút bên dưới
+          để xác thực email của bạn:
+        </p>
+        <p style="text-align: center; margin: 30px 0">
+          <a href="{{ verify_url }}" class="button">Xác thực email</a>
+        </p>
+        <div class="warning">
+          <p style="margin: 0">
+            <strong>⏰ Lưu ý:</strong> Link xác thực có hiệu lực trong vòng
+            <strong>24 giờ</strong>.
+          </p>
+        </div>
+        <p style="margin-top: 20px">
+          Nếu bạn không đăng ký tài khoản tại BanThuoc, vui lòng bỏ qua email
+          này.
+        </p>
+      </div>
+      <div class="footer">
+        <p>&copy; 2026 BanThuoc. Đã đăng ký bản quyền.</p>
+      </div>
+    </div>
+  </body>
+</html>

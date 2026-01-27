@@ -15,8 +15,8 @@ interface SuccessModalProps {
 export function SuccessModal({ 
     isOpen, 
     onClose, 
-    title = "SUCCESS", 
-    message = "Congratulations, your account has been successfully created." 
+    title = "THÀNH CÔNG", 
+    message = "Chúc mừng, tài khoản của bạn đã được tạo thành công." 
 }: SuccessModalProps) {
   if (!isOpen) return null;
 
@@ -51,7 +51,7 @@ export function SuccessModal({
                     onClick={onClose}
                     className="w-40 rounded-full bg-[#87D53F] hover:bg-[#76c035] text-white font-medium h-12 shadow-lg shadow-green-200 transition-transform active:scale-95"
                 >
-                    Continue
+                    Tiếp tục
                 </Button>
             </div>
           </motion.div>

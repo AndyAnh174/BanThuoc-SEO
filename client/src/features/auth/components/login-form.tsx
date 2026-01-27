@@ -56,7 +56,23 @@ export function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     const success = await login(data);
     if (success) {
-      router.push("/admin/users");
+      // Check user role from JWT token and redirect accordingly
+      try {
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+          // Decode JWT payload (base64)
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          if (payload.role === 'ADMIN') {
+            router.push("/admin/users");
+          } else {
+            router.push("/"); // Customer goes to homepage
+          }
+        } else {
+          router.push("/");
+        }
+      } catch (e) {
+        router.push("/"); // Default to homepage
+      }
     }
   };
 

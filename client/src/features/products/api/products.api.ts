@@ -23,29 +23,48 @@ export interface CategoryListParams {
   active_only?: boolean;
 }
 
+import { transformProduct, transformProductList } from '../utils/transformer';
+
 // Product APIs
 export const getProducts = async (params?: ProductListParams) => {
-  return api.get('/products/', { params });
+  const res = await api.get('/products/', { params });
+  return { ...res, data: transformProductList(res.data) };
 };
 
 export const getProduct = async (slug: string) => {
-  return api.get(`/products/${slug}/`);
+  const res = await api.get(`/products/${slug}/`);
+  return { ...res, data: transformProduct(res.data) };
 };
 
 export const getFeaturedProducts = async () => {
-  return api.get('/products/featured/');
+  const res = await api.get('/products/featured/');
+  // API might return list directly or paginated
+  // If list:
+  if (Array.isArray(res.data)) {
+      return { ...res, data: res.data.map(transformProduct) };
+  }
+  return { ...res, data: transformProductList(res.data) };
 };
 
 export const getOnSaleProducts = async () => {
-  return api.get('/products/on-sale/');
+    const res = await api.get('/products/on-sale/');
+    if (Array.isArray(res.data)) {
+        return { ...res, data: res.data.map(transformProduct) };
+    }
+    return { ...res, data: transformProductList(res.data) };
 };
 
 export const getNewProducts = async () => {
-  return api.get('/products/new/');
+    const res = await api.get('/products/new/');
+    if (Array.isArray(res.data)) {
+        return { ...res, data: res.data.map(transformProduct) };
+    }
+    return { ...res, data: transformProductList(res.data) };
 };
 
 export const searchProducts = async (query: string, params?: ProductListParams) => {
-  return api.get('/search/', { params: { q: query, ...params } });
+  const res = await api.get('/search/', { params: { q: query, ...params } });
+  return { ...res, data: transformProductList(res.data) }; // SearchResponse has results array
 };
 
 export const getSuggestions = async (query: string) => {

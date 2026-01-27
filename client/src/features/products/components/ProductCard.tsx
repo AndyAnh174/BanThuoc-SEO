@@ -1,11 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, Heart, Pill } from 'lucide-react';
+import { ShoppingCart, Heart, Pill, Loader2 } from 'lucide-react';
+import { useCartStore } from '@/src/features/cart/stores/cart.store';
+import { useAuthStore } from '@/src/features/auth/stores/auth.store';
+import { toast } from 'sonner';
 
 export interface ProductCardProps {
   id: string;
@@ -60,6 +64,82 @@ export function ProductCard({
   onAddToCart,
   onAddToWishlist,
 }: ProductCardProps) {
+  const { cart, addToCart, updateItem, isLoading: isCartLoading } = useCartStore();
+  const { isAuthenticated } = useAuthStore();
+  const router = useRouter();
+  const [localLoading, setLocalLoading] = useState(false);
+
+  // No need to parse ID if it is UUID string
+  const productId = id;
+  
+  // Find item in cart
+  const cartItem = cart?.items.find(item => item.product.id === productId || item.product_id === productId);
+  const quantityInCart = cartItem ? cartItem.quantity : 0;
+
+  // Logic handlers
+  const handleAddToCart = async (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const hasToken = typeof window !== 'undefined' && (!!localStorage.getItem('accessToken') || !!localStorage.getItem('access_token'));
+
+      if (!hasToken) {
+          toast.error("Vui lòng đăng nhập để mua hàng");
+          router.push("/auth/login");
+          return;
+      }
+
+      setLocalLoading(true);
+      await addToCart(productId, 1);
+      setLocalLoading(false);
+  };
+
+  const handleUpdateQuantity = async (e: React.MouseEvent, newQty: number) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      if (!cartItem) return;
+
+      setLocalLoading(true);
+      // Optimistic update could happen here, but let's wait for API
+      if (newQty <= 0) {
+          // Typically remove item if qty 0
+          // But here we might just reduce to 0 (remove) via updateItem handling or removeItem.
+          // Store's updateItem might not handle remove. 
+          // Let's assume we want to remove if qty = 0? Or just min 1.
+          // Segmented control usually allows going to 0 -> remove.
+          // Let's check store updateItem implementation. 
+          // It calls PATCH. If backend handles 0 as delete? Usually no.
+          // Better use removeItem for 0.
+          if (newQty === 0) {
+             // We can check if we have removeItem in scope. Yes we do need it.
+             // But simpler: updateItem with 0 -> Backend?
+             // Let's safe side: if newQty is 0, we can implementation remove logic here but I didn't import removeItem.
+             // Let's allow update to 0 if backend supports or just stop at 1.
+             // But UI shows "-" button. If click "-" when 1, it becomes 0 (back to "Add").
+             // Handled by logic below?
+      }
+      // Actually simpler:
+      // If current is 1 and click "-", newQty = 0.
+      // We should call removeItem.
+      // I need to import removeItem from store.
+      }
+      
+      await updateItem(cartItem.id, newQty);
+      setLocalLoading(false);
+  };
+
+  const { removeItem } = useCartStore();
+  const handleRemove = async (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!cartItem) return;
+      setLocalLoading(true);
+      await removeItem(cartItem.id);
+      setLocalLoading(false);
+  }
+
+
   // Calculate current price and discount
   const currentPrice = flashSale?.flashSalePrice ?? salePrice ?? price;
   const isOnSale = currentPrice < price;
@@ -67,6 +147,7 @@ export function ProductCard({
     ? Math.round((1 - currentPrice / price) * 100)
     : 0;
   const isOutOfStock = stockQuantity <= 0;
+  const isLoading = isCartLoading && localLoading;
 
   // Format price to VND
   const formatPrice = (value: number) => {
@@ -81,7 +162,11 @@ export function ProductCard({
       <div className="relative p-3 pb-0 flex-1 flex flex-col">
         {/* Wishlist button */}
         <button
-          onClick={() => onAddToWishlist?.(id)}
+          onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onAddToWishlist?.(id);
+          }}
           className="absolute top-3 right-3 z-10 text-gray-400 hover:text-red-500 transition-colors"
           aria-label="Add to wishlist"
         >
@@ -106,14 +191,13 @@ export function ProductCard({
           )}
         </Link>
 
-        {/* Badges - Custom "Hospital Prescription" Style */}
+        {/* Badges */}
         <div className="flex flex-col gap-1 items-start mb-2 min-h-[24px]">
           {requiresPrescription && (
             <div className="bg-[#0057B7] text-[#FFD700] text-[10px] font-bold px-2 py-1 uppercase leading-tight inline-block rounded-sm">
               Theo đơn<br />bệnh viện
             </div>
           )}
-          {/* Other badge - e.g. New/Flash Sale */}
           {flashSale && (
              <Badge className="bg-red-600 hover:bg-red-700 text-white rounded-sm px-1.5 py-0.5 text-[10px]">
                Flash Sale
@@ -126,7 +210,7 @@ export function ProductCard({
           )}
         </div>
 
-        {/* Price - Fixed Height to align Title below */}
+        {/* Price */}
         <div className="mb-2 h-[46px] flex flex-col justify-end">
            <span className="text-xl font-bold text-green-600 block leading-tight">
               {formatPrice(currentPrice)}
@@ -136,24 +220,24 @@ export function ProductCard({
            </span>
         </div>
 
-        {/* Product Name - Fixed Height */}
+        {/* Product Name */}
         <Link href={`/products/${slug}`}>
           <h3 className="font-medium text-gray-900 line-clamp-2 h-[40px] mb-1 hover:text-primary transition-colors text-sm leading-tight" title={name}>
             {name}
           </h3>
         </Link>
         
-        {/* Short Description - Fixed Height */}
+        {/* Short Description */}
         <p className="text-xs text-gray-500 line-clamp-1 mb-1 h-[18px] leading-relaxed">
             {short_description || '\u00A0'}
         </p>
         
-        {/* Unit & Packaging - Fixed Height */}
+        {/* Unit & Packaging */}
         <p className="text-xs text-gray-500 mb-2 h-[18px] leading-relaxed line-clamp-1">
             {quantity_per_unit ? quantity_per_unit : unit}
         </p>
 
-        {/* Manufacturer - Push to bottom */}
+        {/* Manufacturer */}
         <div className="mt-auto">
           {manufacturer && (
              <div className="flex items-center gap-1.5 mb-3">
@@ -165,11 +249,6 @@ export function ProductCard({
                </p>
              </div>
           )}
-          {/* Spacer if no manufacturer to keep alignment? No, mt-auto handles position, but if missing, gap might vary. 
-              Let's render an empty div with same height if missing? 
-              User wants "balanced". If manufacturer is missing, maybe it's cleaner to just leave it blank. 
-              But ensuring the "Add to cart" is strictly at bottom is the key. 
-          */}
           {!manufacturer && <div className="h-7 mb-3"></div>} 
         </div>
       </div>
@@ -179,26 +258,41 @@ export function ProductCard({
          {/* Minus Button */}
          <button 
            className="flex items-center justify-center hover:bg-gray-50 transition-colors border-r border-gray-100 h-10 text-gray-500 disabled:opacity-50"
-           disabled={isOutOfStock}
+           disabled={isOutOfStock || quantityInCart === 0 || isLoading}
+           onClick={(e) => {
+               if (quantityInCart === 1) {
+                   handleRemove(e);
+               } else {
+                   handleUpdateQuantity(e, quantityInCart - 1);
+               }
+           }}
          >
             <span className="text-xl font-medium leading-none mb-0.5">–</span>
          </button>
 
          {/* Center - Cart/Count */}
          <button 
-             onClick={() => onAddToCart?.(id)}
+             onClick={quantityInCart === 0 ? handleAddToCart : undefined}
              className="flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors h-10 text-gray-500 disabled:opacity-50"
-             disabled={isOutOfStock}
+             disabled={isOutOfStock || isLoading}
          >
-            <ShoppingCart className="w-4 h-4" />
-            <span className="text-sm">0</span>
+            {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+            ) : quantityInCart > 0 ? (
+                <span className="text-sm font-semibold text-primary">{quantityInCart}</span>
+            ) : (
+                <>
+                    <ShoppingCart className="w-4 h-4" />
+                    <span className="text-sm">Thêm</span>
+                </>
+            )}
          </button>
 
          {/* Plus Button */}
          <button 
-           onClick={() => onAddToCart?.(id)}
+           onClick={quantityInCart === 0 ? handleAddToCart : (e) => handleUpdateQuantity(e, quantityInCart + 1)}
            className="flex items-center justify-center hover:bg-gray-50 transition-colors border-l border-gray-100 h-10 text-green-600 font-medium disabled:opacity-50"
-           disabled={isOutOfStock}
+           disabled={isOutOfStock || isLoading}
          >
             <span className="text-xl leading-none mb-0.5">+</span>
          </button>

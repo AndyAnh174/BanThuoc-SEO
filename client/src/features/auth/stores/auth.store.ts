@@ -6,19 +6,22 @@ import { toast } from 'sonner';
 import { registerUser, loginUser } from '../api/auth.api';
 
 interface AuthState {
+  isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
   register: (data: RegisterFormValues) => Promise<boolean>;
   login: (data: LoginFormValues) => Promise<boolean>;
   resetError: () => void;
   logout: () => void;
+  checkAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
+  isAuthenticated: false,
   isLoading: false,
   error: null,
   register: async (data: RegisterFormValues) => {
-    // ... (existing register code)
+    // ... existing register ...
     set({ isLoading: true, error: null });
     
     try {
@@ -26,10 +29,9 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       if (response.status === 201) {
         toast.success("Đăng ký thành công!", {
-            description: "Vui lòng kiểm tra email để xác thực tài khoản."
+            description: "Tài khoản đang chờ admin duyệt. Sau khi duyệt, bạn sẽ nhận email xác thực để kích hoạt."
         });
         set({ isLoading: false });
-        // Optional: Redirect logic can be handled by the component listening to this specific successful action return
         return true;
       }
       return false;
@@ -37,20 +39,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error: any) {
         let errorMessage = "Đã xảy ra lỗi không xác định.";
         
-        if (error.response) { // Check for Axios error response
+        if (error.response) { 
             const status = error.response.status;
             const data = error.response.data;
 
             if (status === 400) {
-                // Handle Validation Errors
                 if (data) {
-                     // Try to extract the first error message from DRF response
-                     // DRF usually returns { field: ["error message"], ... }
                      const keys = Object.keys(data);
                      if (keys.length > 0) {
                          const firstKey = keys[0];
                          const firstVal = data[firstKey];
-                         // Format: "email: nội dung lỗi"
                          errorMessage = `${firstKey}: ${Array.isArray(firstVal) ? firstVal[0] : firstVal}`;
                      } else {
                          errorMessage = "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.";
@@ -84,14 +82,13 @@ export const useAuthStore = create<AuthState>((set) => ({
           if (response.status === 200) {
               const { access, refresh } = response.data;
               
-              // Store tokens
               if (typeof window !== 'undefined') {
                 localStorage.setItem('accessToken', access);
                 localStorage.setItem('refreshToken', refresh);
               }
               
               toast.success("Đăng nhập thành công!");
-              set({ isLoading: false });
+              set({ isLoading: false, isAuthenticated: true });
               return true;
           }
           return false;
@@ -121,9 +118,16 @@ export const useAuthStore = create<AuthState>((set) => ({
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
       }
+      set({ isAuthenticated: false });
       toast.info("Đã đăng xuất");
-      // Optional: Force reload or redirect using window.location if router isn't available
       window.location.href = '/auth/login';
+  },
+
+  checkAuth: () => {
+     if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('accessToken');
+        set({ isAuthenticated: !!token });
+     }
   },
 
   resetError: () => set({ error: null }),
