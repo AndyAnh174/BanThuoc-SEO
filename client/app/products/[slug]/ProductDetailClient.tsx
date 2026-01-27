@@ -20,6 +20,8 @@ import {
   Pill
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { ProductCard } from '@/src/features/products';
+import { MappedProduct } from '@/src/lib/api-mapper';
 
 interface ProductImage {
   id: string;
@@ -49,10 +51,12 @@ interface ProductDetailProps {
     ingredients?: string;
     usage?: string;
     dosage?: string;
+    contraindications?: string;
     sideEffects?: string;
     storage?: string;
     rating?: number;
     reviewCount?: number;
+    relatedProducts?: MappedProduct[];
   };
 }
 
@@ -407,6 +411,12 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
                 <p className="text-gray-600">{product.usage}</p>
               </div>
             )}
+            {product.contraindications && (
+              <div>
+                <h3 className="font-semibold mb-2">Chống chỉ định</h3>
+                <p className="text-gray-600">{product.contraindications}</p>
+              </div>
+            )}
             {product.sideEffects && (
               <div>
                 <h3 className="font-semibold mb-2">Tác dụng phụ</h3>
@@ -433,6 +443,36 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Related Products Section */}
+      {product.relatedProducts && product.relatedProducts.length > 0 && (
+         <div className="mt-16">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Sản phẩm liên quan</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+               {product.relatedProducts.map(rp => (
+                  <ProductCard 
+                     key={rp.id}
+                     id={rp.id}
+                     name={rp.name}
+                     slug={rp.slug}
+                     price={rp.price}
+                     salePrice={rp.salePrice}
+                     imageUrl={rp.imageUrl || undefined}
+                     category={rp.category || undefined}
+                     manufacturer={rp.manufacturer || undefined}
+                     unit={rp.unit}
+                     stockQuantity={rp.stockQuantity}
+                     isFeatured={rp.isFeatured}
+                     requiresPrescription={rp.requiresPrescription}
+                     rating={rp.rating}
+                     reviewCount={rp.reviewCount}
+                     short_description={rp.short_description}
+                     quantity_per_unit={rp.quantity_per_unit}
+                  />
+               ))}
+            </div>
+         </div>
+      )}
     </div>
   );
 }

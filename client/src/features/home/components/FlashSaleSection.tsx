@@ -98,7 +98,7 @@ export function FlashSaleSection() {
   // Loading skeleton
   if (loading) {
     return (
-      <section className="py-12 bg-gradient-to-r from-red-50 to-orange-50">
+      <section className="py-12 bg-linear-to-r from-red-50 to-orange-50">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
             <Skeleton className="h-10 w-48" />
@@ -122,7 +122,7 @@ export function FlashSaleSection() {
   const formatNumber = (n: number) => n.toString().padStart(2, '0');
 
   return (
-    <section className="py-12 bg-gradient-to-r from-red-50 to-orange-50 relative overflow-hidden">
+    <section className="py-12 bg-linear-to-r from-red-50 to-orange-50 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-red-100 rounded-full blur-3xl opacity-50" />

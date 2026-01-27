@@ -181,7 +181,7 @@ class ElasticsearchProductSearchView(APIView):
         total_pages = math.ceil(total / page_size)
 
         return Response({
-            'total': total,
+            'count': total,
             'page': page,
             'page_size': page_size,
             'total_pages': total_pages,

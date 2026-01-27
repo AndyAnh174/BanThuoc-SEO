@@ -13,6 +13,7 @@ from products.views.public import (
     ProductListView,
     ProductDetailView,
     FeaturedProductsView,
+    NewProductsView,
     OnSaleProductsView,
     ProductSearchView,
 )
@@ -62,6 +63,7 @@ urlpatterns = [
     # ========================================
     path('products/', ProductListView.as_view(), name='product-list'),
     path('products/featured/', FeaturedProductsView.as_view(), name='product-featured'),
+    path('products/new/', NewProductsView.as_view(), name='product-new'),
     path('products/on-sale/', OnSaleProductsView.as_view(), name='product-on-sale'),
     path('products/search/', ProductSearchView.as_view(), name='product-search'),
     path('products/<slug:slug>/', ProductDetailView.as_view(), name='product-detail'),

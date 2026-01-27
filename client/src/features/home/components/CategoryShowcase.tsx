@@ -75,7 +75,7 @@ export function CategoryShowcase() {
   if (loading) {
     return (
       <section className="py-8">
-        <div className="bg-gradient-to-br from-green-50 via-green-100/50 to-teal-50 rounded-2xl p-6">
+        <div className="bg-linear-to-br from-green-50 via-green-100/50 to-teal-50 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-6">
             <Skeleton className="h-7 w-48" />
             <Skeleton className="h-6 w-24" />
@@ -97,10 +97,10 @@ export function CategoryShowcase() {
   return (
     <section className="py-8">
       {/* Background with pattern */}
-      <div className="relative bg-gradient-to-br from-green-50 via-emerald-50/80 to-teal-50 rounded-2xl p-6 overflow-hidden">
+      <div className="relative bg-linear-to-br from-green-50 via-emerald-50/80 to-teal-50 rounded-2xl p-6 overflow-hidden">
         {/* Decorative pattern */}
-        <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-full -translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-tl from-teal-100/50 to-transparent rounded-full translate-x-1/4 translate-y-1/4" />
+        <div className="absolute top-0 left-0 w-32 h-32 bg-linear-to-br from-primary/10 to-transparent rounded-full -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute bottom-0 right-0 w-48 h-48 bg-linear-to-tl from-teal-100/50 to-transparent rounded-full translate-x-1/4 translate-y-1/4" />
         
         {/* Header */}
         <div className="relative flex items-center justify-between mb-6">
@@ -145,9 +145,12 @@ export function CategoryShowcase() {
                 <h3 className="text-xs font-semibold text-center text-gray-800 line-clamp-2 leading-tight min-h-[2.5em]">
                   {category.name}
                 </h3>
+                <span className="text-[10px] text-gray-500 mt-1">
+                  {count !== undefined ? `${count} sản phẩm` : 'Sản phẩm'}
+                </span>
               </Link>
             );
-          })}
+          }).slice(0, 14)}
         </div>
       </div>
     </section>

@@ -3,12 +3,13 @@
 import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, ShieldCheck, Truck, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export function HeroBanner() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5">
+    <section className="relative overflow-hidden bg-linear-to-br from-primary/5 via-primary/10 to-primary/5">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
@@ -60,42 +61,50 @@ export function HeroBanner() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="grid sm:grid-cols-2 gap-4"
           >
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
-                <ShieldCheck className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">100% Chính hãng</h3>
-              <p className="text-sm text-gray-600">
-                Cam kết sản phẩm chính hãng, nguồn gốc rõ ràng
-              </p>
-            </div>
+            <Card className="border-gray-100 shadow-lg">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                  <ShieldCheck className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">100% Chính hãng</h3>
+                <p className="text-sm text-gray-600">
+                  Cam kết sản phẩm chính hãng, nguồn gốc rõ ràng
+                </p>
+              </CardContent>
+            </Card>
 
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
-                <Truck className="w-6 h-6 text-orange-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Giao hàng nhanh</h3>
-              <p className="text-sm text-gray-600">
-                Giao hàng trong 2h với đơn nội thành
-              </p>
-            </div>
+            <Card className="border-gray-100 shadow-lg">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
+                  <Truck className="w-6 h-6 text-orange-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">Giao hàng nhanh</h3>
+                <p className="text-sm text-gray-600">
+                  Giao hàng trong 2h với đơn nội thành
+                </p>
+              </CardContent>
+            </Card>
 
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                <Clock className="w-6 h-6 text-blue-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Tư vấn 24/7</h3>
-              <p className="text-sm text-gray-600">
-                Đội ngũ dược sĩ sẵn sàng tư vấn mọi lúc
-              </p>
-            </div>
+            <Card className="border-gray-100 shadow-lg">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                  <Clock className="w-6 h-6 text-blue-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">Tư vấn 24/7</h3>
+                <p className="text-sm text-gray-600">
+                  Đội ngũ dược sĩ sẵn sàng tư vấn mọi lúc
+                </p>
+              </CardContent>
+            </Card>
 
-            <div className="bg-gradient-to-br from-primary to-primary/80 rounded-2xl p-6 shadow-lg text-white">
-              <div className="text-3xl font-bold mb-2">10K+</div>
-              <p className="text-primary-foreground/90">
-                Sản phẩm đa dạng, đầy đủ các danh mục
-              </p>
-            </div>
+            <Card className="bg-linear-to-br from-primary to-primary/80 border-none shadow-lg text-white">
+              <CardContent className="p-6">
+                <div className="text-3xl font-bold mb-2">10K+</div>
+                <p className="text-primary-foreground/90">
+                  Sản phẩm đa dạng, đầy đủ các danh mục
+                </p>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
       </div>

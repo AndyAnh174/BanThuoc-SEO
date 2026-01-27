@@ -163,26 +163,45 @@ export function ProductModal() {
          if (modalMode === 'edit' && selectedProduct) {
              console.log('Editing Product Data:', selectedProduct);
              
-             // Safely map enum values (ensure uppercase)
-             const safeProductType = String(selectedProduct.product_type || 'MEDICINE').toUpperCase();
-             const safeStatus = String(selectedProduct.status || 'DRAFT').toUpperCase();
+             // Fetch full product details to ensure we have all fields (ingredients, desc, etc.)
+             const { getProductById } = require('../api/products.api'); // Dynamic import to avoid cycles if any, or just import top level
+             
+             getProductById(selectedProduct.id)
+                .then((fullProduct: any) => {
+                     // Safely map enum values (ensure uppercase)
+                     const safeProductType = String(fullProduct.product_type || 'MEDICINE').toUpperCase();
+                     const safeStatus = String(fullProduct.status || 'DRAFT').toUpperCase();
 
-             // Map product data to form
-             reset({
-                 ...selectedProduct,
-                 category: selectedProduct.category, // ID
-                 manufacturer: selectedProduct.manufacturer, // ID
-                 // Ensure valid enums
-                 product_type: ['MEDICINE', 'SUPPLEMENT', 'MEDICAL_DEVICE', 'COSMETIC', 'OTHER'].includes(safeProductType) 
-                    ? safeProductType as any 
-                    : 'MEDICINE',
-                 status: ['ACTIVE', 'DRAFT', 'INACTIVE', 'OUT_OF_STOCK'].includes(safeStatus)
-                    ? safeStatus as any
-                    : 'DRAFT',
-                 // Ensure optional keys exist
-                 stock_quantity: selectedProduct.stock_quantity ?? 0,
-                 unit: selectedProduct.unit || 'Hộp',
-             });
+                     // Map product data to form
+                     reset({
+                         ...fullProduct,
+                         // Ensure optional keys exist with defaults if null
+                         stock_quantity: fullProduct.stock_quantity ?? 0,
+                         low_stock_threshold: fullProduct.low_stock_threshold ?? 10,
+                         unit: fullProduct.unit || 'Hộp',
+                         // Enum checks
+                         product_type: ['MEDICINE', 'SUPPLEMENT', 'MEDICAL_DEVICE', 'COSMETIC', 'OTHER'].includes(safeProductType) 
+                            ? safeProductType as any 
+                            : 'MEDICINE',
+                         status: ['ACTIVE', 'DRAFT', 'INACTIVE', 'OUT_OF_STOCK'].includes(safeStatus)
+                            ? safeStatus as any
+                            : 'DRAFT',
+                     });
+                     
+                     // Force tab to general
+                     setActiveTab('general');
+                })
+                .catch((err: any) => {
+                    console.error("Failed to fetch full product details", err);
+                    toast.error("Không thể tải chi tiết sản phẩm đầy đủ");
+                    // Fallback to selectedProduct
+                     reset({
+                         ...selectedProduct,
+                         unit: selectedProduct.unit || 'Hộp',
+                         stock_quantity: selectedProduct.stock_quantity ?? 0,
+                     });
+                });
+
          } else {
              reset({
                 status: 'DRAFT',
@@ -190,12 +209,13 @@ export function ProductModal() {
                 unit: 'Hộp',
                 stock_quantity: 0,
                 price: 0,
+                low_stock_threshold: 10,
                 is_featured: false,
                 requires_prescription: false,
                 images: []
              });
+             setActiveTab('general');
          }
-         setActiveTab('general');
      }
   }, [isModalOpen, modalMode, selectedProduct, reset]);
 
@@ -463,8 +483,24 @@ export function ProductModal() {
                     <Textarea {...register('ingredients')} rows={2} />
                  </div>
                  <div className="space-y-2">
-                    <Label>Cách dùng & Liều dùng</Label>
+                    <Label>Cách dùng</Label>
                     <Textarea {...register('usage')} rows={2} />
+                 </div>
+                 <div className="space-y-2">
+                    <Label>Liều dùng</Label>
+                    <Textarea {...register('dosage')} rows={2} />
+                 </div>
+                 <div className="space-y-2">
+                    <Label>Tác dụng phụ</Label>
+                    <Textarea {...register('side_effects')} rows={2} />
+                 </div>
+                 <div className="space-y-2">
+                    <Label>Bảo quản</Label>
+                    <Textarea {...register('storage')} rows={2} />
+                 </div>
+                 <div className="space-y-2">
+                    <Label>Chống chỉ định</Label>
+                    <Textarea {...register('contraindications')} rows={2} />
                  </div>
                  
                  <div className="space-y-2">

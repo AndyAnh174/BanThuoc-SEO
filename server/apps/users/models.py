@@ -6,7 +6,6 @@ class User(AbstractUser):
     class Role(models.TextChoices):
         CUSTOMER = 'CUSTOMER', _('Customer')
         ADMIN = 'ADMIN', _('Admin')
-        STAFF = 'STAFF', _('Staff')
 
     class Status(models.TextChoices):
         PENDING = 'PENDING', _('Pending')

@@ -278,6 +278,30 @@ class FeaturedProductsView(generics.ListAPIView):
         ).order_by('-created_at')[:8]
 
 
+class NewProductsView(generics.ListAPIView):
+    """
+    List newly added products (created within the last 30 days).
+    Limited to 8 products for homepage display.
+    """
+    permission_classes = [AllowAny]
+    serializer_class = ProductListSerializer
+
+    def get_queryset(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        
+        thirty_days_ago = timezone.now() - timedelta(days=30)
+        return Product.objects.filter(
+            status='ACTIVE',
+            created_at__gte=thirty_days_ago
+        ).select_related(
+            'category',
+            'manufacturer',
+        ).prefetch_related(
+            'images',
+        ).order_by('-created_at')[:8]
+
+
 class OnSaleProductsView(generics.ListAPIView):
     """
     List products currently on sale.

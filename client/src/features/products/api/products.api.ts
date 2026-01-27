@@ -40,6 +40,10 @@ export const getOnSaleProducts = async () => {
   return api.get('/products/on-sale/');
 };
 
+export const getNewProducts = async () => {
+  return api.get('/products/new/');
+};
+
 export const searchProducts = async (query: string, params?: ProductListParams) => {
   return api.get('/search/', { params: { q: query, ...params } });
 };

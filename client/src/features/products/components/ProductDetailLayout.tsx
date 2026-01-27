@@ -4,6 +4,7 @@ import React from 'react';
 import { ProductGallery, ProductImage } from './ProductGallery';
 import { ProductInfo } from './ProductInfo';
 import { AddToCart } from './AddToCart';
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 interface ProductDetailLayoutProps {
@@ -96,42 +97,53 @@ export function ProductDetailLayout({
 
           {/* Trust badges */}
           <div className="grid grid-cols-2 gap-4 pt-4">
-            <div className="flex items-center gap-3 text-sm text-gray-600">
-              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                <span className="text-lg">🚚</span>
+            <Card className="p-4 bg-green-50/50 border-green-100 shadow-none hover:bg-green-50 transition-colors">
+              <div className="flex flex-col gap-2">
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-xl">
+                  🚚
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-gray-900">Giao hàng nhanh</p>
+                  <p className="text-xs text-gray-600">Trong 24h nội thành</p>
+                </div>
               </div>
-              <div>
-                <p className="font-medium text-gray-900">Giao hàng nhanh</p>
-                <p className="text-xs">Trong 24h với đơn nội thành</p>
+            </Card>
+            
+            <Card className="p-4 bg-blue-50/50 border-blue-100 shadow-none hover:bg-blue-50 transition-colors">
+              <div className="flex flex-col gap-2">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-xl">
+                  ✅
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-gray-900">Chính hãng 100%</p>
+                  <p className="text-xs text-gray-600">Cam kết chất lượng</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-gray-600">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-lg">✅</span>
+            </Card>
+
+            <Card className="p-4 bg-orange-50/50 border-orange-100 shadow-none hover:bg-orange-50 transition-colors">
+              <div className="flex flex-col gap-2">
+                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-xl">
+                  🔄
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-gray-900">Đổi trả dễ dàng</p>
+                  <p className="text-xs text-gray-600">Trong vòng 7 ngày</p>
+                </div>
               </div>
-              <div>
-                <p className="font-medium text-gray-900">Chính hãng 100%</p>
-                <p className="text-xs">Cam kết hàng chính hãng</p>
+            </Card>
+
+            <Card className="p-4 bg-purple-50/50 border-purple-100 shadow-none hover:bg-purple-50 transition-colors">
+              <div className="flex flex-col gap-2">
+                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-xl">
+                  💬
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-gray-900">Hỗ trợ 24/7</p>
+                  <p className="text-xs text-gray-600">Tư vấn miễn phí</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-gray-600">
-              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-                <span className="text-lg">🔄</span>
-              </div>
-              <div>
-                <p className="font-medium text-gray-900">Đổi trả dễ dàng</p>
-                <p className="text-xs">Trong vòng 7 ngày</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-gray-600">
-              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                <span className="text-lg">💬</span>
-              </div>
-              <div>
-                <p className="font-medium text-gray-900">Hỗ trợ 24/7</p>
-                <p className="text-xs">Tư vấn miễn phí</p>
-              </div>
-            </div>
+            </Card>
           </div>
         </div>
       </div>

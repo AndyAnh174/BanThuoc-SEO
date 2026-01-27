@@ -5,19 +5,19 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductCard } from '@/src/features/products';
-import { getFeaturedProducts } from '@/src/features/products';
+import { getNewProducts } from '@/src/features/products';
 import { mapApiProducts, MappedProduct } from '@/src/lib/api-mapper';
-import { ArrowRight, Star } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
 
-export function FeaturedProducts() {
+export function NewProductsSection() {
   const [products, setProducts] = useState<MappedProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await getFeaturedProducts();
+        const response = await getNewProducts();
         let rawProducts = [];
         if (response.data?.results) {
           rawProducts = response.data.results.slice(0, 8);
@@ -27,7 +27,7 @@ export function FeaturedProducts() {
         // Map API products to frontend format
         setProducts(mapApiProducts(rawProducts));
       } catch (error) {
-        console.error('Failed to fetch featured products:', error);
+        console.error('Failed to fetch new products:', error);
       } finally {
         setLoading(false);
       }
@@ -64,19 +64,23 @@ export function FeaturedProducts() {
         {/* Section Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           {/* Colored Header - Solid green */}
-          <div className="bg-teal-600 px-6 py-4">
+          <div className="bg-emerald-600 px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {/* Simple pill/capsule icon */}
-                <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm">
-                  <div className="w-4 h-2 bg-teal-500 rounded-full" />
-                </div>
+                {/* NEW Starburst Badge */}
+                <svg viewBox="0 0 50 50" className="w-10 h-10 shrink-0">
+                  <polygon 
+                    points="25,0 29,18 50,18 33,29 38,50 25,38 12,50 17,29 0,18 21,18" 
+                    className="fill-orange-500"
+                  />
+                  <text x="25" y="28" textAnchor="middle" className="fill-white text-[10px] font-bold">NEW</text>
+                </svg>
                 <h2 className="text-xl md:text-2xl font-bold text-white">
-                  Sản Phẩm Nổi Bật
+                  Sản Phẩm Mới
                 </h2>
               </div>
-              <Button variant="secondary" size="sm" className="bg-white hover:bg-gray-50 text-teal-700 border-0 font-semibold shadow-sm" asChild>
-                <Link href="/products?featured=true">
+              <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm" asChild>
+                <Link href="/products?ordering=-created_at">
                   Xem tất cả
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
@@ -115,4 +119,4 @@ export function FeaturedProducts() {
   );
 }
 
-export default FeaturedProducts;
+export default NewProductsSection;

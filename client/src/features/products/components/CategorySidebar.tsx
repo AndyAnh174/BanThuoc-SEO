@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Filter, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -92,7 +93,7 @@ export function CategorySidebar({
     (filters.requiresPrescription !== undefined ? 1 : 0);
 
   return (
-    <aside className={cn('bg-white rounded-lg border p-4 space-y-6', className)}>
+    <Card className={cn('p-4 space-y-6 h-fit', className)}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -109,9 +110,9 @@ export function CategorySidebar({
             variant="ghost"
             size="sm"
             onClick={resetFilters}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-500 hover:text-gray-700 h-8 px-2"
           >
-            <RotateCcw className="w-4 h-4 mr-1" />
+            <RotateCcw className="w-3.5 h-3.5 mr-1" />
             Đặt lại
           </Button>
         )}
@@ -154,7 +155,7 @@ export function CategorySidebar({
           Áp dụng bộ lọc
         </Button>
       )}
-    </aside>
+    </Card>
   );
 }
 

@@ -32,6 +32,8 @@ export interface Product {
     slug: string;
   };
   unit?: string;
+  quantity_per_unit?: string;
+  short_description?: string;
   stockQuantity?: number;
   requiresPrescription?: boolean;
   isFeatured?: boolean;

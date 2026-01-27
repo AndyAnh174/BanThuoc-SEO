@@ -115,11 +115,27 @@ export function ProductsClient() {
         };
         if (category) params.category = category;
         if (manufacturer) params.manufacturer = manufacturer;
-        if (search) params.search = search;
         if (minPrice) params.min_price = minPrice;
         if (maxPrice) params.max_price = maxPrice;
 
-        const response = await getProducts(params);
+        let response;
+        if (search) {
+            // Use search API if search query is present
+            // Note: searchProducts takes query as first arg, and params as second
+            // The API function signature is: searchProducts(query, params)
+            // Backend expects 'q' for query in params if using standard view, 
+            // but our map uses q in query param.
+            
+            // Let's verify searchProducts signature from api/products.api.ts
+            // export const searchProducts = async (query: string, params?: ProductListParams) => {
+            //   return api.get('/search/', { params: { q: query, ...params } });
+            // };
+            
+            response = await import('@/src/features/products').then(m => m.searchProducts(search, params));
+        } else {
+            response = await getProducts(params);
+        }
+
         if (response.data) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const data = response.data as { count: number; results: any[] };
@@ -361,6 +377,8 @@ export function ProductsClient() {
                   isFeatured={product.isFeatured}
                   rating={product.rating}
                   reviewCount={product.reviewCount}
+                  short_description={product.short_description}
+                  quantity_per_unit={product.quantity_per_unit}
                 />
               ))}
             </div>

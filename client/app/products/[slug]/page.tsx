@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/src/features/layout';
 import { ProductDetailClient } from '@/app/products/[slug]/ProductDetailClient';
+import { mapApiProducts } from '@/src/lib/api-mapper';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -38,10 +39,12 @@ function transformProduct(apiProduct: any) {
     ingredients: apiProduct.ingredients,
     usage: apiProduct.usage,
     dosage: apiProduct.dosage,
+    contraindications: apiProduct.contraindications,
     sideEffects: apiProduct.side_effects,
     storage: apiProduct.storage,
     rating: apiProduct.rating,
     reviewCount: apiProduct.review_count,
+    relatedProducts: mapApiProducts(apiProduct.related_products || []),
   };
 }
 

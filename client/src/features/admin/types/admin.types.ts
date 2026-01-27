@@ -1,15 +1,14 @@
 export enum UserRole {
     ADMIN = 'ADMIN',
-    CUSTOMER = 'CUSTOMER',
-    PHARMACY = 'PHARMACY',
-    ENTERPRISE = 'ENTERPRISE'
+    CUSTOMER = 'CUSTOMER'
 }
 
 export enum UserStatus {
     PENDING = 'PENDING',
     ACTIVE = 'ACTIVE',
     INACTIVE = 'INACTIVE',
-    REJECTED = 'REJECTED'
+    REJECTED = 'REJECTED',
+    LOCKED = 'LOCKED'
 }
 
 export interface BusinessProfile {
@@ -23,11 +22,13 @@ export interface BusinessProfile {
 
 export interface User {
     id: number;
+    username?: string;
     email: string;
     full_name: string;
     phone: string;
     role: UserRole;
     status: UserStatus;
+    is_active?: boolean;
     date_joined: string;
     business_profile?: BusinessProfile;
 }
@@ -43,3 +44,25 @@ export interface UserStatusUpdate {
     status: UserStatus;
     reason?: string;
 }
+
+export interface UserCreateData {
+    username: string;
+    email: string;
+    password: string;
+    password_confirm: string;
+    full_name?: string;
+    phone?: string;
+    role: UserRole;
+    status?: UserStatus;
+}
+
+export interface UserUpdateData {
+    full_name?: string;
+    phone?: string;
+    email?: string;
+    role?: UserRole;
+    status?: UserStatus;
+    is_active?: boolean;
+    password?: string;
+}
+

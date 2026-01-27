@@ -94,7 +94,7 @@ class ProductListSerializer(serializers.ModelSerializer):
             'id', 'sku', 'name', 'slug', 'short_description',
             'price', 'sale_price', 'current_price', 'discount_percentage', 'is_on_sale',
             'primary_image', 'category', 'manufacturer',
-            'product_type', 'unit', 'stock_quantity',
+            'product_type', 'unit', 'quantity_per_unit', 'stock_quantity',
             'requires_prescription', 'is_featured', 'status'
         ]
 

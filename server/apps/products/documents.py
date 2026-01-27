@@ -126,8 +126,6 @@ class ProductDocument(Document):
         return super().get_queryset().select_related(
             'category',
             'manufacturer',
-        ).prefetch_related(
-            'images',
         ).filter(
             status='ACTIVE'
         )

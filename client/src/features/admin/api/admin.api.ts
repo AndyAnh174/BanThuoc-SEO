@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { User, UserListResponse, UserStatusUpdate } from '../types/admin.types';
+import { User, UserListResponse, UserStatusUpdate, UserCreateData, UserUpdateData } from '../types/admin.types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -15,11 +15,12 @@ const getAuthHeader = () => {
     return {};
 };
 
-export const fetchUsers = async (page = 1, status = '', search = ''): Promise<UserListResponse> => {
+export const fetchUsers = async (page = 1, status = '', search = '', role = ''): Promise<UserListResponse> => {
     const params = new URLSearchParams();
     params.append('page', page.toString());
-    if (status) params.append('status', status);
+    if (status && status !== 'all') params.append('status', status);
     if (search) params.append('search', search);
+    if (role && role !== 'all') params.append('role', role);
 
     const response = await axios.get<UserListResponse>(`${API_URL}/api/admin/users`, {
         params: params,
@@ -41,3 +42,24 @@ export const updateUserStatus = async (userId: number, data: UserStatusUpdate) =
     });
     return response.data;
 };
+
+export const createUser = async (data: UserCreateData): Promise<User> => {
+    const response = await axios.post<User>(`${API_URL}/api/admin/users/create`, data, {
+        headers: getAuthHeader()
+    });
+    return response.data;
+};
+
+export const updateUser = async (userId: number, data: UserUpdateData): Promise<User> => {
+    const response = await axios.patch<User>(`${API_URL}/api/admin/users/${userId}/update`, data, {
+        headers: getAuthHeader()
+    });
+    return response.data;
+};
+
+export const deleteUser = async (userId: number): Promise<void> => {
+    await axios.delete(`${API_URL}/api/admin/users/${userId}/delete`, {
+        headers: getAuthHeader()
+    });
+};
+

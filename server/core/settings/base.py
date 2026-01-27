@@ -224,7 +224,7 @@ SWAGGER_SETTINGS = {
 # Elasticsearch DSL Configuration
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': env('ELASTICSEARCH_HOST', default='localhost:9200'),
+        'hosts': env('ELASTICSEARCH_HOST', default='http://localhost:9200'),
         'http_auth': (
             env('ELASTICSEARCH_USER', default=''),
             env('ELASTICSEARCH_PASSWORD', default=''),

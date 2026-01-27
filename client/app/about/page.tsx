@@ -54,7 +54,7 @@ export default function AboutPage() {
   return (
     <MainLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 py-16 md:py-24">
+      <section className="bg-linear-to-br from-primary/5 via-primary/10 to-primary/5 py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -110,7 +110,7 @@ export default function AboutPage() {
               </p>
             </div>
             <div className="relative aspect-video bg-gray-200 rounded-2xl overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+              <div className="absolute inset-0 bg-linear-to-br from-primary/20 to-primary/10 flex items-center justify-center">
                 <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center">
                   <span className="text-4xl font-bold text-white">B</span>
                 </div>
