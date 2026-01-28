@@ -31,6 +31,9 @@ export interface User {
     is_active?: boolean;
     date_joined: string;
     business_profile?: BusinessProfile;
+    loyalty_points?: number;
+    favorites?: any[]; // Keep flexible or define Product type
+    orders?: any[]; // Keep flexible or define Order type
 }
 
 export interface UserListResponse {

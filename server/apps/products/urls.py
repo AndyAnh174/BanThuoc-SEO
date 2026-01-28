@@ -17,6 +17,7 @@ from products.views.public import (
     OnSaleProductsView,
     ProductSearchView,
 )
+from products.views.favorite import FavoriteToggleView, FavoriteListView
 from products.views.category import (
     CategoryListCreateView,
     CategoryDetailView,
@@ -65,8 +66,10 @@ urlpatterns = [
     path('products/featured/', FeaturedProductsView.as_view(), name='product-featured'),
     path('products/new/', NewProductsView.as_view(), name='product-new'),
     path('products/on-sale/', OnSaleProductsView.as_view(), name='product-on-sale'),
+    path('products/favorites/', FavoriteListView.as_view(), name='product-favorites-list'),
     path('products/search/', ProductSearchView.as_view(), name='product-search'),
     path('products/<slug:slug>/', ProductDetailView.as_view(), name='product-detail'),
+    path('products/id/<uuid:id>/favorite/', FavoriteToggleView.as_view(), name='product-favorite-toggle'),
 
     # ========================================
     # Products (Admin)

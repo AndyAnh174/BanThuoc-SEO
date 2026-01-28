@@ -106,4 +106,14 @@ export const checkProductFlashSale = async (productId: string) => {
   return api.get('/flash-sale/check/', { params: { product_id: productId } });
 };
 
+export const toggleFavorite = async (productId: string) => {
+  // Use POST to toggle
+  return api.post(`/products/id/${productId}/favorite/`);
+};
+
+export const getFavorites = async (params?: ProductListParams) => {
+  const res = await api.get('/products/favorites/', { params });
+  return { ...res, data: transformProductList(res.data) };
+};
+
 export default api;

@@ -108,6 +108,12 @@ export const productSchema = z.object({
   requiresPrescription: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
   
+  // Ratings & Social
+  rating: z.number().optional(),
+  reviewCount: z.number().optional(),
+  isLiked: z.boolean().optional(),
+  likesCount: z.number().optional(),
+  
   // SEO
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),

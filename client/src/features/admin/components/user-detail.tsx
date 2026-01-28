@@ -121,19 +121,34 @@ export function UserDetailView({ user, onApprove, onReject }: UserDetailViewProp
                     >
                         Hợp đồng & Tài liệu
                     </TabsTrigger>
+                    <TabsTrigger 
+                        value="orders" 
+                        className="px-4 py-3 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-green-600 data-[state=active]:bg-white data-[state=active]:text-green-700 data-[state=active]:shadow-sm bg-gray-50/50"
+                    >
+                        Lịch sử đơn hàng ({user.orders?.length || 0})
+                    </TabsTrigger>
+                    <TabsTrigger 
+                        value="favorites" 
+                        className="px-4 py-3 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-green-600 data-[state=active]:bg-white data-[state=active]:text-green-700 data-[state=active]:shadow-sm bg-gray-50/50"
+                    >
+                        Sản phẩm yêu thích ({user.favorites?.length || 0})
+                    </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="profile" className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     {/* ... (existing profile content) ... */}
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Personal/Business Info Card */}
                         <Card className="border-none shadow-sm ring-1 ring-gray-100">
+                            {/* ... */}
                             <CardHeader className="pb-3 border-b flex flex-row items-center justify-between bg-gray-50/30 rounded-t-xl">
                                 <CardTitle className="text-base font-bold text-gray-800">Thông tin doanh nghiệp</CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6 grid grid-cols-2 gap-y-6 gap-x-4">
                                 {user.business_profile ? (
                                     <>
-                                        <div className="col-span-2 space-y-1">
+                                        {/* ... fields ... */}
+                                         <div className="col-span-2 space-y-1">
                                             <label className="text-xs font-medium text-gray-400 uppercase">Tên doanh nghiệp</label>
                                             <p className="text-sm font-bold text-gray-900">{user.business_profile.business_name}</p>
                                         </div>
@@ -159,7 +174,7 @@ export function UserDetailView({ user, onApprove, onReject }: UserDetailViewProp
                         {/* Account Info Card */}
                         <Card className="border-none shadow-sm ring-1 ring-gray-100">
                              <CardHeader className="pb-3 border-b flex flex-row items-center justify-between bg-gray-50/30 rounded-t-xl">
-                                <CardTitle className="text-base font-bold text-gray-800">Trạng thái tài khoản</CardTitle>
+                                <CardTitle className="text-base font-bold text-gray-800">Trạng thái & Điểm thưởng</CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6 space-y-6">
                                     <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 relative overflow-hidden">
@@ -167,13 +182,19 @@ export function UserDetailView({ user, onApprove, onReject }: UserDetailViewProp
                                             <Briefcase className="w-24 h-24 text-blue-600 -rotate-12 transform translate-x-4 -translate-y-4" />
                                        </div>
                                        <div className="relative z-10">
-                                           <h4 className="text-lg font-bold text-blue-900 mb-2">Cần xem xét</h4>
-                                           <p className="text-sm text-blue-700 leading-relaxed mb-4 max-w-[80%]">
-                                               {user.status === UserStatus.PENDING 
-                                                   ? "Tài khoản này đang chờ quản trị viên phê duyệt. Vui lòng xác minh hồ sơ doanh nghiệp." 
-                                                   : `Trạng thái hiện tại là ${user.status === 'ACTIVE' ? 'Hoạt động' : user.status === 'REJECTED' ? 'Đã từ chối' : user.status}.`}
-                                           </p>
-                                           <div className="flex gap-3 mt-4">
+                                           <div className="flex justify-between items-start mb-4">
+                                                <div>
+                                                    <h4 className="text-lg font-bold text-blue-900 mb-1">Trạng thái</h4>
+                                                    <Badge className={`${getStatusColor(user.status)}`}>{user.status}</Badge>
+                                                </div>
+                                                <div className="text-right">
+                                                    <h4 className="text-lg font-bold text-green-700 mb-1">Điểm tích lũy</h4>
+                                                    <span className="text-2xl font-bold text-green-600">{user.loyalty_points || 0}</span>
+                                                    <span className="text-xs text-green-500 block">điểm</span>
+                                                </div>
+                                           </div>
+                                           
+                                           <div className="flex gap-3 mt-4 border-t border-blue-200 pt-4">
                                                {user.status === UserStatus.PENDING && (
                                                    <>
                                                         <Button className="bg-green-600 hover:bg-green-700 shadow-md shadow-green-200" onClick={() => onApprove(user.id)}>
@@ -192,9 +213,9 @@ export function UserDetailView({ user, onApprove, onReject }: UserDetailViewProp
                     </div>
                 </TabsContent>
 
-                    {/* Documents Tab */}
                 <TabsContent value="documents" className="min-h-[300px]">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                     {/* ... (existing documents content) ... */}
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <Card className="border-none shadow-sm ring-1 ring-gray-100 col-span-3">
                             <CardHeader className="pb-3 border-b bg-gray-50/30 rounded-t-xl">
                                 <CardTitle className="text-base font-bold text-gray-800">Tài liệu đã tải lên</CardTitle>
@@ -236,6 +257,74 @@ export function UserDetailView({ user, onApprove, onReject }: UserDetailViewProp
                             </CardContent>
                         </Card>
                     </div>
+                </TabsContent>
+
+                <TabsContent value="orders">
+                    <Card className="border-none shadow-sm ring-1 ring-gray-100">
+                        <CardHeader className="pb-3 border-b bg-gray-50/30 rounded-t-xl">
+                            <CardTitle className="text-base font-bold text-gray-800">Lịch sử đơn hàng</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                            {user.orders && user.orders.length > 0 ? (
+                                <table className="w-full text-sm text-left">
+                                    <thead className="bg-gray-50 text-gray-500 font-medium">
+                                        <tr>
+                                            <th className="px-4 py-3">Mã đơn</th>
+                                            <th className="px-4 py-3">Ngày đặt</th>
+                                            <th className="px-4 py-3">Tổng tiền</th>
+                                            <th className="px-4 py-3">Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y">
+                                        {user.orders.map((order: any) => (
+                                            <tr key={order.id} className="hover:bg-gray-50">
+                                                <td className="px-4 py-3 font-medium">#{order.id.slice(0, 8)}...</td>
+                                                <td className="px-4 py-3">{new Date(order.created_at).toLocaleDateString('vi-VN')}</td>
+                                                <td className="px-4 py-3 font-bold text-green-600">
+                                                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(order.total_amount))}
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <Badge variant="outline">{order.status}</Badge>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="py-12 text-center text-gray-400">Chưa có đơn hàng nào.</div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="favorites">
+                    <Card className="border-none shadow-sm ring-1 ring-gray-100">
+                         <CardHeader className="pb-3 border-b bg-gray-50/30 rounded-t-xl">
+                            <CardTitle className="text-base font-bold text-gray-800">Sản phẩm yêu thích</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-6">
+                             {user.favorites && user.favorites.length > 0 ? (
+                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                     {user.favorites.map((prod: any) => (
+                                         <div key={prod.id} className="border rounded-lg p-3 flex flex-col items-center text-center hover:shadow-sm">
+                                             <div className="w-20 h-20 mb-2 bg-gray-100 rounded-md flex items-center justify-center overflow-hidden">
+                                                 {prod.image_url || prod.images?.[0]?.image_url ? 
+                                                     <img src={prod.image_url || prod.images[0].image_url} alt={prod.name} className="w-full h-full object-contain" /> :
+                                                     <span className="text-xs text-gray-400">No Img</span>
+                                                 }
+                                             </div>
+                                             <h4 className="font-medium text-sm line-clamp-2 mb-1" title={prod.name}>{prod.name}</h4>
+                                             <p className="text-green-600 font-bold text-sm">
+                                                 {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(prod.price))}
+                                             </p>
+                                         </div>
+                                     ))}
+                                 </div>
+                             ) : (
+                                 <div className="py-12 text-center text-gray-400">Chưa có sản phẩm yêu thích.</div>
+                             )}
+                        </CardContent>
+                    </Card>
                 </TabsContent>
             </Tabs>
 

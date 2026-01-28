@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -41,7 +41,10 @@ export interface ProductCardProps {
   };
   onAddToCart?: (id: string) => void;
   onAddToWishlist?: (id: string) => void;
+  isLiked?: boolean;
 }
+
+import { toggleFavorite } from '@/src/features/products/api/products.api';
 
 export function ProductCard({
   id,
@@ -63,17 +66,23 @@ export function ProductCard({
   short_description,
   onAddToCart,
   onAddToWishlist,
+  isLiked = false,
 }: ProductCardProps) {
   const { cart, addToCart, updateItem, isLoading: isCartLoading } = useCartStore();
   const { isAuthenticated } = useAuthStore();
   const router = useRouter();
   const [localLoading, setLocalLoading] = useState(false);
+  const [isLikedState, setIsLikedState] = useState(isLiked);
 
   // No need to parse ID if it is UUID string
   const productId = id;
   
+  useEffect(() => {
+    setIsLikedState(isLiked);
+  }, [isLiked]);
+  
   // Find item in cart
-  const cartItem = cart?.items.find(item => item.product.id === productId || item.product_id === productId);
+  const cartItem = cart?.items.find(item => item.product.id === productId || String(item.product_id) === productId);
   const quantityInCart = cartItem ? cartItem.quantity : 0;
 
   // Logic handlers
@@ -92,6 +101,31 @@ export function ProductCard({
       setLocalLoading(true);
       await addToCart(productId, 1);
       setLocalLoading(false);
+  };
+
+  const handleToggleWishlist = async (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const hasToken = typeof window !== 'undefined' && (!!localStorage.getItem('accessToken') || !!localStorage.getItem('access_token'));
+      if (!hasToken) {
+          toast.error("Vui lòng đăng nhập để thực hiện chức năng này");
+          router.push("/auth/login");
+          return;
+      }
+
+      // Optimistic update
+      const previousState = isLikedState;
+      setIsLikedState(!previousState);
+
+      try {
+          await toggleFavorite(id);
+          toast.success(!previousState ? "Đã thêm vào yêu thích" : "Đã xoá khỏi yêu thích");
+          onAddToWishlist?.(id); // Call parent if provided
+      } catch (error) {
+          setIsLikedState(previousState);
+          toast.error("Có lỗi xảy ra, vui lòng thử lại");
+      }
   };
 
   const handleUpdateQuantity = async (e: React.MouseEvent, newQty: number) => {
@@ -162,15 +196,11 @@ export function ProductCard({
       <div className="relative p-3 pb-0 flex-1 flex flex-col">
         {/* Wishlist button */}
         <button
-          onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onAddToWishlist?.(id);
-          }}
-          className="absolute top-3 right-3 z-10 text-gray-400 hover:text-red-500 transition-colors"
-          aria-label="Add to wishlist"
+          onClick={handleToggleWishlist}
+          className={`absolute top-3 right-3 z-10 transition-colors ${isLikedState ? 'text-red-500 hover:text-red-600' : 'text-gray-400 hover:text-red-500'}`}
+          aria-label={isLikedState ? "Remove from wishlist" : "Add to wishlist"}
         >
-          <Heart className="w-5 h-5" />
+          <Heart className={`w-5 h-5 ${isLikedState ? 'fill-current' : ''}`} />
         </button>
 
         {/* Product Image */}

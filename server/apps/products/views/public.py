@@ -355,5 +355,5 @@ class ProductSearchView(APIView):
             'images',
         )[:10]
 
-        serializer = ProductListSerializer(products, many=True)
+        serializer = ProductListSerializer(products, many=True, context={'request': request})
         return Response({'results': serializer.data})

@@ -29,6 +29,7 @@ class User(AbstractUser):
     full_name = models.CharField(max_length=255, blank=True)
     avatar = models.CharField(max_length=500, blank=True, null=True, help_text=_("URL to avatar image"))
     is_verified = models.BooleanField(default=False)
+    loyalty_points = models.IntegerField(default=0, help_text=_("Accumulated loyalty points"))
 
     def __str__(self):
         return self.username

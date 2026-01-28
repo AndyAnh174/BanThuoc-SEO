@@ -17,6 +17,8 @@ export const transformProduct = (data: any): Product => {
     metaDescription: data.meta_description ?? data.metaDescription,
     createdAt: data.created_at ?? data.createdAt,
     updatedAt: data.updated_at ?? data.updatedAt,
+    isLiked: data.is_liked ?? data.isLiked ?? false,
+    likesCount: data.likes_count ?? data.likesCount ?? 0,
     // Add other fields if necessary
   };
 };

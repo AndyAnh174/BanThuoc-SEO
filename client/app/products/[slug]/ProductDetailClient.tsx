@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -22,6 +23,8 @@ import {
 import { toast } from 'sonner';
 import { ProductCard } from '@/src/features/products';
 import { MappedProduct } from '@/src/lib/api-mapper';
+import { toggleFavorite } from '@/src/features/products/api/products.api';
+import { useAuthStore } from '@/src/features/auth/stores/auth.store';
 
 interface ProductImage {
   id: string;
@@ -57,13 +60,17 @@ interface ProductDetailProps {
     rating?: number;
     reviewCount?: number;
     relatedProducts?: MappedProduct[];
+    isLiked?: boolean;
+    likesCount?: number;
   };
 }
 
 export function ProductDetailClient({ product }: ProductDetailProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(product.isLiked || false);
+  const { isAuthenticated } = useAuthStore();
+  const router = useRouter();
 
   // Calculate price
   const currentPrice = product.salePrice ?? product.price;
@@ -114,6 +121,28 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
     } else {
       await navigator.clipboard.writeText(window.location.href);
       toast.success('Đã sao chép liên kết');
+    }
+  };
+
+  // Handle favorite toggle
+  const handleToggleWishlist = async () => {
+    const hasToken = typeof window !== 'undefined' && (!!localStorage.getItem('accessToken') || !!localStorage.getItem('access_token'));
+    
+    if (!hasToken) {
+        toast.error("Vui lòng đăng nhập để thực hiện chức năng này");
+        router.push("/auth/login");
+        return;
+    }
+
+    const previousState = isWishlisted;
+    setIsWishlisted(!previousState);
+
+    try {
+        await toggleFavorite(product.id);
+        toast.success(!previousState ? "Đã thêm vào yêu thích" : "Đã xoá khỏi yêu thích");
+    } catch {
+        setIsWishlisted(previousState);
+        toast.error("Có lỗi xảy ra");
     }
   };
 
@@ -313,7 +342,7 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
               <Button
                 size="lg"
                 variant="outline"
-                onClick={() => setIsWishlisted(!isWishlisted)}
+                onClick={handleToggleWishlist}
               >
                 <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
               </Button>
@@ -468,6 +497,7 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
                      reviewCount={rp.reviewCount}
                      short_description={rp.short_description}
                      quantity_per_unit={rp.quantity_per_unit}
+                     isLiked={rp.isLiked}
                   />
                ))}
             </div>

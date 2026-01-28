@@ -44,6 +44,8 @@ function transformProduct(apiProduct: any) {
     storage: apiProduct.storage,
     rating: apiProduct.rating,
     reviewCount: apiProduct.review_count,
+    isLiked: apiProduct.is_liked ?? apiProduct.isLiked ?? false,
+    likesCount: apiProduct.likes_count ?? apiProduct.likesCount ?? 0,
     relatedProducts: mapApiProducts(apiProduct.related_products || []),
   };
 }

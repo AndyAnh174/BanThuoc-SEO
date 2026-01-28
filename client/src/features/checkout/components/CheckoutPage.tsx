@@ -15,6 +15,7 @@ import { useCartStore } from '@/src/features/cart/stores/cart.store';
 import { getProducts } from '@/src/features/products';
 import { ProductCard } from '@/src/features/products/components/ProductCard';
 import { Product } from '@/src/features/products/types/product.types';
+import { createOrder } from '@/src/features/orders/api/orders.api';
 
 export function CheckoutPage() {
   const router = useRouter();
@@ -56,14 +57,31 @@ export function CheckoutPage() {
   }, [cart, isLoading, router]);
 
   const onSubmit = async (data: CheckoutFormValues) => {
-    console.log("Checkout Data:", data);
-    console.log("Cart Items:", cart?.items);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    toast.success("Đặt hàng thành công! Đơn hàng đang được xử lý.");
-    router.push('/checkout/success'); // Or success modal
+    if (!cart || cart.items.length === 0) return;
+
+    try {
+        const orderData = {
+            shipping_address: data.deliveryMethod === 'pickup' 
+                ? 'Nhận tại cửa hàng' 
+                : `${data.streetAddress}, ${data.ward}, ${data.district}, ${data.city}, Tên: ${data.fullName}, SĐT: ${data.phoneNumber}`,
+            payment_method: data.paymentMethod, // Ensure this matches backend choices or map it
+            items_input: cart.items.map(item => ({
+                product: item.product.id,
+                quantity: item.quantity,
+                price: item.product.sale_price ?? item.product.price // Use current price
+            }))
+        };
+        
+        await createOrder(orderData);
+        
+        toast.success("Đặt hàng thành công! Đơn hàng đang được xử lý.");
+        // Clear cart
+        useCartStore.getState().clearCart(); // Assuming clearCart exists or fetch cart again empty
+        router.push('/checkout/success'); 
+    } catch (error) {
+        console.error(error);
+        toast.error("Đặt hàng thất bại, vui lòng thử lại.");
+    }
   };
 
   if (!cart || cart.items.length === 0) {
@@ -113,7 +131,24 @@ export function CheckoutPage() {
                                   <h3 className="font-semibold text-gray-900 mb-4 px-1">Thường được mua kèm với</h3>
                                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                       {relatedProducts.map(product => (
-                                          <ProductCard key={product.id} data={product} /> // Assuming simple usage
+                                          <ProductCard 
+                                            key={product.id}
+                                            id={product.id}
+                                            name={product.name}
+                                            slug={product.slug}
+                                            price={product.price}
+                                            salePrice={product.salePrice}
+                                            imageUrl={product.imageUrl}
+                                            category={product.category}
+                                            manufacturer={product.manufacturer}
+                                            unit={product.unit}
+                                            stockQuantity={product.stockQuantity}
+                                            requiresPrescription={product.requiresPrescription}
+                                            isFeatured={product.isFeatured}
+                                            rating={product.rating}
+                                            reviewCount={product.reviewCount}
+                                            short_description={product.shortDescription}
+                                          /> 
                                       ))}
                                   </div>
                               </div>

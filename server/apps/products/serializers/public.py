@@ -2,7 +2,7 @@
 Product serializers for public API.
 """
 from rest_framework import serializers
-from products.models import Category, Manufacturer, Product, ProductImage
+from products.models import Category, Manufacturer, Product, ProductImage, Favorite
 
 
 class CategoryTreeSerializer(serializers.ModelSerializer):
@@ -76,6 +76,10 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'image_url', 'alt_text', 'is_primary', 'sort_order']
 
 
+from products.models import Category, Manufacturer, Product, ProductImage, Favorite
+
+# ... (Previous code) ...
+
 class ProductListSerializer(serializers.ModelSerializer):
     """
     Serializer for Product list view (lightweight).
@@ -87,6 +91,8 @@ class ProductListSerializer(serializers.ModelSerializer):
     current_price = serializers.DecimalField(max_digits=12, decimal_places=0, read_only=True)
     discount_percentage = serializers.IntegerField(read_only=True)
     is_on_sale = serializers.BooleanField(read_only=True)
+    is_liked = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -95,7 +101,8 @@ class ProductListSerializer(serializers.ModelSerializer):
             'price', 'sale_price', 'current_price', 'discount_percentage', 'is_on_sale',
             'primary_image', 'category', 'manufacturer',
             'product_type', 'unit', 'quantity_per_unit', 'stock_quantity',
-            'requires_prescription', 'is_featured', 'status'
+            'requires_prescription', 'is_featured', 'status',
+            'is_liked', 'likes_count'
         ]
 
     def get_primary_image(self, obj):
@@ -104,6 +111,15 @@ class ProductListSerializer(serializers.ModelSerializer):
         if primary:
             return ProductImageSerializer(primary).data
         return None
+
+    def get_is_liked(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return Favorite.objects.filter(user=request.user, product=obj).exists()
+        return False
+
+    def get_likes_count(self, obj):
+        return obj.favorited_by.count()
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -119,6 +135,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     is_on_sale = serializers.BooleanField(read_only=True)
     is_low_stock = serializers.BooleanField(read_only=True)
     related_products = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -131,7 +149,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'unit', 'quantity_per_unit', 'stock_quantity', 'is_low_stock',
             'requires_prescription', 'is_featured', 'status',
             'meta_title', 'meta_description',
-            'related_products', 'created_at', 'updated_at'
+            'related_products', 'created_at', 'updated_at',
+            'is_liked', 'likes_count'
         ]
 
     def get_related_products(self, obj):
@@ -143,4 +162,13 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'category', 'manufacturer'
         ).prefetch_related('images')[:4]
         
-        return ProductListSerializer(related, many=True).data
+        return ProductListSerializer(related, many=True, context=self.context).data
+
+    def get_is_liked(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return Favorite.objects.filter(user=request.user, product=obj).exists()
+        return False
+
+    def get_likes_count(self, obj):
+        return obj.favorited_by.count()
