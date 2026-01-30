@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        @font-face {
+            font-family: 'UTM-Avo';
+            src: url('/static/fonts/UTM-Avo.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'UTM-Avo';
+            src: url('/static/fonts/UTM-AvoBold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        * {
+            font-family: "UTM-Avo", sans-serif;
+        }
+        body {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 24px;
+        }
+        .company-info {
+            font-size: 10px;
+            color: #7f8c8d;
+        }
+        .invoice-details {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .customer-info {
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .total-section {
+            text-align: right;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #7f8c8d;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>HÓA ĐƠN BÁN HÀNG</h1>
+        <div class="company-info">
+            <p><strong>CÔNG TY TNHH WEB BAN THUOC</strong></p>
+            <p>Địa chỉ: 1 Võ Văn Ngân, Thủ Đức, TP.HCM</p>
+            <p>Hotline: 1900 1000 - Email: support@webbanthuoc.com</p>
+        </div>
+    </div>
+
+    <div class="invoice-details">
+        <p><strong>Mã đơn hàng:</strong> #{{ order.id }}</p>
+        <p><strong>Ngày đặt:</strong> {{ order.created_at|date:"d/m/Y H:i" }}</p>
+        <p><strong>Phương thức TT:</strong> {{ order.get_payment_method_display }}</p>
+    </div>
+
+    <div class="customer-info">
+        <h3>Thông tin khách hàng</h3>
+        <p><strong>Họ tên:</strong> {{ order.full_name }}</p>
+        <p><strong>Số điện thoại:</strong> {{ order.phone_number }}</p>
+        <p><strong>Địa chỉ:</strong> {{ order.address }}</p>
+        {% if order.province %}, {{ order.province }}{% endif %}
+        {% if order.district %}, {{ order.district }}{% endif %}
+        {% if order.ward %}, {{ order.ward }}{% endif %}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 5%;">STT</th>
+                <th style="width: 45%;">Sản phẩm</th>
+                <th style="width: 10%;">SL</th>
+                <th style="width: 20%;">Đơn giá</th>
+                <th style="width: 20%;">Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.items.all %}
+            <tr>
+                <td style="text-align: center;">{{ forloop.counter }}</td>
+                <td>{{ item.product_name }}</td>
+                <td style="text-align: center;">{{ item.quantity }}</td>
+                <td style="text-align: right;">{{ item.price }} đ</td>
+                <td style="text-align: right;">{{ item.total_price }} đ</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total-section">
+        <p>Tạm tính: <strong>{{ order.total_amount }} đ</strong></p>
+        <p>Phí vận chuyển: <strong>{{ order.shipping_fee }} đ</strong></p>
+        <p>Giảm giá: <strong>-{{ order.discount_amount }} đ</strong></p>
+        <h2 style="color: #c0392b;">TỔNG CỘNG: {{ order.final_amount }} đ</h2>
+    </div>
+
+    <div class="footer">
+        <p>Cảm ơn quý khách đã mua hàng!</p>
+        <p>Hóa đơn được tạo tự động từ hệ thống.</p>
+    </div>
+</body>
+</html>

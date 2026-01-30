@@ -189,7 +189,7 @@ export function ProfileForm() {
 
             {/* Tabs */}
             <Tabs defaultValue="personal" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 mb-4">
+                <TabsList className="grid w-full grid-cols-4 mb-4">
                     <TabsTrigger value="personal" className="flex items-center gap-2">
                         <User className="w-4 h-4" />
                         Cá nhân
@@ -201,6 +201,10 @@ export function ProfileForm() {
                     <TabsTrigger value="password" className="flex items-center gap-2">
                         <Lock className="w-4 h-4" />
                         Đổi mật khẩu
+                    </TabsTrigger>
+                    <TabsTrigger value="loyalty" className="flex items-center gap-2">
+                        <Receipt className="w-4 h-4" />
+                        Điểm thưởng
                     </TabsTrigger>
                 </TabsList>
                 
@@ -447,7 +451,106 @@ export function ProfileForm() {
                         </CardContent>
                     </Card>
                 </TabsContent>
+                
+                {/* Reward Points Tab */}
+                <TabsContent value="loyalty">
+                    <div className="space-y-6">
+                        {/* Points Summary */}
+                        <Card className="border-none shadow-sm ring-1 ring-gray-100 bg-linear-to-br from-yellow-50 to-white">
+                             <CardContent className="p-6 flex items-center gap-6">
+                                <div className="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center border-4 border-white shadow-xs">
+                                    <span className="text-3xl">👑</span>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900">Điểm tích lũy hiện tại</h3>
+                                    <p className="text-3xl font-black text-yellow-600 tracking-tight">
+                                        {profile.loyalty_points ? new Intl.NumberFormat('vi-VN').format(profile.loyalty_points) : 0}
+                                        <span className="text-sm font-medium text-gray-500 ml-1">điểm</span>
+                                    </p>
+                                    <p className="text-sm text-gray-500 mt-1">
+                                        Dùng điểm để đổi ưu đãi khi mua hàng
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <LoyaltyHistory />
+                    </div>
+                </TabsContent>
             </Tabs>
         </div>
+    );
+}
+
+function LoyaltyHistory() {
+    const [logs, setLogs] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchHistory = async () => {
+            try {
+                // Dynamic import to avoid circular dependency if needed, or just standard import
+                const { getPointHistory } = await import("../api/profile.api");
+                const data = await getPointHistory();
+                setLogs(data);
+            } catch (error) {
+                console.error("Failed to fetch point history", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchHistory();
+    }, []);
+
+    if (isLoading) {
+        return <div className="py-8 text-center text-gray-500">Đang tải lịch sử...</div>;
+    }
+
+    if (logs.length === 0) {
+        return (
+            <Card className="border-none shadow-sm ring-1 ring-gray-100">
+                <CardContent className="py-12 text-center text-gray-500">
+                    <Receipt className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                    <p>Chưa có lịch sử tích điểm</p>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    return (
+        <Card className="border-none shadow-sm ring-1 ring-gray-100">
+             <CardHeader className="pb-3 border-b bg-gray-50/30 rounded-t-xl">
+                 <CardTitle className="text-base font-bold text-gray-800">Lịch sử giao dịch</CardTitle>
+             </CardHeader>
+             <CardContent className="pt-0">
+                <table className="w-full text-sm text-left">
+                    <thead className="bg-gray-50 text-gray-500 font-medium">
+                        <tr>
+                            <th className="px-4 py-3">Thời gian</th>
+                            <th className="px-4 py-3">Hoạt động</th>
+                            <th className="px-4 py-3 text-right">Số điểm</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                        {logs.map((log) => (
+                            <tr key={log.id} className="hover:bg-gray-50">
+                                <td className="px-4 py-3 text-gray-600">
+                                    {log.created_at}
+                                </td>
+                                <td className="px-4 py-3">
+                                    <div className="font-medium text-gray-900">{log.reason_display}</div>
+                                    <div className="text-xs text-gray-500 truncate max-w-[200px]" title={log.description}>
+                                        {log.description} {log.related_order && `(#${log.related_order})`}
+                                    </div>
+                                </td>
+                                <td className={`px-4 py-3 font-bold text-right ${log.points > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                                    {log.points > 0 ? '+' : ''}{log.points}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+             </CardContent>
+        </Card>
     );
 }

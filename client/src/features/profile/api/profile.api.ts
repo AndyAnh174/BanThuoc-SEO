@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { UserProfile, UserProfileUpdateData } from '../types/profile.types';
+import { UserProfile, UserProfileUpdateData, RewardPointLog } from '../types/profile.types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -56,5 +56,12 @@ export const changePassword = async (data: ChangePasswordData): Promise<{ messag
         data,
         { headers: getAuthHeader() }
     );
+    return response.data;
+};
+
+export const getPointHistory = async (): Promise<RewardPointLog[]> => {
+    const response = await axios.get<RewardPointLog[]>(`${API_URL}/api/me/points/`, {
+        headers: getAuthHeader()
+    });
     return response.data;
 };

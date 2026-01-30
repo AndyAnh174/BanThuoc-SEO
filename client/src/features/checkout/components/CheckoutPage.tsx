@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { ChevronRight } from 'lucide-react';
 
 import { checkoutSchema, CheckoutFormValues } from '../schema/checkout.schema';
+import locationData from '@/src/data/db.json';
 import { DeliveryInfo } from './DeliveryInfo';
 import { OrderSummary } from './OrderSummary';
 import { CheckoutItem } from './CheckoutItem';
@@ -28,7 +29,6 @@ export function CheckoutPage() {
       deliveryMethod: 'shipping',
       paymentMethod: 'COD',
       city: '',
-      district: '',
       ward: '',
     }
   });
@@ -59,11 +59,28 @@ export function CheckoutPage() {
   const onSubmit = async (data: CheckoutFormValues) => {
     if (!cart || cart.items.length === 0) return;
 
+      
+    // Map IDs to Names
+    const cityId = data.city;
+    const wardId = data.ward;
+    
+    // Import json dynamically or assume it's available. To be safe, let's use the one we imported.
+    // Or simpler: We need to import it here too to look up names.
+    // Let's rely on importing it at top level
+    
+    const provinceName = (locationData.province as any[]).find(p => p.idProvince === cityId)?.name || cityId;
+    const wardName = (locationData.commune as any[]).find(w => w.idCommune === wardId)?.name || wardId;
+
     try {
         const orderData = {
-            shipping_address: data.deliveryMethod === 'pickup' 
+            // Map 'shipping_address' to 'address' as required by backend
+            address: data.deliveryMethod === 'pickup' 
                 ? 'Nhận tại cửa hàng' 
-                : `${data.streetAddress}, ${data.ward}, ${data.district}, ${data.city}, Tên: ${data.fullName}, SĐT: ${data.phoneNumber}`,
+                : `${data.streetAddress}, ${wardName}, ${provinceName}`,
+            province: provinceName,
+            ward: wardName,
+            full_name: data.fullName,
+            phone_number: data.phoneNumber,
             payment_method: data.paymentMethod, // Ensure this matches backend choices or map it
             items_input: cart.items.map(item => ({
                 product: item.product.id,
@@ -74,13 +91,31 @@ export function CheckoutPage() {
         
         await createOrder(orderData);
         
+        
         toast.success("Đặt hàng thành công! Đơn hàng đang được xử lý.");
         // Clear cart
-        useCartStore.getState().clearCart(); // Assuming clearCart exists or fetch cart again empty
-        router.push('/checkout/success'); 
-    } catch (error) {
-        console.error(error);
-        toast.error("Đặt hàng thất bại, vui lòng thử lại.");
+        useCartStore.getState().clearCart(); 
+        
+        // Redirect with params
+        const newOrder = await createOrder(orderData); // Assuming createOrder returns response with data
+        // API response wrapper handling:
+        const orderId = newOrder.data?.id || newOrder.id; // Adjust based on actual API response structure
+        
+        router.push(`/checkout/success?orderId=${orderId}&method=${data.paymentMethod}`);
+    } catch (error: any) {
+        console.error("Order creation failed:", error);
+        
+        let errorMessage = "Đặt hàng thất bại, vui lòng thử lại.";
+        if (error.response?.data) {
+             // Try to extract specific validation messages
+             if (typeof error.response.data === 'object') {
+                 // Join values of the first key or general details
+                 const details = Object.values(error.response.data).flat().join(', ');
+                 if (details) errorMessage = `Lỗi: ${details}`;
+             }
+        }
+        
+        toast.error(errorMessage);
     }
   };
 

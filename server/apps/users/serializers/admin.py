@@ -45,10 +45,11 @@ class AdminUserSerializer(serializers.ModelSerializer):
     business_profile = BusinessProfileSerializer(read_only=True)
     favorites = serializers.SerializerMethodField()
     orders = serializers.SerializerMethodField()
+    point_logs = serializers.SerializerMethodField()
     
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'full_name', 'phone', 'role', 'status', 'is_active', 'date_joined', 'business_profile', 'loyalty_points', 'favorites', 'orders']
+        fields = ['id', 'username', 'email', 'full_name', 'phone', 'role', 'status', 'is_active', 'date_joined', 'business_profile', 'loyalty_points', 'favorites', 'orders', 'point_logs']
 
     def get_favorites(self, obj):
         products = [fav.product for fav in Favorite.objects.filter(user=obj).select_related('product')]
@@ -58,6 +59,11 @@ class AdminUserSerializer(serializers.ModelSerializer):
         # Limit to last 5-10 orders to avoid bloating the response
         user_orders = obj.orders.all().order_by('-created_at')[:10]
         return OrderSerializer(user_orders, many=True).data
+
+    def get_point_logs(self, obj):
+        logs = obj.point_logs.all().order_by('-created_at')[:20]
+        from .loyalty import RewardPointLogSerializer
+        return RewardPointLogSerializer(logs, many=True).data
 
 class AdminUserStatusUpdateSerializer(serializers.Serializer):
     status = serializers.ChoiceField(choices=User.Status.choices)

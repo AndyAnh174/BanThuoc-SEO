@@ -10,6 +10,7 @@ import { ShoppingCart, Heart, Pill, Loader2 } from 'lucide-react';
 import { useCartStore } from '@/src/features/cart/stores/cart.store';
 import { useAuthStore } from '@/src/features/auth/stores/auth.store';
 import { toast } from 'sonner';
+import { toggleFavorite } from '@/src/features/products/api/products.api';
 
 export interface ProductCardProps {
   id: string;
@@ -44,7 +45,7 @@ export interface ProductCardProps {
   isLiked?: boolean;
 }
 
-import { toggleFavorite } from '@/src/features/products/api/products.api';
+
 
 export function ProductCard({
   id,

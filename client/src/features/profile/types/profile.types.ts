@@ -18,10 +18,21 @@ export interface UserProfile {
     date_joined: string;
     is_verified: boolean;
     business_profile: BusinessProfile | null;
+    loyalty_points?: number;
 }
 
 export interface UserProfileUpdateData {
     full_name?: string;
     phone?: string;
+}
+
+export interface RewardPointLog {
+    id: number;
+    points: number;
+    reason: string;
+    reason_display: string;
+    description: string;
+    created_at: string;
+    related_order: number | null;
 }
 

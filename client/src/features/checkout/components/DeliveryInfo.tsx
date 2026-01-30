@@ -6,10 +6,37 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CheckoutFormValues } from '../schema/checkout.schema';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import locationData from '@/src/data/db.json';
 
 export function DeliveryInfo() {
-  const { register, setValue, watch, formState: { errors } } = useFormContext<CheckoutFormValues>();
+  const { register, setValue, watch, control, formState: { errors } } = useFormContext<CheckoutFormValues>();
   const deliveryMethod = watch('deliveryMethod');
+  const selectedCity = watch('city'); 
+  
+  const availableWards = React.useMemo(() => {
+     if (!selectedCity) return [];
+     return locationData.commune.filter((c: any) => c.idProvince === selectedCity);
+  }, [selectedCity]);
+
+  // Reset ward when city changes
+  React.useEffect(() => {
+      setValue('ward', '');
+  }, [selectedCity, setValue]);
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -46,25 +73,58 @@ export function DeliveryInfo() {
              <TabsContent value="shipping" className="space-y-4 mt-0 animate-in fade-in slide-in-from-left-2">
                  <div className="space-y-2">
                     <Label className="text-gray-600 font-medium">Địa chỉ <span className="text-red-500">*</span></Label>
-                    {/* Mock Selectors - In real app use Select or Combobox */}
-                    <div className="grid grid-cols-3 gap-3 mb-3">
-                         <select {...register('city')} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                             <option value="">Chọn Tỉnh/Thành</option>
-                             <option value="HN">Hà Nội</option>
-                             <option value="HCM">TP. Hồ Chí Minh</option>
-                         </select>
-                         <select {...register('district')} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                             <option value="">Chọn Quận/Huyện</option>
-                             <option value="BaDinh">Ba Đình</option>
-                             <option value="Q1">Quận 1</option>
-                         </select>
-                         <select {...register('ward')} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                             <option value="">Chọn Phường/Xã</option>
-                             <option value="KimMa">Kim Mã</option>
-                             <option value="BenNghe">Bến Nghé</option>
-                         </select>
+                    
+                    {/* Address Selectors using shadcn Select */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                         <FormField
+                            control={control}
+                            name="city"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className="bg-white">
+                                                <SelectValue placeholder="Chọn Tỉnh/Thành" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent position="popper">
+                                            {locationData.province.map((p: any) => (
+                                                <SelectItem key={p.idProvince} value={p.idProvince}>{p.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                         />
+                         
+                         <FormField
+                            control={control}
+                            name="ward"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <Select 
+                                        onValueChange={field.onChange} 
+                                        defaultValue={field.value} 
+                                        value={field.value}
+                                        disabled={!selectedCity}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger className="bg-white">
+                                                <SelectValue placeholder="Chọn Phường/Xã" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent position="popper">
+                                            {availableWards.map((w: any) => (
+                                                <SelectItem key={w.idCommune} value={w.idCommune}>{w.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                         />
                     </div>
-                    {errors.city && <p className="text-xs text-red-500">Vui lòng chọn địa chỉ đầy đủ</p>}
 
                     <Input {...register('streetAddress')} placeholder="Số nhà, tên đường..." className={`bg-gray-50/50 ${errors.streetAddress ? 'border-red-500 focus-visible:ring-red-200' : ''}`} />
                     {errors.streetAddress && <p className="text-xs text-red-500">{errors.streetAddress.message}</p>}

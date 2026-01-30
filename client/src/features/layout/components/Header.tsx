@@ -72,8 +72,17 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                         setCategories(res.data);
                     }
                 })(),
-                // Fetch cart
-                fetchCart() // fetchCart should handle auth check internally or fail gracefully
+                // Fetch cart only if authenticated
+                (async () => {
+                    const token = localStorage.getItem('accessToken');
+                    if (token) {
+                        try {
+                            await fetchCart();
+                        } catch (e) {
+                            // Ignore cart fetch error
+                        }
+                    }
+                })()
             ]);
         } catch (error) {
             console.error("Failed to fetch initial data for header", error);

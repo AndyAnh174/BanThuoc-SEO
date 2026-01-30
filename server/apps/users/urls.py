@@ -3,6 +3,7 @@ from .views import RegisterB2BView, AdminUserListView, AdminUserStatusUpdateView
 from .views.admin import AdminUserCreateView, AdminUserUpdateView, AdminUserDeleteView
 from .views.file_upload import FileUploadView, FileDeleteView
 from .views.profile import UserProfileView, UserProfileUpdateView, UserAvatarUploadView, ChangePasswordView
+from .views.loyalty import UserPointLogListView
 from .views.verify_email import VerifyEmailView
 
 urlpatterns = [
@@ -18,6 +19,7 @@ urlpatterns = [
     path('me/update/', UserProfileUpdateView.as_view(), name='user-profile-update'),
     path('me/avatar/', UserAvatarUploadView.as_view(), name='user-avatar-upload'),
     path('me/change-password/', ChangePasswordView.as_view(), name='user-change-password'),
+    path('me/points/', UserPointLogListView.as_view(), name='user-point-history'),
     
     # Admin Management
     path('admin/users', AdminUserListView.as_view(), name='admin-user-list'),

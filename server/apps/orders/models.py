@@ -85,10 +85,17 @@ class OrderItem(models.Model):
 def update_user_loyalty_points(sender, instance, created, **kwargs):
     if instance.status == Order.Status.DELIVERED and instance.user and not instance.points_awarded:
         points = instance.calculate_loyalty_points()
-        instance.user.loyalty_points += points
-        instance.user.save()
+        
+        # Create Log entry (which triggers user point update via signal)
+        from users.models import RewardPointLog
+        RewardPointLog.objects.create(
+            user=instance.user,
+            points=points,
+            reason=RewardPointLog.Reason.ORDER_EARN,
+            related_order=instance,
+            description=f"Points earned from Order #{instance.id}"
+        )
         
         # Mark as awarded
-        # Use update to avoid recursive signal loop or just save specific fields if simple
         Order.objects.filter(pk=instance.pk).update(points_awarded=True)
 

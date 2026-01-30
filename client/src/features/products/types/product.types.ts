@@ -120,6 +120,7 @@ export const productSchema = z.object({
   
   // Images
   images: z.array(productImageSchema).optional(),
+  imageUrl: z.string().optional().nullable(), // For transformer result
   
   // Timestamps
   createdAt: z.string().datetime().optional(),

@@ -133,6 +133,12 @@ export function UserDetailView({ user, onApprove, onReject }: UserDetailViewProp
                     >
                         Sản phẩm yêu thích ({user.favorites?.length || 0})
                     </TabsTrigger>
+                    <TabsTrigger 
+                        value="loyalty" 
+                        className="px-4 py-3 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-green-600 data-[state=active]:bg-white data-[state=active]:text-green-700 data-[state=active]:shadow-sm bg-gray-50/50"
+                    >
+                        Điểm thưởng
+                    </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="profile" className="space-y-6">
@@ -278,7 +284,7 @@ export function UserDetailView({ user, onApprove, onReject }: UserDetailViewProp
                                     <tbody className="divide-y">
                                         {user.orders.map((order: any) => (
                                             <tr key={order.id} className="hover:bg-gray-50">
-                                                <td className="px-4 py-3 font-medium">#{order.id.slice(0, 8)}...</td>
+                                                <td className="px-4 py-3 font-medium">#{order.id}</td>
                                                 <td className="px-4 py-3">{new Date(order.created_at).toLocaleDateString('vi-VN')}</td>
                                                 <td className="px-4 py-3 font-bold text-green-600">
                                                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(order.total_amount))}
@@ -325,6 +331,67 @@ export function UserDetailView({ user, onApprove, onReject }: UserDetailViewProp
                              )}
                         </CardContent>
                     </Card>
+                </TabsContent>
+
+                <TabsContent value="loyalty">
+                    <div className="space-y-6">
+                        {/* Points Summary */}
+                        <Card className="border-none shadow-sm ring-1 ring-gray-100 bg-linear-to-br from-yellow-50 to-white">
+                            <CardContent className="p-6 flex items-center gap-6">
+                                <div className="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center border-4 border-white shadow-xs">
+                                    <span className="text-3xl">👑</span>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900">Tổng điểm tích lũy</h3>
+                                    <p className="text-3xl font-black text-yellow-600 tracking-tight">
+                                        {user.loyalty_points ? new Intl.NumberFormat('vi-VN').format(user.loyalty_points) : 0}
+                                        <span className="text-sm font-medium text-gray-500 ml-1">điểm</span>
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* History Table */}
+                        <Card className="border-none shadow-sm ring-1 ring-gray-100">
+                            <CardHeader className="pb-3 border-b bg-gray-50/30 rounded-t-xl">
+                                <CardTitle className="text-base font-bold text-gray-800">Lịch sử điểm thưởng</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0">
+                                {user.point_logs && user.point_logs.length > 0 ? (
+                                    <table className="w-full text-sm text-left">
+                                        <thead className="bg-gray-50 text-gray-500 font-medium">
+                                            <tr>
+                                                <th className="px-4 py-3">Ngày giờ</th>
+                                                <th className="px-4 py-3">Hoạt động</th>
+                                                <th className="px-4 py-3">Số điểm</th>
+                                                <th className="px-4 py-3">Mô tả</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y">
+                                            {user.point_logs.map((log) => (
+                                                <tr key={log.id} className="hover:bg-gray-50">
+                                                    <td className="px-4 py-3 text-gray-600">
+                                                        {log.created_at}
+                                                    </td>
+                                                    <td className="px-4 py-3 font-medium text-gray-900">
+                                                        {log.reason_display}
+                                                    </td>
+                                                    <td className={`px-4 py-3 font-bold ${log.points > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                                                        {log.points > 0 ? '+' : ''}{log.points}
+                                                    </td>
+                                                    <td className="px-4 py-3 text-gray-500 max-w-xs truncate" title={log.description}>
+                                                        {log.description || '-'} {log.related_order ? `(Đơn #${log.related_order})` : ''}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                ) : (
+                                    <div className="py-12 text-center text-gray-400">Chưa có lịch sử điểm thưởng.</div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
                 </TabsContent>
             </Tabs>
 

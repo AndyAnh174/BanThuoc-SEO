@@ -68,3 +68,53 @@ class EmailVerificationToken(models.Model):
     def __str__(self):
         return f"Token for {self.user.email}"
 
+
+class RewardPointLog(models.Model):
+    class Reason(models.TextChoices):
+        ORDER_EARN = 'ORDER_EARN', _('Earned from Order')
+        ORDER_REFUND = 'ORDER_REFUND', _('Deducted from Refund')
+        ADMIN_ADJUSTMENT = 'ADMIN_ADJUSTMENT', _('Admin Adjustment')
+        REDEEM = 'REDEEM', _('Redeemed for Discount')
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='point_logs'
+    )
+    points = models.IntegerField(help_text=_("Points change (positive or negative)"))
+    reason = models.CharField(
+        max_length=50,
+        choices=Reason.choices,
+        default=Reason.ORDER_EARN
+    )
+    related_order = models.ForeignKey(
+        'orders.Order',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='reward_logs',
+        help_text=_("Related order if applicable")
+    )
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.points} pts ({self.reason})"
+
+
+# Signals
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=RewardPointLog)
+def update_user_total_points(sender, instance, created, **kwargs):
+    """
+    Update User.loyalty_points whenever a log is created.
+    """
+    if created:
+        user = instance.user
+        user.loyalty_points += instance.points
+        user.save(update_fields=['loyalty_points'])
