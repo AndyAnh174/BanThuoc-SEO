@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductCard } from '@/src/features/products';
@@ -68,8 +69,14 @@ export function FeaturedProducts() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {/* Simple pill/capsule icon */}
-                <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm">
-                  <div className="w-4 h-2 bg-teal-500 rounded-full" />
+                {/* Custom Icon */}
+                <div className="relative w-8 h-8">
+                  <Image 
+                    src="/noi-bat.svg" 
+                    alt="Icon Nổi bật" 
+                    fill
+                    className="object-contain brightness-0 invert"
+                  />
                 </div>
                 <h2 className="text-xl md:text-2xl font-bold text-white">
                   Sản Phẩm Nổi Bật

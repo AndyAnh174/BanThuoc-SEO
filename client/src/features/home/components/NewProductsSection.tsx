@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductCard } from '@/src/features/products';
@@ -67,14 +68,15 @@ export function NewProductsSection() {
           <div className="bg-emerald-600 px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {/* NEW Starburst Badge */}
-                <svg viewBox="0 0 50 50" className="w-10 h-10 shrink-0">
-                  <polygon 
-                    points="25,0 29,18 50,18 33,29 38,50 25,38 12,50 17,29 0,18 21,18" 
-                    className="fill-orange-500"
+                {/* Custom Icon */}
+                <div className="relative w-9 h-9 shrink-0">
+                  <Image 
+                    src="/vien-thuoc.svg" 
+                    alt="Icon Sản phẩm mới" 
+                    fill
+                    className="object-contain brightness-0 invert"
                   />
-                  <text x="25" y="28" textAnchor="middle" className="fill-white text-[10px] font-bold">NEW</text>
-                </svg>
+                </div>
                 <h2 className="text-xl md:text-2xl font-bold text-white">
                   Sản Phẩm Mới
                 </h2>

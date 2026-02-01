@@ -1,4 +1,5 @@
 import { MainLayout } from '@/src/features/layout';
+import { Metadata } from 'next';
 import { WishlistClient } from './WishlistClient';
 
 export const metadata: Metadata = {

@@ -56,8 +56,8 @@ export const useOrdersStore = create<OrdersState>((set, get) => ({
 
             const response = await getOrders(params);
             set({ 
-                orders: response?.results || [], 
-                totalCount: response?.count || 0, 
+                orders: response.data.results || [], 
+                totalCount: response.data.count || 0, 
                 isLoading: false 
             });
         } catch (error: any) {

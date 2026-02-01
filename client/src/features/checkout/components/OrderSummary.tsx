@@ -13,11 +13,33 @@ import { useCartStore } from '@/src/features/cart/stores/cart.store';
 import { formatCurrency } from '@/lib/utils';
 import { CheckoutFormValues } from '../schema/checkout.schema';
 
-export function OrderSummary() {
+interface OrderSummaryProps {
+  voucherCode?: string;
+  setVoucherCode?: (code: string) => void;
+  onApplyVoucher?: (code: string) => void;
+  onRemoveVoucher?: () => void;
+  appliedVoucher?: { code: string; discount: number } | null;
+  loadingVoucher?: boolean;
+}
+
+export function OrderSummary({
+  voucherCode,
+  setVoucherCode,
+  onApplyVoucher,
+  onRemoveVoucher,
+  appliedVoucher,
+  loadingVoucher
+}: OrderSummaryProps) {
   const { register, watch, formState: { isSubmitting } } = useFormContext<CheckoutFormValues>();
   const { cart } = useCartStore();
   const paymentMethod = watch('paymentMethod');
   const totalPrice = cart?.total_price || 0;
+  
+  // Calculate final price with discount
+  const discountAmount = appliedVoucher ? appliedVoucher.discount : 0;
+  // If cart total is different from reduced total (calculated by items), use that
+  const cartTotal = cart!.items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+  const finalPrice = Math.max(0, Number(totalPrice) - discountAmount);
 
   return (
     <div className="space-y-6">
@@ -25,13 +47,41 @@ export function OrderSummary() {
        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
            <div className="flex items-center justify-between mb-3">
                <span className="font-medium text-gray-900 text-sm">Mã giảm giá</span>
-               <button type="button" className="text-primary text-sm font-medium hover:underline flex items-center gap-1">
-                   <Ticket className="w-4 h-4" />
-                   Thêm mã giảm
-               </button>
+               <Ticket className="w-4 h-4 text-primary" />
            </div>
-           {/* Mock input if expanded */}
-           {/* For now simplified as design */}
+           
+           {appliedVoucher ? (
+               <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex justify-between items-center">
+                   <div>
+                       <div className="font-bold text-green-700">{appliedVoucher.code}</div>
+                       <div className="text-xs text-green-600">Đã giảm {formatCurrency(appliedVoucher.discount)}</div>
+                   </div>
+                   <button 
+                       type="button" 
+                       onClick={onRemoveVoucher}
+                       className="text-red-500 text-xs font-medium hover:underline"
+                   >
+                       Gỡ bỏ
+                   </button>
+               </div>
+           ) : (
+               <div className="flex gap-2">
+                   <Input 
+                       placeholder="Nhập mã voucher" 
+                       value={voucherCode}
+                       onChange={(e) => setVoucherCode?.(e.target.value.toUpperCase())}
+                       className="uppercase"
+                   />
+                   <Button 
+                       type="button" 
+                       variant="outline" 
+                       onClick={() => onApplyVoucher?.(voucherCode || '')}
+                       disabled={loadingVoucher || !voucherCode}
+                   >
+                       {loadingVoucher ? <Loader2 className="w-4 h-4 animate-spin" /> : "Áp dụng"}
+                   </Button>
+               </div>
+           )}
        </div>
 
        {/* Payment Method */}
@@ -87,14 +137,27 @@ export function OrderSummary() {
            <div className="space-y-3 mb-6">
                <div className="flex justify-between text-sm">
                    <span className="text-gray-600">Tổng {cart?.total_items || 0} sản phẩm</span>
-                   <span className="font-medium">{formatCurrency(cart!.items.reduce((total, item) => total + (item.product.price * item.quantity), 0))}</span>
+                   <span className="font-medium">{formatCurrency(cartTotal)}</span>
                </div>
+               
+               {/* Product Discount */}
                <div className="flex justify-between text-sm">
-                   <span className="text-gray-600">Giảm giá</span>
+                   <span className="text-gray-600">Giảm giá sản phẩm</span>
                    <span className="font-medium text-green-600">
-                     -{formatCurrency(cart!.items.reduce((total, item) => total + (item.product.price * item.quantity), 0) - Number(totalPrice))}
+                     -{formatCurrency(cartTotal - Number(totalPrice))}
                    </span>
                </div>
+
+               {/* Voucher Discount */}
+               {discountAmount > 0 && (
+                   <div className="flex justify-between text-sm">
+                       <span className="text-gray-600">Voucher giảm giá</span>
+                       <span className="font-medium text-green-600">
+                         -{formatCurrency(discountAmount)}
+                       </span>
+                   </div>
+               )}
+
                <div className="flex justify-between text-sm">
                    <span className="text-gray-600">Phí vận chuyển</span>
                    <span className="font-medium text-green-600">Miễn phí</span>
@@ -104,9 +167,9 @@ export function OrderSummary() {
                    <span className="font-bold text-gray-900 text-lg">Tổng cộng</span>
                    <div className="text-right">
                        <div className="text-sm text-gray-400 line-through mr-2 inline-block">
-                           {formatCurrency(cart!.items.reduce((total, item) => total + (item.product.price * item.quantity), 0))}
+                           {formatCurrency(cartTotal)}
                        </div>
-                       <span className="font-bold text-primary text-xl">{formatCurrency(Number(totalPrice))}</span>
+                       <span className="font-bold text-primary text-xl">{formatCurrency(finalPrice)}</span>
                    </div>
                </div>
            </div>

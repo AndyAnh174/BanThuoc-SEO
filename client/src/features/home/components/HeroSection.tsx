@@ -34,11 +34,11 @@ const defaultBanner: Banner = {
   id: 'default',
   title: 'Sức khỏe là vàng,\nChăm sóc tận tâm',
   subtitle: 'Hơn 10.000+ sản phẩm dược phẩm chính hãng, giao hàng nhanh toàn quốc. Đội ngũ dược sĩ tư vấn 24/7.',
-  image_url: '',
+  image_url: '/3.png',
   link_url: '/products',
   link_text: 'Mua ngay',
-  background_color: '#16a34a',
-  text_color: '#ffffff',
+  background_color: '#ffffff', // Changed to white to match image background if needed, or keep green if transparent
+  text_color: '#000000',
 };
 
 export function HeroSection() {
@@ -157,82 +157,65 @@ export function HeroSection() {
         </div>
 
         {/* Right: Info Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-1 gap-3">
-          <div className="bg-white rounded-xl p-4 border shadow-sm hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mb-3">
-              <Shield className="w-5 h-5 text-green-600" />
+        <div className="grid grid-cols-2 lg:grid-cols-1 gap-4 h-full">
+          {/* Card 1 */}
+          <div className="bg-white rounded-2xl p-5 border border-green-50 shadow-sm hover:shadow-md transition-all duration-300 group">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <Shield className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-1">100% Chính hãng</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">Cam kết sản phẩm nguồn gốc rõ ràng, đầy đủ hóa đơn</p>
+              </div>
             </div>
-            <h3 className="font-semibold text-gray-900 mb-1">100% Chính hãng</h3>
-            <p className="text-sm text-gray-500">Cam kết sản phẩm chính hãng, nguồn gốc rõ ràng</p>
           </div>
 
-          <div className="bg-white rounded-xl p-4 border shadow-sm hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mb-3">
-              <Truck className="w-5 h-5 text-orange-600" />
+          {/* Card 2 */}
+          <div className="bg-white rounded-2xl p-5 border border-orange-50 shadow-sm hover:shadow-md transition-all duration-300 group">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <Truck className="w-6 h-6 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-1">Giao siêu tốc 2H</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">Nhận hàng ngay trong ngày với đơn nội thành HCM</p>
+              </div>
             </div>
-            <h3 className="font-semibold text-gray-900 mb-1">Giao hàng nhanh</h3>
-            <p className="text-sm text-gray-500">Giao hàng trong 2h với đơn nội thành</p>
           </div>
 
-          <div className="bg-white rounded-xl p-4 border shadow-sm hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
-              <Clock className="w-5 h-5 text-blue-600" />
+          {/* Card 3 */}
+          <div className="bg-white rounded-2xl p-5 border border-blue-50 shadow-sm hover:shadow-md transition-all duration-300 group">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <Clock className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-1">Tư vấn 24/7</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">Chat trực tiếp với Dược sĩ chuyên môn cao</p>
+              </div>
             </div>
-            <h3 className="font-semibold text-gray-900 mb-1">Tư vấn 24/7</h3>
-            <p className="text-sm text-gray-500">Đội ngũ dược sĩ sẵn sàng tư vấn mọi lúc</p>
           </div>
 
-          <div className="bg-primary rounded-xl p-4 text-white">
-            <div className="text-2xl font-bold mb-1">10K+</div>
-            <p className="text-sm text-white/80">Sản phẩm đa dạng, đầy đủ các danh mục</p>
+          {/* Card 4 - Highlight */}
+          <div className="bg-linear-to-br from-emerald-500 to-green-600 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full translate-x-1/3 -translate-y-1/3 group-hover:scale-110 transition-transform duration-500" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -translate-x-1/3 translate-y-1/3 group-hover:scale-110 transition-transform duration-500" />
+            
+            <div className="relative flex items-center justify-between h-full">
+              <div>
+                 <div className="text-3xl font-extrabold mb-1 tracking-tight">10K+</div>
+                 <p className="text-sm text-green-50 font-medium">Sản phẩm đa dạng</p>
+              </div>
+              <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                 <Gift className="w-5 h-5 text-white" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Quick links */}
-      <div className="grid grid-cols-3 gap-3 mt-4">
-        <Link 
-          href="/about#courses"
-          className="bg-white rounded-xl p-4 border flex items-center gap-3 hover:border-primary transition-colors"
-        >
-          <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center shrink-0">
-            <GraduationCap className="w-5 h-5 text-purple-600" />
-          </div>
-          <div>
-            <div className="text-xs text-gray-500 mb-0.5">Khóa học</div>
-            <div className="font-semibold text-sm">Học cùng Sĩ</div>
-            <div className="text-xs text-primary">20+ Khóa học</div>
-          </div>
-        </Link>
 
-        <Link 
-          href="/vouchers"
-          className="bg-white rounded-xl p-4 border flex items-center gap-3 hover:border-primary transition-colors"
-        >
-          <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center shrink-0">
-            <Gift className="w-5 h-5 text-red-600" />
-          </div>
-          <div>
-            <div className="text-xs text-gray-500 mb-0.5">Giới thiệu bạn mới</div>
-            <div className="font-semibold text-sm">Voucher 500K</div>
-            <div className="text-xs text-primary">Mời bạn ngay</div>
-          </div>
-        </Link>
-
-        <Link 
-          href="/prescription"
-          className="bg-white rounded-xl p-4 border flex items-center gap-3 hover:border-primary transition-colors"
-        >
-          <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center shrink-0">
-            <FileText className="w-5 h-5 text-teal-600" />
-          </div>
-          <div>
-            <div className="text-xs text-gray-500 mb-0.5">Bệnh viện tin dùng</div>
-            <div className="font-semibold text-sm">DS Theo Đơn BV</div>
-            <div className="text-xs text-primary">Khám phá ngay</div>
-          </div>
-        </Link>
-      </div>
     </section>
   );
 }

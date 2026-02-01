@@ -111,7 +111,7 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
           <div className="flex items-center gap-6 opacity-90 hover:opacity-100 transition-opacity">
             <span className="flex items-center gap-1.5 cursor-help" title="Hotline hỗ trợ 24/7">
               <Phone className="w-3.5 h-3.5 text-yellow-400" />
-              Hotline: <span className="text-white font-bold tracking-wide">1900 xxxx</span>
+              Hotline: <span className="text-white font-bold tracking-wide">096.770.5287</span>
             </span>
             <span className="flex items-center gap-1.5 hover:text-white cursor-pointer transition-colors">
               <MapPin className="w-3.5 h-3.5 text-emerald-400" />
@@ -135,9 +135,16 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
         <div className="container mx-auto px-4 py-3 md:py-4">
           <div className="flex items-center justify-between gap-4 md:gap-8">
             {/* Logo */}
+            {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-              <div className="w-10 h-10 md:w-11 md:h-11 bg-linear-to-br from-primary to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
-                <span className="text-2xl md:text-3xl font-black text-white tracking-tighter">B</span>
+              <div className="relative w-12 h-12 md:w-14 md:h-14 transition-transform duration-300 group-hover:scale-105">
+                <Image 
+                  src="/2.png" 
+                  alt="BanThuoc Logo" 
+                  fill
+                  className="object-contain"
+                  priority
+                />
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight group-hover:text-primary transition-colors">BanThuoc</h1>

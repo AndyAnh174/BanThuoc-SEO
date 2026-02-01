@@ -28,3 +28,12 @@ urlpatterns = [
     path('my/', UserVouchersView.as_view(), name='my-vouchers'),
     path('claim/', ClaimVoucherView.as_view(), name='claim'),
 ]
+
+# Admin Router
+from rest_framework.routers import DefaultRouter
+from vouchers.views import AdminVoucherViewSet
+
+router = DefaultRouter()
+router.register(r'manage', AdminVoucherViewSet, basename='voucher-admin')
+
+urlpatterns += router.urls

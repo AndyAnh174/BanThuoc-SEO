@@ -24,7 +24,7 @@ export function CheckoutPage() {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
 
   const methods = useForm<CheckoutFormValues>({
-    resolver: zodResolver(checkoutSchema),
+    resolver: zodResolver(checkoutSchema) as any,
     defaultValues: {
       deliveryMethod: 'shipping',
       paymentMethod: 'COD',
@@ -32,6 +32,11 @@ export function CheckoutPage() {
       ward: '',
     }
   });
+
+  // Voucher State
+  const [voucherCode, setVoucherCode] = useState('');
+  const [appliedVoucher, setAppliedVoucher] = useState<{code: string, discount: number} | null>(null);
+  const [voucherLoading, setVoucherLoading] = useState(false);
 
   // Fetch related products
   useEffect(() => {
@@ -55,6 +60,39 @@ export function CheckoutPage() {
         router.push('/products');
     }
   }, [cart, isLoading, router]);
+
+  const handleApplyVoucher = async (code: string) => {
+      if (!code || !cart) return;
+      setVoucherLoading(true);
+      try {
+          const { checkVoucher } = await import('@/src/features/checkout/api/vouchers.api');
+          const totalOrder = cart.items.reduce((total, item) => total + (item.product.sale_price ?? item.product.price) * item.quantity, 0);
+          
+          const res = await checkVoucher(code, totalOrder, cart.items);
+          
+          if (res.valid) {
+              setAppliedVoucher({
+                  code: code,
+                  discount: res.discount_amount
+              });
+              toast.success(`Áp dụng mã ${code} thành công, giảm ${res.discount_amount.toLocaleString()}đ`);
+          } else {
+              setAppliedVoucher(null);
+              toast.error(res.error_message || "Mã giảm giá không hợp lệ");
+          }
+      } catch (error: any) {
+          setAppliedVoucher(null);
+          toast.error(error.response?.data?.error_message || "Lỗi khi kiểm tra mã giảm giá");
+      } finally {
+          setVoucherLoading(false);
+      }
+  };
+
+  const handleRemoveVoucher = () => {
+      setAppliedVoucher(null);
+      setVoucherCode('');
+      toast.info("Đã gỡ bỏ mã giảm giá");
+  };
 
   const onSubmit = async (data: CheckoutFormValues) => {
     if (!cart || cart.items.length === 0) return;
@@ -86,7 +124,8 @@ export function CheckoutPage() {
                 product: item.product.id,
                 quantity: item.quantity,
                 price: item.product.sale_price ?? item.product.price // Use current price
-            }))
+            })),
+            voucher_code: appliedVoucher?.code || undefined
         };
         
         await createOrder(orderData);
@@ -97,9 +136,10 @@ export function CheckoutPage() {
         useCartStore.getState().clearCart(); 
         
         // Redirect with params
-        const newOrder = await createOrder(orderData); // Assuming createOrder returns response with data
-        // API response wrapper handling:
-        const orderId = newOrder.data?.id || newOrder.id; // Adjust based on actual API response structure
+        // Redirect with params
+        // createOrder returns AxiosResponse, so we need .data
+        const newOrder = await createOrder(orderData); 
+        const orderId = newOrder.data?.id;
         
         router.push(`/checkout/success?orderId=${orderId}&method=${data.paymentMethod}`);
     } catch (error: any) {
@@ -173,7 +213,7 @@ export function CheckoutPage() {
                                             slug={product.slug}
                                             price={product.price}
                                             salePrice={product.salePrice}
-                                            imageUrl={product.imageUrl}
+                                            imageUrl={product.imageUrl || undefined}
                                             category={product.category}
                                             manufacturer={product.manufacturer}
                                             unit={product.unit}
@@ -192,7 +232,14 @@ export function CheckoutPage() {
 
                      {/* RIGHT COLUMN */}
                      <div className="lg:col-span-1">
-                          <OrderSummary />
+                          <OrderSummary 
+                            voucherCode={voucherCode}
+                            setVoucherCode={setVoucherCode}
+                            onApplyVoucher={handleApplyVoucher}
+                            onRemoveVoucher={handleRemoveVoucher}
+                            appliedVoucher={appliedVoucher}
+                            loadingVoucher={voucherLoading}
+                          />
                      </div>
                 </div>
            </form>

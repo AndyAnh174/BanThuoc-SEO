@@ -288,7 +288,26 @@ export default function CartPage() {
                             </h2>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                                 {relatedProducts.map((product) => (
-                                    <ProductCard key={product.id} {...product} />
+                                    <ProductCard 
+                                        key={product.id} 
+                                        id={product.id}
+                                        name={product.name}
+                                        slug={product.slug}
+                                        price={product.price}
+                                        salePrice={product.salePrice}
+                                        imageUrl={product.imageUrl || undefined}
+                                        category={product.category}
+                                        manufacturer={product.manufacturer}
+                                        unit={product.unit}
+                                        stockQuantity={product.stockQuantity}
+                                        requiresPrescription={product.requiresPrescription}
+                                        isFeatured={product.isFeatured}
+                                        rating={product.rating}
+                                        reviewCount={product.reviewCount}
+                                        short_description={product.shortDescription}
+                                        quantity_per_unit={product.quantityPerUnit}
+                                        isLiked={product.isLiked}
+                                    />
                                 ))}
                             </div>
                         </div>

@@ -43,7 +43,7 @@ export function AddToCartButton({
         }
 
         setIsLoading(true);
-        await addToCart(productId, quantity);
+        await addToCart(String(productId), quantity);
         setIsLoading(false);
     };
 

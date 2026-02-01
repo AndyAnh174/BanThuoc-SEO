@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Phone, Mail, MapPin, Facebook, Clock } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
@@ -14,8 +15,13 @@ export function Footer() {
           {/* Company info */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-2xl font-bold text-primary-foreground">B</span>
+              <div className="relative w-16 h-16 flex items-center justify-center overflow-hidden">
+                <Image 
+                  src="/2.png" 
+                  alt="BanThuoc Logo" 
+                  fill
+                  className="object-contain"
+                />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-white">BanThuoc</h3>
@@ -100,20 +106,20 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 shrink-0 text-primary mt-0.5" />
                 <span>
-                  123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh
+                  117/127C/27 Phan Huy Ích, Phường Tân Sơn, Tp. Hồ Chí Minh
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 shrink-0 text-primary" />
-                <span>1900 xxxx</span>
+                <span>096.770.5287</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 shrink-0 text-primary" />
-                <span>contact@banthuoc.vn</span>
+                <span>ngockimnganpharm@gmail.com</span>
               </li>
               <li className="flex items-center gap-3">
                 <Clock className="w-5 h-5 shrink-0 text-primary" />
-                <span>8:00 - 22:00, T2 - CN</span>
+                <span>8:00 - 17:00, T2 - CN</span>
               </li>
             </ul>
           </div>
@@ -127,7 +133,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
           <p>© {currentYear} BanThuoc. All rights reserved.</p>
           <p>
-            Giấy phép kinh doanh số: XXXXXXXXXX
+            Giấy phép kinh doanh số: 0319116538
           </p>
         </div>
       </div>

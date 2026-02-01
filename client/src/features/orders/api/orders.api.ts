@@ -14,6 +14,7 @@ export interface CreateOrderData {
     quantity: number;
     price: number; // Current price
   }>;
+  voucher_code?: string;
 }
 
 export const createOrder = async (data: CreateOrderData) => {

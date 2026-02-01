@@ -1,144 +1,380 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         @font-face {
             font-family: 'UTM-Avo';
             src: url('/static/fonts/UTM-Avo.ttf') format('truetype');
             font-weight: normal;
-            font-style: normal;
         }
         @font-face {
             font-family: 'UTM-Avo';
             src: url('/static/fonts/UTM-AvoBold.ttf') format('truetype');
             font-weight: bold;
-            font-style: normal;
         }
-        @page {
-            size: A4;
-            margin: 1cm;
+        @font-face {
+            font-family: 'UTM-Avo';
+            src: url('/static/fonts/UTM-AvoItalic.ttf') format('truetype');
+            font-style: italic;
         }
-        * {
-            font-family: "UTM-Avo", sans-serif;
+
+        :root {
+            --primary-green: #2e7d32;
+            --border-color: #2e7d32;
+            --text-color: #333;
         }
+
         body {
-            font-size: 12px;
-            line-height: 1.5;
-            color: #333;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 10px;
-        }
-        .header h1 {
-            color: #2c3e50;
+            font-family: 'UTM-Avo', Arial, sans-serif;
+            font-size: 13px;
+            color: var(--text-color);
+            line-height: 1.4;
             margin: 0;
-            font-size: 24px;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
         }
-        .company-info {
-            font-size: 10px;
-            color: #7f8c8d;
+
+        .container {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm;
+            margin: 0 auto;
+            position: relative;
+            background: white;
         }
-        .invoice-details {
-            margin-bottom: 20px;
+
+        /* Header */
+        .header {
             display: flex;
             justify-content: space-between;
-        }
-        .customer-info {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
             margin-bottom: 20px;
-            background-color: #f9f9f9;
-            padding: 10px;
-            border-radius: 5px;
         }
+
+        .logo-section {
+            width: 25%;
+            text-align: center;
+        }
+        .logo-section img {
+            max-width: 100px;
+            height: auto;
+        }
+        .logo-text {
+            color: var(--primary-green);
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .company-info {
+            width: 73%;
+            text-align: left;
+        }
+        .company-name {
+            color: var(--primary-green);
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .company-detail {
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+        .company-detail strong {
+            color: var(--primary-green);
+        }
+
+        /* Invoice Title */
+        .invoice-title {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .invoice-title h1 {
+            color: var(--primary-green);
+            font-size: 24px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .invoice-meta {
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .invoice-serial {
+            position: absolute;
+            top: 200px;
+            right: 15mm;
+            text-align: right;
+            color: var(--primary-green);
+        }
+
+        /* Customer Info */
+        .customer-section {
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            position: relative;
+        }
+        .row {
+            display: flex;
+            margin-bottom: 5px;
+        }
+        .label {
+            width: 160px;
+            font-weight: bold;
+            color: var(--border-color);
+        }
+        .value {
+            flex: 1;
+            border-bottom: 1px dotted #ccc;
+        }
+        
+        .qr-code {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 80px;
+            height: 80px;
+            background: #eee; /* Placeholder */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #999;
+        }
+
+        /* Table */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
         th, td {
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             padding: 8px;
             text-align: left;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #f1f8e9; /* Light green bg */
+            color: var(--primary-green);
+            text-align: center;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        td {
+            vertical-align: top;
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .text-bold { font-weight: bold; }
+
+        /* Totals */
+        .totals-section {
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+        .total-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 5px;
+        }
+        .total-label {
+            width: 200px;
+            text-align: right;
+            font-weight: bold;
+            padding-right: 10px;
+            color: var(--primary-green);
+        }
+        .total-value {
+            width: 150px;
+            text-align: right;
             font-weight: bold;
         }
-        .total-section {
-            text-align: right;
-        }
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 10px;
-            color: #7f8c8d;
-            border-top: 1px solid #ddd;
+
+        .amount-words {
+            margin-top: 10px;
+            font-style: italic;
+            border-top: 1px solid var(--border-color);
             padding-top: 10px;
         }
+
+        /* Footer / Signatures */
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+        .sig-block {
+            width: 40%;
+        }
+        .sig-title {
+            font-weight: bold;
+            color: var(--primary-green);
+            text-transform: uppercase;
+        }
+        .sig-note {
+            font-style: italic;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+        .sig-space {
+            height: 80px;
+        }
+
+        /* Watermark */
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            opacity: 0.1;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .watermark img {
+            width: 400px;
+        }
+        
+        .content-layer {
+            position: relative;
+            z-index: 1;
+        }
+
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>HÓA ĐƠN BÁN HÀNG</h1>
-        <div class="company-info">
-            <p><strong>CÔNG TY TNHH WEB BAN THUOC</strong></p>
-            <p>Địa chỉ: 1 Võ Văn Ngân, Thủ Đức, TP.HCM</p>
-            <p>Hotline: 1900 1000 - Email: support@webbanthuoc.com</p>
+    <div class="container">
+        <!-- Watermark -->
+        <div class="watermark">
+             <img src="{{ logo_url }}" alt="Watermark">
         </div>
-    </div>
 
-    <div class="invoice-details">
-        <p><strong>Mã đơn hàng:</strong> #{{ order.id }}</p>
-        <p><strong>Ngày đặt:</strong> {{ order.created_at|date:"d/m/Y H:i" }}</p>
-        <p><strong>Phương thức TT:</strong> {{ order.get_payment_method_display }}</p>
-    </div>
+        <div class="content-layer">
+            <div class="header">
+                <div class="logo-section">
+                    <img src="{{ logo_url }}" alt="Logo">
+                </div>
+                <div class="company-info">
+                    <div class="company-name">CÔNG TY TNHH DƯỢC PHẨM NGỌC KIM NGÂN</div>
+                    <div class="company-detail">Mã số thuế: <strong>0319116538</strong></div>
+                    <div class="company-detail">Địa chỉ: 117/127C/27 Phan Huy Ích, KP5, Phường Tân Sơn, TP Hồ Chí Minh, Việt Nam.</div>
+                    <div class="company-detail">Số điện thoại: 096.770.5287 - Email: ngockimnganpharm@gmail.com</div>
+                    <div class="company-detail">Số tài khoản: 119116368 tại Ngân hàng TMCP Quân Đội (MBBank)</div>
+                </div>
+            </div>
 
-    <div class="customer-info">
-        <h3>Thông tin khách hàng</h3>
-        <p><strong>Họ tên:</strong> {{ order.full_name }}</p>
-        <p><strong>Số điện thoại:</strong> {{ order.phone_number }}</p>
-        <p><strong>Địa chỉ:</strong> {{ order.address }}</p>
-        {% if order.province %}, {{ order.province }}{% endif %}
-        {% if order.district %}, {{ order.district }}{% endif %}
-        {% if order.ward %}, {{ order.ward }}{% endif %}
-    </div>
+            <div class="invoice-title">
+                <h1>HÓA ĐƠN GIÁ TRỊ GIA TĂNG</h1>
+                <div class="invoice-meta">Ngày {{ order.created_at|date:"d" }} tháng {{ order.created_at|date:"m" }} năm {{ order.created_at|date:"Y" }}</div>
+                <div class="invoice-meta">Mã CQT: ______________</div>
+            </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 5%;">STT</th>
-                <th style="width: 45%;">Sản phẩm</th>
-                <th style="width: 10%;">SL</th>
-                <th style="width: 20%;">Đơn giá</th>
-                <th style="width: 20%;">Thành tiền</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in order.items.all %}
-            <tr>
-                <td style="text-align: center;">{{ forloop.counter }}</td>
-                <td>{{ item.product_name }}</td>
-                <td style="text-align: center;">{{ item.quantity }}</td>
-                <td style="text-align: right;">{{ item.price }} đ</td>
-                <td style="text-align: right;">{{ item.total_price }} đ</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            <div class="invoice-serial">
+                 <div>Ký hiệu: 1C24MYY</div>
+                 <div>Số: <strong style="color: red;">#{{ order.id }}</strong></div>
+            </div>
 
-    <div class="total-section">
-        <p>Tạm tính: <strong>{{ order.total_amount }} đ</strong></p>
-        <p>Phí vận chuyển: <strong>{{ order.shipping_fee }} đ</strong></p>
-        <p>Giảm giá: <strong>-{{ order.discount_amount }} đ</strong></p>
-        <h2 style="color: #c0392b;">TỔNG CỘNG: {{ order.final_amount }} đ</h2>
-    </div>
+            <div class="customer-section">
+                <div class="row">
+                    <div class="label">Họ tên người mua hàng:</div>
+                    <div class="value">{{ order.full_name }}</div>
+                </div>
+                <div class="row">
+                    <div class="label">Tên đơn vị:</div>
+                    <div class="value">Khách lẻ</div>
+                </div>
+                <div class="row">
+                    <div class="label">Mã số thuế:</div>
+                    <div class="value"></div>
+                </div>
+                <div class="row">
+                    <div class="label">Địa chỉ:</div>
+                    <div class="value">{{ order.address }} {% if order.ward %}, {{ order.ward }}{% endif %} {% if order.province %}, {{ order.province }}{% endif %}</div>
+                </div>
+                <div class="row">
+                    <div class="label">Hình thức thanh toán:</div>
+                    <div class="value">{{ order.get_payment_method_display }}</div>
+                </div>
+                
 
-    <div class="footer">
-        <p>Cảm ơn quý khách đã mua hàng!</p>
-        <p>Hóa đơn được tạo tự động từ hệ thống.</p>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 5%">STT</th>
+                        <th style="width: 35%">Tên hàng hóa, dịch vụ</th>
+                        <th style="width: 10%">ĐVT</th>
+                        <th style="width: 10%">Số lượng</th>
+                        <th style="width: 12%">Đơn giá</th>
+                        <th style="width: 15%">Thành tiền</th>
+                        <th style="width: 8%">Thuế</th>
+                    </tr>
+                </thead>
+                <tbody>
+                     {% for item in items %}
+                    <tr>
+                        <td class="text-center">{{ forloop.counter }}</td>
+                        <td>
+                            <span class="text-bold">{{ item.product_name }}</span>
+                            <!-- <div style="font-size: 11px; color: #666;">Số lô: - | HSD: -</div> -->
+                        </td>
+                        <td class="text-center">Hộp</td>
+                        <td class="text-center">{{ item.quantity }}</td>
+                        <td class="text-right">{{ item.price }}</td>
+                        <td class="text-right">{{ item.total_price }}</td>
+                        <td class="text-center">8%</td>
+                    </tr>
+                    {% endfor %}
+                    
+                    <!-- Row fillers if layout needs height, optional -->
+                </tbody>
+                <tfoot>
+                     <tr>
+                        <td colspan="5" class="text-right text-bold">Tổng tiền hàng:</td>
+                        <td class="text-right text-bold">{{ formatted_total }}</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="totals-section">
+                <div class="total-row">
+                     <div class="total-label">Tiền thuế GTGT (tạm tính):</div>
+                     <div class="total-value">0</div>
+                </div>
+                <div class="total-row">
+                     <div class="total-label">Tổng cộng tiền thanh toán:</div>
+                     <div class="total-value" style="font-size: 16px; color: var(--primary-green);">{{ formatted_final }} đ</div>
+                </div>
+                <div class="amount-words">
+                    Số tiền viết bằng chữ: <strong>{{ amount_in_words }}</strong>
+                </div>
+            </div>
+
+            <div class="signatures">
+                <div class="sig-block">
+                    <div class="sig-title">Người mua hàng</div>
+                    <div class="sig-note">(Ký, ghi rõ họ tên)</div>
+                    <div class="sig-space"></div>
+                    <div class="text-bold">{{ order.full_name }}</div>
+                </div>
+                <div class="sig-block">
+                    <div class="sig-title">Người bán hàng</div>
+                    <div class="sig-note">(Chữ ký điện tử, Chữ ký số)</div>
+                    <div class="sig-space">
+                        <!-- Placeholder for signature image if needed -->
+                    </div>
+                    <div class="text-bold">CÔNG TY NGỌC KIM NGÂN</div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

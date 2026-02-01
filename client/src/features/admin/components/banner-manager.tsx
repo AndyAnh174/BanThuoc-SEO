@@ -45,7 +45,7 @@ interface Banner {
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 async function fetchBanners(token: string): Promise<any> {
-  const res = await fetch(`${API_URL}/banners/`, {
+  const res = await fetch(`${API_URL}/banners/?t=${new Date().getTime()}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error('Failed to fetch banners');

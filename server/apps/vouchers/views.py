@@ -8,7 +8,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.utils import timezone
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from drf_yasg import openapi
 from decimal import Decimal
+from rest_framework import viewsets, permissions, filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 from vouchers.models import Voucher, UserVoucher
 from vouchers.serializers import (
@@ -297,3 +300,21 @@ class CalculateDiscountView(APIView):
         result.pop('voucher', None)
         
         return Response(result)
+
+
+class AdminVoucherViewSet(viewsets.ModelViewSet):
+    """
+    Admin ViewSet for managing vouchers.
+    
+    CRUD for Vouchers.
+    """
+    queryset = Voucher.objects.all()
+    serializer_class = VoucherSerializer
+    permission_classes = [permissions.IsAuthenticated] # Should be IsAdminUser eventually
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['status', 'discount_type']
+    search_fields = ['code', 'name']
+    ordering_fields = ['created_at', 'end_date', 'usage_count']
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)

@@ -8,9 +8,9 @@ export const checkoutSchema = z.object({
   phoneNumber: z.string().regex(/^(0|\+84)[0-9]{9}$/, 'Số điện thoại không hợp lệ'),
   
   // Address (Required if shipping)
-  city: z.string().optional(),
-  ward: z.string().optional(),
-  streetAddress: z.string().optional(),
+  city: z.string().default(''),
+  ward: z.string().default(''),
+  streetAddress: z.string().default(''),
   
   // Note
   orderNote: z.string().optional(),

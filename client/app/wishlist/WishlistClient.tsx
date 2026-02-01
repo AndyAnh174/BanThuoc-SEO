@@ -83,9 +83,9 @@ export function WishlistClient() {
                     slug={product.slug}
                     price={product.price}
                     salePrice={product.salePrice}
-                    imageUrl={product.imageUrl}
-                    category={product.category}
-                    manufacturer={product.manufacturer}
+                    imageUrl={product.imageUrl || undefined}
+                    category={product.category || undefined}
+                    manufacturer={product.manufacturer || undefined}
                     unit={product.unit}
                     stockQuantity={product.stockQuantity}
                     requiresPrescription={product.requiresPrescription}

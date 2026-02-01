@@ -39,7 +39,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
         const fetchOrder = async () => {
             try {
                 const response = await getOrder(orderId);
-                setOrder(response);
+                setOrder(response.data);
             } catch (error) {
                 toast.error("Không thể tải thông tin đơn hàng");
                 router.push("/admin/orders");
