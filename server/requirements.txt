@@ -35,3 +35,4 @@ django-elasticsearch-dsl==8.0
 elasticsearch-dsl==8.18.0
 elasticsearch==8.19.3
 django-filter==25.1
+django-prometheus>=2.3.1

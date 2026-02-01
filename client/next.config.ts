@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   images: {
     // Temporarily use unoptimized to debug MinIO image loading
     unoptimized: true,

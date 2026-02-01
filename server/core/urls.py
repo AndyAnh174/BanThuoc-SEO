@@ -54,5 +54,6 @@ urlpatterns = [
     path('api/files/', include('files.urls')),
     path('api/cart/', include('cart.urls')),
     path('api/', include('orders.urls')),
+    path('', include('django_prometheus.urls')),
 ]
 

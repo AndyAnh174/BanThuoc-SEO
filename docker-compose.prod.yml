@@ -6,21 +6,24 @@ services:
     image: postgres:15-alpine
     restart: always
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-banthuoc}
-    ports:
-      - "5432:5432"
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    # In production, we might not want to expose DB port globally, 
+    # but for simplicity if external tools need it (with firewall), we keep it. 
+    # Or comment out for security.
+    # ports:
+    #   - "5432:5432"
 
   minio:
     image: minio/minio
     restart: always
     command: server /data --console-address ":9001"
     environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -31,18 +34,19 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    command: gunicorn --bind 0.0.0.0:8000 core.wsgi:application
-    ports:
-      - "8000:8000"
+    command: gunicorn --bind 0.0.0.0:8000 --workers 3 core.wsgi:application
+    restart: always
     volumes:
-      - ./server:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
     environment:
-      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-banthuoc}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
       - REDIS_HOST=redis
       - DJANGO_DEBUG=0
-      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,backend
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
     depends_on:
       - db
       - redis
@@ -52,37 +56,33 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
+    restart: always
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
-      # In browser, localhost works. Server-side, might need internal name?
-      # Actually for server-side rendering fetch, we can just use the public one if DNS allows,
-      # but ideally 'http://backend:8000/api' for internal.
-      # However Next.js dual env for API URL is tricky.
-      # Let's keep public URL for now.
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NODE_ENV=production
     depends_on:
       - backend
 
   nginx:
     image: nginx:alpine
+    restart: always
     ports:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./server/static:/app/static
-      - ./server/media:/app/media
+      - static_volume:/app/static
+      - media_volume:/app/media
     depends_on:
       - backend
       - frontend
 
   redis:
     image: redis:alpine
-    ports:
-      - "6379:6379"
+    restart: always
 
   prometheus:
     image: prom/prometheus
+    restart: always
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
@@ -93,3 +93,5 @@ services:
 volumes:
   postgres_data:
   minio_data:
+  static_volume:
+  media_volume:
