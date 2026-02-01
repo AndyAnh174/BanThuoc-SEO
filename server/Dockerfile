@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -13,6 +13,7 @@ WORKDIR /app
 # but we used psycopg2-binary so we might be fine. Installing basics just in case.
 RUN apt-get update && apt-get install -y \
     netcat-openbsd \
+    dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
 # Install python dependencies
@@ -25,6 +26,7 @@ COPY . /app/
 # Copy entrypoint and start scripts and make them executable
 COPY entrypoint.sh /app/
 COPY start.sh /app/
+RUN dos2unix /app/entrypoint.sh /app/start.sh
 RUN chmod +x /app/entrypoint.sh /app/start.sh
 
 # Run entrypoint.sh
