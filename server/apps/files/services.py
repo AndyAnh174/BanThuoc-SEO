@@ -49,7 +49,10 @@ class MinioService:
         # Return URL
         # We need to construct the URL manually because client.presigned_get_object is for private objects
         # For public objects: http://localhost:9000/bucket-name/filename
-        protocol = "http" # or https if configured
-        # Use settings.MINIO_ENDPOINT which includes protocol
-        base_url = settings.MINIO_ENDPOINT
+        # Use settings.MINIO_PUBLIC_ENDPOINT which includes protocol and potentially external domain
+        base_url = settings.MINIO_PUBLIC_ENDPOINT
+        # Ensure no double slashes if base_url ends with /
+        if base_url.endswith('/'):
+            base_url = base_url[:-1]
+            
         return f"{base_url}/{self.bucket_name}/{filename}"

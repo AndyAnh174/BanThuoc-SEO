@@ -2,8 +2,6 @@
 
 import React from 'react';
 import { Slider } from '@/components/ui/slider';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
 import { PriceRange } from './filter.types';
 
 interface PriceFilterProps {
@@ -25,12 +23,11 @@ export function PriceFilter({ priceRange, maxPrice, onPriceChange }: PriceFilter
   };
 
   return (
-    <Collapsible defaultOpen className="space-y-2">
-      <CollapsibleTrigger className="flex items-center justify-between w-full py-2 border-b">
+    <div className="space-y-2">
+      <div className="flex items-center justify-between w-full py-2 border-b">
         <h3 className="font-medium text-sm text-gray-900">Khoảng giá</h3>
-        <ChevronDown className="w-4 h-4 text-gray-500" />
-      </CollapsibleTrigger>
-      <CollapsibleContent className="pt-4 px-1">
+      </div>
+      <div className="pt-4 px-1">
         <Slider
           value={[priceRange.min, priceRange.max]}
           onValueChange={handleChange}
@@ -43,8 +40,8 @@ export function PriceFilter({ priceRange, maxPrice, onPriceChange }: PriceFilter
           <span className="text-gray-600">{formatPrice(priceRange.min)}</span>
           <span className="text-gray-600">{formatPrice(priceRange.max)}</span>
         </div>
-      </CollapsibleContent>
-    </Collapsible>
+      </div>
+    </div>
   );
 }
 

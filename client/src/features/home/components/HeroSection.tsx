@@ -157,7 +157,7 @@ export function HeroSection() {
         </div>
 
         {/* Right: Info Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-1 gap-4 h-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 h-full">
           {/* Card 1 */}
           <div className="bg-white rounded-2xl p-5 border border-green-50 shadow-sm hover:shadow-md transition-all duration-300 group">
             <div className="flex items-start gap-4">

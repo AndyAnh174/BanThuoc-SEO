@@ -4,7 +4,6 @@ import React, { useState, useMemo } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronRight, Search, X } from 'lucide-react';
 import { Category } from './filter.types';
 
@@ -105,12 +104,11 @@ export function CategoryFilter({
   };
 
   return (
-    <Collapsible defaultOpen className="space-y-2">
-      <CollapsibleTrigger className="flex items-center justify-between w-full py-2 border-b">
+    <div className="space-y-2">
+      <div className="flex items-center justify-between w-full py-2 border-b">
         <h3 className="font-medium text-sm text-gray-900">Danh mục</h3>
-        <ChevronDown className="w-4 h-4 text-gray-500" />
-      </CollapsibleTrigger>
-      <CollapsibleContent className="space-y-2">
+      </div>
+      <div className="space-y-2">
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -135,8 +133,8 @@ export function CategoryFilter({
         <div className="max-h-64 overflow-y-auto space-y-1 pr-1">
           {filteredCategories.map((category) => renderCategory(category))}
         </div>
-      </CollapsibleContent>
-    </Collapsible>
+      </div>
+    </div>
   );
 }
 

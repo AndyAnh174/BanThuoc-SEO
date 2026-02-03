@@ -24,10 +24,19 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . /app/
 
 # Copy entrypoint and start scripts and make them executable
+# Copy entrypoint and start scripts and make them executable
 COPY entrypoint.sh /app/
 COPY start.sh /app/
 RUN dos2unix /app/entrypoint.sh /app/start.sh
 RUN chmod +x /app/entrypoint.sh /app/start.sh
+
+# Create static and media directories and set permissions for non-root user
+RUN mkdir -p /app/staticfiles /app/media && \
+    adduser --disabled-password --gecos '' django_user && \
+    chown -R django_user:django_user /app
+
+# Switch to non-root user
+USER django_user
 
 # Run entrypoint.sh
 ENTRYPOINT ["/app/entrypoint.sh"]

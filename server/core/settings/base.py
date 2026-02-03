@@ -74,17 +74,19 @@ MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
-CORS_ALLOWED_ORIGINS = [
+CORS_ALLOWED_ORIGINS = env.list("DJANGO_CORS_ALLOWED_ORIGINS", default=[
     "http://localhost:3000",
     "http://localhost",
     "http://127.0.0.1",
-]
+])
+CORS_ALLOW_ALL_ORIGINS = env.bool("DJANGO_CORS_ALLOW_ALL_ORIGINS", default=True)
+CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = [
+CSRF_TRUSTED_ORIGINS = env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=[
     "http://localhost:3000",
     "http://localhost",
     "http://127.0.0.1",
-]
+])
 
 ROOT_URLCONF = "core.urls"
 
@@ -185,6 +187,8 @@ MINIO_ENDPOINT = env("MINIO_ENDPOINT", default="http://localhost:9000")
 MINIO_ACCESS_KEY = env("MINIO_ROOT_USER", default="minioadmin")
 MINIO_SECRET_KEY = env("MINIO_ROOT_PASSWORD", default="minioadmin")
 MINIO_BUCKET_NAME = env("MINIO_BUCKET_NAME", default="banthuoc-media")
+MINIO_PUBLIC_ENDPOINT = env("MINIO_PUBLIC_ENDPOINT", default=MINIO_ENDPOINT)
+
 
 # Frontend URL
 NEXT_PUBLIC_FRONTEND_URL = env("NEXT_PUBLIC_FRONTEND_URL", default="http://localhost:3000")

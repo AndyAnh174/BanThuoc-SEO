@@ -260,7 +260,7 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                                 <ChevronDown className={`w-3.5 h-3.5 ml-2 transition-transform duration-300 ${isCategoryMenuOpen ? 'rotate-180' : ''}`} />
                             </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="w-[1200px] p-0 rounded-2xl shadow-2xl border-gray-100 flex items-start min-h-[450px] overflow-hidden mt-3 animate-in fade-in-0 zoom-in-95" sideOffset={8}>
+                            <DropdownMenuContent align="start" className="w-[90vw] max-w-[1200px] p-0 rounded-2xl shadow-2xl border-gray-100 flex items-start min-h-[450px] overflow-hidden mt-3 animate-in fade-in-0 zoom-in-95" sideOffset={8}>
                              {/* Left Side: Category List */}
                              <div className="w-[300px] border-r border-gray-100 bg-gray-50/80 backdrop-blur-sm py-3 shrink-0 h-full flex flex-col gap-1">
                                 <Link 

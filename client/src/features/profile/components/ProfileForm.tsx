@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { AvatarUpload } from "./AvatarUpload";
-import { getProfile, updateProfile, changePassword } from "../api/profile.api";
+import { getProfile, updateProfile, changePassword, getPointHistory } from "../api/profile.api";
 import { UserProfile } from "../types/profile.types";
 
 export function ProfileForm() {
@@ -189,20 +189,20 @@ export function ProfileForm() {
 
             {/* Tabs */}
             <Tabs defaultValue="personal" className="w-full">
-                <TabsList className="grid w-full grid-cols-4 mb-4">
-                    <TabsTrigger value="personal" className="flex items-center gap-2">
+                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-4 h-auto">
+                    <TabsTrigger value="personal" className="flex items-center gap-2 py-2">
                         <User className="w-4 h-4" />
                         Cá nhân
                     </TabsTrigger>
-                    <TabsTrigger value="business" className="flex items-center gap-2">
+                    <TabsTrigger value="business" className="flex items-center gap-2 py-2">
                         <Building2 className="w-4 h-4" />
                         Doanh nghiệp
                     </TabsTrigger>
-                    <TabsTrigger value="password" className="flex items-center gap-2">
+                    <TabsTrigger value="password" className="flex items-center gap-2 py-2">
                         <Lock className="w-4 h-4" />
                         Đổi mật khẩu
                     </TabsTrigger>
-                    <TabsTrigger value="loyalty" className="flex items-center gap-2">
+                    <TabsTrigger value="loyalty" className="flex items-center gap-2 py-2">
                         <Receipt className="w-4 h-4" />
                         Điểm thưởng
                     </TabsTrigger>
@@ -489,8 +489,6 @@ function LoyaltyHistory() {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                // Dynamic import to avoid circular dependency if needed, or just standard import
-                const { getPointHistory } = await import("../api/profile.api");
                 const data = await getPointHistory();
                 setLogs(data);
             } catch (error) {
