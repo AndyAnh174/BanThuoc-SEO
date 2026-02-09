@@ -70,6 +70,9 @@ export interface CategoryListResponse {
   next: string | null;
   previous: string | null;
   results: Category[];
+  active_count?: number;
+  inactive_count?: number;
+  root_count?: number;
 }
 
 export interface CategoryTreeResponse {

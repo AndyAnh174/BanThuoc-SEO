@@ -41,25 +41,25 @@ export const getFeaturedProducts = async () => {
   // API might return list directly or paginated
   // If list:
   if (Array.isArray(res.data)) {
-      return { ...res, data: res.data.map(transformProduct) };
+    return { ...res, data: res.data.map(transformProduct) };
   }
   return { ...res, data: transformProductList(res.data) };
 };
 
 export const getOnSaleProducts = async () => {
-    const res = await api.get('/products/on-sale/');
-    if (Array.isArray(res.data)) {
-        return { ...res, data: res.data.map(transformProduct) };
-    }
-    return { ...res, data: transformProductList(res.data) };
+  const res = await api.get('/products/on-sale/');
+  if (Array.isArray(res.data)) {
+    return { ...res, data: res.data.map(transformProduct) };
+  }
+  return { ...res, data: transformProductList(res.data) };
 };
 
 export const getNewProducts = async () => {
-    const res = await api.get('/products/new/');
-    if (Array.isArray(res.data)) {
-        return { ...res, data: res.data.map(transformProduct) };
-    }
-    return { ...res, data: transformProductList(res.data) };
+  const res = await api.get('/products/new/');
+  if (Array.isArray(res.data)) {
+    return { ...res, data: res.data.map(transformProduct) };
+  }
+  return { ...res, data: transformProductList(res.data) };
 };
 
 export const searchProducts = async (query: string, params?: ProductListParams) => {
@@ -114,6 +114,48 @@ export const toggleFavorite = async (productId: string) => {
 export const getFavorites = async (params?: ProductListParams) => {
   const res = await api.get('/products/favorites/', { params });
   return { ...res, data: transformProductList(res.data) };
+};
+
+export const getAdminProducts = async (params?: ProductListParams) => {
+  const res = await api.get('/admin/products/', { params });
+  return { ...res, data: transformProductList(res.data) };
+};
+
+export const createProduct = async (data: any) => {
+  return api.post('/admin/products/', data);
+};
+
+export const updateProduct = async (id: string, data: any) => {
+  return api.patch(`/admin/products/${id}/`, data);
+};
+
+export const deleteProduct = async (id: string) => {
+  return api.delete(`/admin/products/${id}/`);
+};
+
+export const productsApi = {
+  getProducts,
+  getProduct,
+  getFeaturedProducts,
+  getOnSaleProducts,
+  getNewProducts,
+  searchProducts,
+  getSuggestions,
+  getCategories,
+  getCategory,
+  getManufacturers,
+  getManufacturer,
+  getCurrentFlashSale,
+  getFlashSaleSessions,
+  getFlashSaleSession,
+  checkProductFlashSale,
+  toggleFavorite,
+  getFavorites,
+  // Admin
+  getAdminProducts,
+  createProduct,
+  updateProduct,
+  deleteProduct,
 };
 
 export default api;

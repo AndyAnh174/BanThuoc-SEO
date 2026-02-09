@@ -9,15 +9,15 @@ export const registerSchema = z.object({
     .min(10, "Số điện thoại không hợp lệ")
     .regex(/(84|0[3|5|7|8|9])+([0-9]{8})\b/, "Số điện thoại Việt Nam không hợp lệ"),
   email: z.string().email("Email không hợp lệ"),
-  password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
-  confirmPassword: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
-  
+  password: z.string().min(8, "Mật khẩu phải có ít nhất 8 ký tự"),
+  confirmPassword: z.string().min(8, "Mật khẩu phải có ít nhất 8 ký tự"),
+
   // Business Info
   businessName: z.string().min(1, "Vui lòng nhập tên nhà thuốc/doanh nghiệp"),
   licenseNumber: z.string().min(1, "Vui lòng nhập số giấy phép kinh doanh"),
   taxId: z.string().min(1, "Vui lòng nhập mã số thuế"),
   address: z.string().min(1, "Vui lòng nhập địa chỉ kinh doanh"),
-  
+
   // File Validation
   licenseFile: z
     .instanceof(File, { message: "Vui lòng tải lên giấy phép kinh doanh" })

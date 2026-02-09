@@ -1,42 +1,26 @@
-import axios from 'axios';
+import { http } from '@/lib/http';
 import { UserProfile, UserProfileUpdateData, RewardPointLog } from '../types/profile.types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
-const getAuthHeader = () => {
-    if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-            return { Authorization: `Bearer ${token}` };
-        }
-    }
-    return {};
-};
-
 export const getProfile = async (): Promise<UserProfile> => {
-    const response = await axios.get<UserProfile>(`${API_URL}/api/me/`, {
-        headers: getAuthHeader()
-    });
+    const response = await http.get<UserProfile>('/me/');
     return response.data;
 };
 
 export const updateProfile = async (data: UserProfileUpdateData): Promise<UserProfile> => {
-    const response = await axios.patch<UserProfile>(`${API_URL}/api/me/update/`, data, {
-        headers: getAuthHeader()
-    });
+    const response = await http.patch<UserProfile>('/me/update/', data);
     return response.data;
 };
 
 export const uploadAvatar = async (file: File): Promise<{ avatar: string; message: string }> => {
     const formData = new FormData();
     formData.append('file', file);
-    
-    const response = await axios.post<{ avatar: string; message: string }>(
-        `${API_URL}/api/me/avatar/`,
+
+    // Auth header is handled by http interceptor
+    const response = await http.post<{ avatar: string; message: string }>(
+        '/me/avatar/',
         formData,
         {
             headers: {
-                ...getAuthHeader(),
                 'Content-Type': 'multipart/form-data'
             }
         }
@@ -51,17 +35,14 @@ export interface ChangePasswordData {
 }
 
 export const changePassword = async (data: ChangePasswordData): Promise<{ message: string }> => {
-    const response = await axios.post<{ message: string }>(
-        `${API_URL}/api/me/change-password/`,
-        data,
-        { headers: getAuthHeader() }
+    const response = await http.post<{ message: string }>(
+        '/me/change-password/',
+        data
     );
     return response.data;
 };
 
 export const getPointHistory = async (): Promise<RewardPointLog[]> => {
-    const response = await axios.get<RewardPointLog[]>(`${API_URL}/api/me/points/`, {
-        headers: getAuthHeader()
-    });
+    const response = await http.get<RewardPointLog[]>('/me/points/');
     return response.data;
 };

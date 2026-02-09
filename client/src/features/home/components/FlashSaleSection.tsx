@@ -64,8 +64,45 @@ export function FlashSaleSection() {
     const fetchFlashSale = async () => {
       try {
         const response = await getCurrentFlashSale();
-        if (response.data) {
-          setFlashSale(response.data);
+        const data = response.data;
+
+        // Get the current session (or upcoming if no current)
+        const session = data.current_session || data.upcoming_session;
+
+        if (session && data.featured_items && data.featured_items.length > 0) {
+          // Transform the API response to match the expected FlashSaleData format
+          const transformedData: FlashSaleData = {
+            id: session.id,
+            name: session.name,
+            slug: session.slug,
+            startTime: session.start_time,
+            endTime: session.end_time,
+            status: session.status,
+            items: data.featured_items.map((item: any) => ({
+              id: item.id,
+              product: {
+                id: item.product.id,
+                name: item.product.name,
+                slug: item.product.slug,
+                price: parseFloat(item.product.price) || 0,
+                salePrice: item.product.sale_price ? parseFloat(item.product.sale_price) : null,
+                imageUrl: item.product.primary_image?.image_url || null,
+                category: item.product.category ? {
+                  name: item.product.category.name,
+                  slug: item.product.category.slug,
+                } : null,
+                manufacturer: item.product.manufacturer ? {
+                  name: item.product.manufacturer.name,
+                } : null,
+                unit: item.product.unit || '',
+                stockQuantity: item.remaining_quantity || 0,
+              },
+              flashSalePrice: parseFloat(item.flash_sale_price) || 0,
+              quantity: item.total_quantity || 0,
+              soldQuantity: item.sold_quantity || 0,
+            })),
+          };
+          setFlashSale(transformedData);
         }
       } catch (error) {
         console.error('Failed to fetch flash sale:', error);
@@ -167,8 +204,8 @@ export function FlashSaleSection() {
         {/* Products grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {flashSale.items.slice(0, 5).map((item) => {
-            const soldPercentage = item.quantity > 0 
-              ? Math.round((item.soldQuantity / item.quantity) * 100) 
+            const soldPercentage = item.quantity > 0
+              ? Math.round((item.soldQuantity / item.quantity) * 100)
               : 0;
             const remainingQuantity = item.quantity - item.soldQuantity;
 

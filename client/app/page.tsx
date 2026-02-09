@@ -10,15 +10,14 @@ export default function Home() {
       {/* Product Categories */}
       <CategoryShowcase />
 
+      {/* Flash Sale - placed right after categories */}
+      <FlashSaleSection />
+
       {/* Featured Products */}
       <FeaturedProducts />
 
       {/* New Products (added within 30 days) */}
       <NewProductsSection />
-
-      {/* Flash Sale */}
-      <FlashSaleSection />
-
 
     </MainLayout>
   );

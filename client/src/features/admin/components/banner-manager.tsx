@@ -184,7 +184,7 @@ export function BannerManager({ token }: BannerManagerProps) {
   async function handleSave() {
     try {
       setSaving(true);
-      
+
       // Convert local datetime input back to UTC ISO string for API
       const payload = {
         ...formData,
@@ -319,10 +319,20 @@ export function BannerManager({ token }: BannerManagerProps) {
                           <Eye className="w-3 h-3 mr-1" />
                           Hiển thị
                         </Badge>
+                      ) : banner.is_active ? (
+                        // is_active = true but is_visible = false means date restriction
+                        <Badge variant="outline" className="text-orange-600 border-orange-300">
+                          <EyeOff className="w-3 h-3 mr-1" />
+                          {banner.start_date && new Date(banner.start_date) > new Date()
+                            ? 'Chờ bắt đầu'
+                            : banner.end_date && new Date(banner.end_date) < new Date()
+                              ? 'Đã hết hạn'
+                              : 'Ẩn'}
+                        </Badge>
                       ) : (
                         <Badge variant="secondary">
                           <EyeOff className="w-3 h-3 mr-1" />
-                          Ẩn
+                          Tắt
                         </Badge>
                       )}
                     </div>

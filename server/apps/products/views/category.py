@@ -101,6 +101,17 @@ class CategoryListCreateView(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        
+        # Add extra stats to response
+        # Note: These are total counts in the database, ignoring pagination and filters
+        response.data['active_count'] = Category.objects.filter(is_active=True).count()
+        response.data['inactive_count'] = Category.objects.filter(is_active=False).count()
+        response.data['root_count'] = Category.objects.filter(parent__isnull=True).count()
+        
+        return response
+
 
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     """

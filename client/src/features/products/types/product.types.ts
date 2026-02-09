@@ -77,15 +77,15 @@ export const productSchema = z.object({
   slug: z.string(),
   description: z.string().optional(),
   shortDescription: z.string().optional(),
-  
+
   // Pricing
   price: z.number().positive(),
   salePrice: z.number().positive().optional().nullable(),
-  
+
   // Relationships
   category: categorySchema.optional(),
   manufacturer: manufacturerSchema.optional(),
-  
+
   // Product details
   productType: productTypeEnum,
   ingredients: z.string().optional(),
@@ -94,34 +94,34 @@ export const productSchema = z.object({
   contraindications: z.string().optional(),
   sideEffects: z.string().optional(),
   storage: z.string().optional(),
-  
+
   // Packaging
   unit: z.string().default('Hộp'),
   quantityPerUnit: z.string().optional(),
-  
+
   // Inventory
   stockQuantity: z.number().int().min(0),
   lowStockThreshold: z.number().int().min(0).default(10),
-  
+
   // Status
   status: productStatusEnum,
   requiresPrescription: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
-  
+
   // Ratings & Social
   rating: z.number().optional(),
   reviewCount: z.number().optional(),
   isLiked: z.boolean().optional(),
   likesCount: z.number().optional(),
-  
+
   // SEO
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
-  
+
   // Images
   images: z.array(productImageSchema).optional(),
   imageUrl: z.string().optional().nullable(), // For transformer result
-  
+
   // Timestamps
   createdAt: z.string().datetime().optional(),
   updatedAt: z.string().datetime().optional(),
@@ -221,3 +221,7 @@ export const searchResponseSchema = z.object({
 });
 
 export type SearchResponse = z.infer<typeof searchResponseSchema>;
+
+// Input types for mutations
+export type ProductCreateInput = Record<string, any>;
+export type ProductUpdateInput = Record<string, any>;

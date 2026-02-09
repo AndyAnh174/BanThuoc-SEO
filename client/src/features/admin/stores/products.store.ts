@@ -3,7 +3,7 @@
  */
 import { create } from 'zustand';
 import { toast } from 'sonner';
-import { productsApi } from '../api/products.api';
+import { productsApi } from '@/src/features/products/api/products.api';
 import type {
   Product,
   ProductListParams,
@@ -15,33 +15,33 @@ interface ProductsState {
   // Data
   products: Product[];
   selectedProduct: Product | null;
-  
+
   // Pagination
   totalCount: number;
   currentPage: number;
   pageSize: number;
-  
+
   // Filters
   searchTerm: string;
   categoryFilter: string | undefined;
   statusFilter: string | undefined;
-  
+
   // Loading states
   isLoading: boolean;
   isCreating: boolean;
   isUpdating: boolean;
   isDeleting: boolean;
-  
+
   // UI state
   isModalOpen: boolean;
   modalMode: 'create' | 'edit';
-  
+
   // Actions
   fetchProducts: (params?: ProductListParams) => Promise<void>;
   createProduct: (data: ProductCreateInput) => Promise<boolean>;
   updateProduct: (id: string, data: ProductUpdateInput) => Promise<boolean>;
   deleteProduct: (id: string) => Promise<boolean>;
-  
+
   // UI actions
   setSelectedProduct: (product: Product | null) => void;
   openCreateModal: () => void;
@@ -74,7 +74,7 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
     set({ isLoading: true });
     try {
       const { currentPage, pageSize, searchTerm, categoryFilter, statusFilter } = get();
-      
+
       const queryParams: ProductListParams = {
         page: params?.page ?? currentPage,
         page_size: params?.page_size ?? pageSize,
@@ -84,11 +84,11 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
         ...params,
       };
 
-      const response = await productsApi.getProducts(queryParams);
-      
+      const response = await productsApi.getAdminProducts(queryParams);
+
       set({
-        products: response.results,
-        totalCount: response.count,
+        products: response.data.results,
+        totalCount: response.data.count,
         isLoading: false,
       });
     } catch (error: any) {
@@ -132,9 +132,9 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
         if (typeof error.response.data.detail === 'string') {
           message = error.response.data.detail;
         } else if (typeof error.response.data === 'object') {
-             message = Object.entries(error.response.data)
-               .map(([k, v]: any) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
-               .join('\n');
+          message = Object.entries(error.response.data)
+            .map(([k, v]: any) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
+            .join('\n');
         }
       }
       toast.error(message);
@@ -163,35 +163,35 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
 
   // UI actions
   setSelectedProduct: (product) => set({ selectedProduct: product }),
-  
-  openCreateModal: () => set({ 
-    isModalOpen: true, 
-    modalMode: 'create', 
-    selectedProduct: null 
+
+  openCreateModal: () => set({
+    isModalOpen: true,
+    modalMode: 'create',
+    selectedProduct: null
   }),
-  
-  openEditModal: (product) => set({ 
-    isModalOpen: true, 
-    modalMode: 'edit', 
-    selectedProduct: product 
+
+  openEditModal: (product) => set({
+    isModalOpen: true,
+    modalMode: 'edit',
+    selectedProduct: product
   }),
-  
-  closeModal: () => set({ 
-    isModalOpen: false, 
-    selectedProduct: null 
+
+  closeModal: () => set({
+    isModalOpen: false,
+    selectedProduct: null
   }),
-  
+
   setPage: (page) => {
     set({ currentPage: page });
     const { pageSize } = get();
     get().fetchProducts({ page, page_size: pageSize });
   },
-  
+
   setPageSize: (size) => {
     set({ pageSize: size, currentPage: 1 });
     get().fetchProducts({ page: 1, page_size: size });
   },
-  
+
   setFilters: (filters) => {
     set((state) => ({ ...state, ...filters, currentPage: 1 }));
     get().fetchProducts({ page: 1 });

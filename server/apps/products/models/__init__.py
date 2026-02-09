@@ -8,6 +8,7 @@ from products.models.product import Product, ProductImage
 from products.models.flash_sale import FlashSaleSession, FlashSaleItem
 from products.models.banner import Banner
 from products.models.favorite import Favorite
+from products.models.product_type import ProductType
 
 
 __all__ = [
@@ -19,5 +20,6 @@ __all__ = [
     'FlashSaleItem',
     'Banner',
     'Favorite',
+    'ProductType',
 ]
 

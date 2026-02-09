@@ -33,7 +33,7 @@ RUN chmod +x /app/entrypoint.sh /app/start.sh
 # Create static and media directories and set permissions for non-root user
 RUN mkdir -p /app/staticfiles /app/media && \
     adduser --disabled-password --gecos '' django_user && \
-    chown -R django_user:django_user /app
+    chown -R django_user:django_user /app/staticfiles /app/media
 
 # Switch to non-root user
 USER django_user

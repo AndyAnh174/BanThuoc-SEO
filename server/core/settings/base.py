@@ -141,12 +141,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {
+            "min_length": 8,
+        }
     },
     {
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
+    # Custom Strict Validator
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME": "users.validators.ComplexPasswordValidator",
     },
 ]
 
@@ -154,7 +158,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "vi"
 
 TIME_ZONE = "UTC"
 
@@ -187,7 +191,11 @@ MINIO_ENDPOINT = env("MINIO_ENDPOINT", default="http://localhost:9000")
 MINIO_ACCESS_KEY = env("MINIO_ROOT_USER", default="minioadmin")
 MINIO_SECRET_KEY = env("MINIO_ROOT_PASSWORD", default="minioadmin")
 MINIO_BUCKET_NAME = env("MINIO_BUCKET_NAME", default="banthuoc-media")
-MINIO_PUBLIC_ENDPOINT = env("MINIO_PUBLIC_ENDPOINT", default=MINIO_ENDPOINT)
+
+# User migrating to dedicated domain: miniobanthuoc.andyanh.id.vn
+MINIO_PUBLIC_ENDPOINT = env("MINIO_PUBLIC_ENDPOINT", default="https://miniobanthuoc.andyanh.id.vn")
+
+
 
 
 # Frontend URL
@@ -250,6 +258,7 @@ ELASTICSEARCH_DSL = {
         ) if env('ELASTICSEARCH_USER', default='') else None,
     },
 }
+ELASTICSEARCH_DSL_AUTOSYNC = False
 
 # Elasticsearch index settings
 ELASTICSEARCH_INDEX_SETTINGS = {
@@ -257,3 +266,24 @@ ELASTICSEARCH_INDEX_SETTINGS = {
     'number_of_replicas': 0,
 }
 
+# Logging Configuration to Console
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

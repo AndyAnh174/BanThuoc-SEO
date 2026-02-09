@@ -17,22 +17,25 @@ interface CategoriesState {
   categories: Category[];
   categoryTree: CategoryTree[];
   selectedCategory: Category | null;
-  
-  // Pagination
+
+  // Pagination & Stats
   totalCount: number;
+  totalActiveCount: number;
+  totalInactiveCount: number;
+  totalRootCount: number;
   currentPage: number;
   pageSize: number;
-  
+
   // Loading states
   isLoading: boolean;
   isCreating: boolean;
   isUpdating: boolean;
   isDeleting: boolean;
-  
+
   // UI state
   isModalOpen: boolean;
   modalMode: 'create' | 'edit';
-  
+
   // Actions
   fetchCategories: (params?: CategoryListParams) => Promise<void>;
   fetchCategoryTree: (activeOnly?: boolean) => Promise<void>;
@@ -40,7 +43,7 @@ interface CategoriesState {
   updateCategory: (slug: string, data: CategoryUpdateInput) => Promise<boolean>;
   deleteCategory: (slug: string) => Promise<boolean>;
   moveCategory: (id: string, newParentId: string | null) => Promise<boolean>;
-  
+
   // UI actions
   setSelectedCategory: (category: Category | null) => void;
   openCreateModal: () => void;
@@ -56,6 +59,9 @@ export const useCategoriesStore = create<CategoriesState>((set, get) => ({
   categoryTree: [],
   selectedCategory: null,
   totalCount: 0,
+  totalActiveCount: 0,
+  totalInactiveCount: 0,
+  totalRootCount: 0,
   currentPage: 1,
   pageSize: 10,
   isLoading: false,
@@ -78,6 +84,9 @@ export const useCategoriesStore = create<CategoriesState>((set, get) => ({
       set({
         categories: response.results,
         totalCount: response.count,
+        totalActiveCount: response.active_count ?? 0,
+        totalInactiveCount: response.inactive_count ?? 0,
+        totalRootCount: response.root_count ?? 0,
         isLoading: false,
       });
     } catch (error: any) {
@@ -110,9 +119,9 @@ export const useCategoriesStore = create<CategoriesState>((set, get) => ({
       return true;
     } catch (error: any) {
       console.error('Error creating category:', error);
-      const message = error.response?.data?.name?.[0] || 
-                      error.response?.data?.detail ||
-                      'Không thể tạo danh mục';
+      const message = error.response?.data?.name?.[0] ||
+        error.response?.data?.detail ||
+        'Không thể tạo danh mục';
       toast.error(message);
       set({ isCreating: false });
       return false;
@@ -131,9 +140,9 @@ export const useCategoriesStore = create<CategoriesState>((set, get) => ({
       return true;
     } catch (error: any) {
       console.error('Error updating category:', error);
-      const message = error.response?.data?.name?.[0] || 
-                      error.response?.data?.detail ||
-                      'Không thể cập nhật danh mục';
+      const message = error.response?.data?.name?.[0] ||
+        error.response?.data?.detail ||
+        'Không thể cập nhật danh mục';
       toast.error(message);
       set({ isUpdating: false });
       return false;
@@ -152,9 +161,9 @@ export const useCategoriesStore = create<CategoriesState>((set, get) => ({
       return true;
     } catch (error: any) {
       console.error('Error deleting category:', error);
-      const message = error.response?.data?.error || 
-                      error.response?.data?.detail ||
-                      'Không thể xóa danh mục';
+      const message = error.response?.data?.error ||
+        error.response?.data?.detail ||
+        'Không thể xóa danh mục';
       toast.error(message);
       set({ isDeleting: false });
       return false;
@@ -179,30 +188,30 @@ export const useCategoriesStore = create<CategoriesState>((set, get) => ({
 
   // UI actions
   setSelectedCategory: (category) => set({ selectedCategory: category }),
-  
-  openCreateModal: () => set({ 
-    isModalOpen: true, 
-    modalMode: 'create', 
-    selectedCategory: null 
+
+  openCreateModal: () => set({
+    isModalOpen: true,
+    modalMode: 'create',
+    selectedCategory: null
   }),
-  
-  openEditModal: (category) => set({ 
-    isModalOpen: true, 
-    modalMode: 'edit', 
-    selectedCategory: category 
+
+  openEditModal: (category) => set({
+    isModalOpen: true,
+    modalMode: 'edit',
+    selectedCategory: category
   }),
-  
-  closeModal: () => set({ 
-    isModalOpen: false, 
-    selectedCategory: null 
+
+  closeModal: () => set({
+    isModalOpen: false,
+    selectedCategory: null
   }),
-  
+
   setPage: (page) => {
     set({ currentPage: page });
     const { pageSize } = get();
     get().fetchCategories({ page, page_size: pageSize });
   },
-  
+
   setPageSize: (size) => {
     set({ pageSize: size, currentPage: 1 });
     get().fetchCategories({ page: 1, page_size: size });

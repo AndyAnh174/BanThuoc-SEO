@@ -19,13 +19,6 @@ class Product(models.Model):
         INACTIVE = 'INACTIVE', _('Inactive')
         OUT_OF_STOCK = 'OUT_OF_STOCK', _('Out of Stock')
 
-    class ProductType(models.TextChoices):
-        MEDICINE = 'MEDICINE', _('Medicine')  # Thuốc
-        SUPPLEMENT = 'SUPPLEMENT', _('Supplement')  # Thực phẩm chức năng
-        MEDICAL_DEVICE = 'MEDICAL_DEVICE', _('Medical Device')  # Thiết bị y tế
-        COSMETIC = 'COSMETIC', _('Cosmetic')  # Mỹ phẩm
-        OTHER = 'OTHER', _('Other')
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     sku = models.CharField(max_length=50, unique=True, help_text=_("Stock Keeping Unit"))
     name = models.CharField(max_length=300, help_text=_("Product name"))
@@ -50,12 +43,14 @@ class Product(models.Model):
         related_name='products',
         help_text=_("Product manufacturer")
     )
-    
+
     # Product details
-    product_type = models.CharField(
-        max_length=20,
-        choices=ProductType.choices,
-        default=ProductType.MEDICINE,
+    product_type = models.ForeignKey(
+        'products.ProductType',
+        on_delete=models.PROTECT,
+        related_name='products',
+        null=True,
+        blank=True,
         help_text=_("Type of product")
     )
     ingredients = models.TextField(blank=True, help_text=_("Product ingredients/composition"))

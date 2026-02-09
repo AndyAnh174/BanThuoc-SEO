@@ -8,7 +8,7 @@ interface AdminState {
     totalCount: number;
     isLoading: boolean;
     error: string | null;
-    
+
     // Filters
     page: number;
     filterStatus: string;
@@ -33,7 +33,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
     totalCount: 0,
     isLoading: false,
     error: null,
-    
+
     page: 1,
     filterStatus: '',
     filterRole: '',
@@ -53,7 +53,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
     },
     setSearchQuery: (query) => {
         set({ searchQuery: query, page: 1 });
-        get().loadUsers(); 
+        get().loadUsers();
         // Note: Real-time search might need debounce outside of store or here
     },
 
@@ -62,15 +62,15 @@ export const useAdminStore = create<AdminState>((set, get) => ({
         try {
             const { page, filterStatus, searchQuery, filterRole } = get();
             const data = await fetchUsers(page, filterStatus, searchQuery, filterRole);
-            set({ 
-                users: data.results, 
-                totalCount: data.count, 
-                isLoading: false 
+            set({
+                users: data.results,
+                totalCount: data.count,
+                isLoading: false
             });
         } catch (error: any) {
-            set({ 
-                isLoading: false, 
-                error: error.message || "Không thể tải danh sách người dùng" 
+            set({
+                isLoading: false,
+                error: error.message || "Không thể tải danh sách người dùng"
             });
             toast.error("Lỗi khi tải danh sách người dùng");
         }
@@ -78,11 +78,11 @@ export const useAdminStore = create<AdminState>((set, get) => ({
 
     approveUser: async (userId: number) => {
         try {
-             // Optimistic Update can be done here, but safer to wait for API
+            // Optimistic Update can be done here, but safer to wait for API
             await updateUserStatus(userId, { status: UserStatus.ACTIVE });
-            
+
             toast.success("Đã phê duyệt người dùng thành công");
-            
+
             // Refresh list
             get().loadUsers();
             return true;
@@ -94,17 +94,17 @@ export const useAdminStore = create<AdminState>((set, get) => ({
 
     rejectUser: async (userId: number, reason: string) => {
         try {
-            await updateUserStatus(userId, { 
+            await updateUserStatus(userId, {
                 status: UserStatus.REJECTED,
-                reason: reason 
+                reason: reason
             });
-            
+
             toast.success("Đã từ chối người dùng");
             get().loadUsers();
             return true;
         } catch (error: any) {
-             toast.error("Không thể từ chối người dùng");
-             return false;
+            toast.error("Không thể từ chối người dùng");
+            return false;
         }
     },
 
@@ -115,7 +115,31 @@ export const useAdminStore = create<AdminState>((set, get) => ({
             get().loadUsers();
             return user;
         } catch (error: any) {
-            const message = error.response?.data?.detail || error.response?.data?.username?.[0] || error.response?.data?.email?.[0] || "Không thể tạo người dùng";
+            let message = "Không thể tạo người dùng";
+            if (error.response?.data) {
+                const data = error.response.data;
+                // If it's a detail message
+                if (data.detail) {
+                    message = data.detail;
+                } else {
+                    // Collect field errors
+                    const errorMessages = [];
+                    for (const [key, value] of Object.entries(data)) {
+                        const errorText = Array.isArray(value) ? value[0] : value;
+                        // Map key to friendly name (optional, or just show key)
+                        let friendlyKey = key;
+                        if (key === 'username') friendlyKey = 'Tên đăng nhập';
+                        if (key === 'email') friendlyKey = 'Email';
+                        if (key === 'password') friendlyKey = 'Mật khẩu';
+                        if (key === 'phone') friendlyKey = 'Số điện thoại';
+
+                        errorMessages.push(`${friendlyKey}: ${errorText}`);
+                    }
+                    if (errorMessages.length > 0) {
+                        message = errorMessages.join("\n");
+                    }
+                }
+            }
             toast.error(message);
             return null;
         }
@@ -128,7 +152,28 @@ export const useAdminStore = create<AdminState>((set, get) => ({
             get().loadUsers();
             return user;
         } catch (error: any) {
-            const message = error.response?.data?.detail || error.response?.data?.email?.[0] || "Không thể cập nhật người dùng";
+            let message = "Không thể cập nhật người dùng";
+            if (error.response?.data) {
+                const data = error.response.data;
+                if (data.detail) {
+                    message = data.detail;
+                } else {
+                    const errorMessages = [];
+                    for (const [key, value] of Object.entries(data)) {
+                        const errorText = Array.isArray(value) ? value[0] : value;
+                        let friendlyKey = key;
+                        if (key === 'username') friendlyKey = 'Tên đăng nhập';
+                        if (key === 'email') friendlyKey = 'Email';
+                        if (key === 'password') friendlyKey = 'Mật khẩu';
+                        if (key === 'phone') friendlyKey = 'Số điện thoại';
+
+                        errorMessages.push(`${friendlyKey}: ${errorText}`);
+                    }
+                    if (errorMessages.length > 0) {
+                        message = errorMessages.join("\n");
+                    }
+                }
+            }
             toast.error(message);
             return null;
         }

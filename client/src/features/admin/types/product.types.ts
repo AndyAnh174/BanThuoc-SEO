@@ -1,5 +1,5 @@
 export type ProductStatus = 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'OUT_OF_STOCK';
-export type ProductType = 'MEDICINE' | 'SUPPLEMENT' | 'MEDICAL_DEVICE' | 'COSMETIC' | 'OTHER';
+export type ProductType = string;
 
 export interface ProductImage {
   id: string;
@@ -16,17 +16,17 @@ export interface Product {
   slug: string;
   description?: string;
   short_description?: string;
-  
+
   // Pricing
   price: number;
   sale_price?: number | null;
-  
+
   // Relationships
   category: string; // ID
   category_name?: string;
   manufacturer: string; // ID
   manufacturer_name?: string;
-  
+
   // Details
   product_type: ProductType;
   ingredients?: string;
@@ -35,28 +35,28 @@ export interface Product {
   contraindications?: string;
   side_effects?: string;
   storage?: string;
-  
+
   // Packaging
   unit: string;
   quantity_per_unit?: string;
-  
+
   // Inventory
   stock_quantity: number;
   low_stock_threshold: number;
-  
+
   // Status
   status: ProductStatus;
   requires_prescription: boolean;
   is_featured: boolean;
-  
+
   // SEO
   meta_title?: string;
   meta_description?: string;
-  
+
   // Images
   images?: ProductImage[];
   primary_image?: string | null;
-  
+
   created_at: string;
 }
 
@@ -92,7 +92,7 @@ export interface ProductCreateInput {
   }[];
 }
 
-export interface ProductUpdateInput extends Partial<ProductCreateInput> {}
+export interface ProductUpdateInput extends Partial<ProductCreateInput> { }
 
 export interface ProductListParams {
   page?: number;

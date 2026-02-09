@@ -6,129 +6,142 @@ import { toast } from 'sonner';
 import { registerUser, loginUser } from '../api/auth.api';
 
 interface AuthState {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
-  register: (data: RegisterFormValues) => Promise<boolean>;
-  login: (data: LoginFormValues) => Promise<boolean>;
-  resetError: () => void;
-  logout: () => void;
-  checkAuth: () => void;
+    isAuthenticated: boolean;
+    isLoading: boolean;
+    error: string | null;
+    register: (data: RegisterFormValues) => Promise<boolean>;
+    login: (data: LoginFormValues) => Promise<boolean>;
+    resetError: () => void;
+    logout: () => void;
+    checkAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  isAuthenticated: false,
-  isLoading: false,
-  error: null,
-  register: async (data: RegisterFormValues) => {
-    // ... existing register ...
-    set({ isLoading: true, error: null });
-    
-    try {
-      const response = await registerUser(data);
+    isAuthenticated: false,
+    isLoading: false,
+    error: null,
+    register: async (data: RegisterFormValues) => {
+        // ... existing register ...
+        set({ isLoading: true, error: null });
 
-      if (response.status === 201) {
-        toast.success("Đăng ký thành công!", {
-            description: "Tài khoản đang chờ admin duyệt. Sau khi duyệt, bạn sẽ nhận email xác thực để kích hoạt."
-        });
-        set({ isLoading: false });
-        return true;
-      }
-      return false;
+        try {
+            const response = await registerUser(data);
 
-    } catch (error: any) {
-        let errorMessage = "Đã xảy ra lỗi không xác định.";
-        
-        if (error.response) { 
-            const status = error.response.status;
-            const data = error.response.data;
-
-            if (status === 400) {
-                if (data) {
-                     const keys = Object.keys(data);
-                     if (keys.length > 0) {
-                         const firstKey = keys[0];
-                         const firstVal = data[firstKey];
-                         errorMessage = `${firstKey}: ${Array.isArray(firstVal) ? firstVal[0] : firstVal}`;
-                     } else {
-                         errorMessage = "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.";
-                     }
-                } else {
-                    errorMessage = "Dữ liệu không hợp lệ.";
-                }
-            } else if (status === 500) {
-                errorMessage = "Lỗi máy chủ nội bộ. Vui lòng thử lại sau.";
-            } else if (data && data.detail) {
-                errorMessage = data.detail;
+            if (response.status === 201) {
+                toast.success("Đăng ký thành công!", {
+                    description: "Tài khoản đang chờ admin duyệt. Sau khi duyệt, bạn sẽ nhận email xác thực để kích hoạt."
+                });
+                set({ isLoading: false });
+                return true;
             }
-        } else if (error.request) {
-            errorMessage = "Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng.";
+            return false;
+
+        } catch (error: any) {
+            let errorMessage = "Đã xảy ra lỗi không xác định.";
+
+            if (error.response) {
+                const status = error.response.status;
+                const data = error.response.data;
+
+                if (status === 400) {
+                    if (data) {
+                        const errorMessages = [];
+                        for (const [key, value] of Object.entries(data)) {
+                            const errorText = Array.isArray(value) ? value[0] : value;
+                            let friendlyKey = key;
+                            // Map common keys
+                            if (key === 'username') friendlyKey = 'Tên đăng nhập';
+                            if (key === 'email') friendlyKey = 'Email';
+                            if (key === 'password') friendlyKey = 'Mật khẩu';
+                            if (key === 'confirmPassword') friendlyKey = 'Xác nhận mật khẩu';
+                            if (key === 'phone') friendlyKey = 'Số điện thoại';
+                            if (key === 'fullName') friendlyKey = 'Họ và tên';
+                            if (key === 'non_field_errors') friendlyKey = 'Lỗi';
+
+                            errorMessages.push(`${friendlyKey}: ${errorText}`);
+                        }
+                        if (errorMessages.length > 0) {
+                            errorMessage = errorMessages.join("\n");
+                        } else {
+                            errorMessage = "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.";
+                        }
+                    } else {
+                        errorMessage = "Dữ liệu không hợp lệ.";
+                    }
+                } else if (status === 500) {
+                    errorMessage = "Lỗi máy chủ nội bộ. Vui lòng thử lại sau.";
+                } else if (data && data.detail) {
+                    errorMessage = data.detail;
+                }
+            } else if (error.request) {
+                errorMessage = "Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng.";
+            }
+
+            toast.error("Đăng ký thất bại", {
+                description: errorMessage,
+                duration: 5000 // Error toasts should stay longer
+            });
+
+            set({ isLoading: false, error: errorMessage });
+            return false;
         }
-        
-        toast.error("Đăng ký thất bại", {
-            description: errorMessage
-        });
-        
-        set({ isLoading: false, error: errorMessage });
-        return false;
-    }
-  },
+    },
 
-  login: async (data: LoginFormValues) => {
-      set({ isLoading: true, error: null });
-      try {
-          const response = await loginUser(data);
-          
-          if (response.status === 200) {
-              const { access, refresh } = response.data;
-              
-              if (typeof window !== 'undefined') {
-                localStorage.setItem('accessToken', access);
-                localStorage.setItem('refreshToken', refresh);
-              }
-              
-              toast.success("Đăng nhập thành công!");
-              set({ isLoading: false, isAuthenticated: true });
-              return true;
-          }
-          return false;
-      } catch (error: any) {
-        let errorMessage = "Tên đăng nhập hoặc mật khẩu không đúng.";
-        
-        if (error.response) {
-            const status = error.response.status;
-            const data = error.response.data;
-             if (status === 401) {
-                errorMessage = "Thông tin đăng nhập không chính xác.";
-             } else if (data && data.detail) {
-                 errorMessage = data.detail;
-             }
-        } else if (error.request) {
-             errorMessage = "Lỗi kết nối mạng.";
+    login: async (data: LoginFormValues) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await loginUser(data);
+
+            if (response.status === 200) {
+                const { access, refresh } = response.data;
+
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('accessToken', access);
+                    localStorage.setItem('refreshToken', refresh);
+                }
+
+                toast.success("Đăng nhập thành công!");
+                set({ isLoading: false, isAuthenticated: true });
+                return true;
+            }
+            return false;
+        } catch (error: any) {
+            let errorMessage = "Tên đăng nhập hoặc mật khẩu không đúng.";
+
+            if (error.response) {
+                const status = error.response.status;
+                const data = error.response.data;
+                if (status === 401) {
+                    errorMessage = "Thông tin đăng nhập không chính xác.";
+                } else if (data && data.detail) {
+                    errorMessage = data.detail;
+                }
+            } else if (error.request) {
+                errorMessage = "Lỗi kết nối mạng.";
+            }
+
+            toast.error("Đăng nhập thất bại", { description: errorMessage });
+            set({ isLoading: false, error: errorMessage });
+            return false;
         }
-        
-        toast.error("Đăng nhập thất bại", { description: errorMessage });
-        set({ isLoading: false, error: errorMessage });
-        return false;
-      }
-  },
+    },
 
-  logout: () => {
-      if (typeof window !== 'undefined') {
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-      }
-      set({ isAuthenticated: false });
-      toast.info("Đã đăng xuất");
-      window.location.href = '/auth/login';
-  },
+    logout: () => {
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+        }
+        set({ isAuthenticated: false });
+        toast.info("Đã đăng xuất");
+        window.location.href = '/auth/login';
+    },
 
-  checkAuth: () => {
-     if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('accessToken');
-        set({ isAuthenticated: !!token });
-     }
-  },
+    checkAuth: () => {
+        if (typeof window !== 'undefined') {
+            const token = localStorage.getItem('accessToken');
+            set({ isAuthenticated: !!token });
+        }
+    },
 
-  resetError: () => set({ error: null }),
+    resetError: () => set({ error: null }),
 }));

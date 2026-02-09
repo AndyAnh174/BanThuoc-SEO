@@ -5,8 +5,7 @@ import { Upload, X, Loader2, ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+import { http } from '@/lib/http';
 
 interface ImageUploadProps {
   value?: string;
@@ -41,28 +40,19 @@ export function ImageUpload({
     }
 
     setIsUploading(true);
-    
+
     try {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('folder', folder);
 
-      const token = localStorage.getItem('accessToken') || localStorage.getItem('access_token');
-      
-      const response = await fetch(`${API_URL}/api/files/upload/`, {
-        method: 'POST',
+      const response = await http.post('/files/upload/', formData, {
         headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          'Content-Type': 'multipart/form-data',
         },
-        body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
-      const data = await response.json();
-      onChange(data.url);
+      onChange(response.data.url);
       toast.success('Tải ảnh lên thành công');
     } catch (error) {
       console.error('Upload error:', error);
@@ -86,7 +76,7 @@ export function ImageUpload({
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    
+
     const file = e.dataTransfer.files?.[0];
     if (file) {
       uploadFile(file);
@@ -131,7 +121,7 @@ export function ImageUpload({
                 (e.target as HTMLImageElement).src = '/images/placeholder.png';
               }}
             />
-            
+
             {/* Overlay actions */}
             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
               <Button

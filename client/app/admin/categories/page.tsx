@@ -17,6 +17,9 @@ export default function AdminCategoriesPage() {
     categoryTree,
     isLoading,
     totalCount,
+    totalActiveCount,
+    totalInactiveCount,
+    totalRootCount,
     currentPage,
     pageSize,
     fetchCategories,
@@ -80,19 +83,19 @@ export default function AdminCategoriesPage() {
         <div className="bg-white rounded-lg border p-4">
           <p className="text-sm text-gray-500">Danh mục gốc</p>
           <p className="text-2xl font-bold text-green-600">
-            {(categories || []).filter(c => !c.parent).length}
+            {totalRootCount}
           </p>
         </div>
         <div className="bg-white rounded-lg border p-4">
           <p className="text-sm text-gray-500">Đang hoạt động</p>
           <p className="text-2xl font-bold text-blue-600">
-            {(categories || []).filter(c => c.is_active).length}
+            {totalActiveCount}
           </p>
         </div>
         <div className="bg-white rounded-lg border p-4">
           <p className="text-sm text-gray-500">Đã ẩn</p>
           <p className="text-2xl font-bold text-gray-400">
-            {(categories || []).filter(c => !c.is_active).length}
+            {totalInactiveCount}
           </p>
         </div>
       </div>

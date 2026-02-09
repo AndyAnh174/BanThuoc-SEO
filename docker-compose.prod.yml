@@ -1,5 +1,4 @@
-
-version: '3.8'
+version: "3.8"
 
 services:
   db:
@@ -63,7 +62,7 @@ services:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
       - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME}
-      - MINIO_PUBLIC_ENDPOINT=https://banthuoc.andyanh.id.vn/minio-api
+      - MINIO_PUBLIC_ENDPOINT=${MINIO_PUBLIC_ENDPOINT}
     depends_on:
       - db
       - redis
@@ -108,7 +107,7 @@ services:
     ports:
       - "9090:9090"
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
+      - "--config.file=/etc/prometheus/prometheus.yml"
 
 volumes:
   postgres_data:
