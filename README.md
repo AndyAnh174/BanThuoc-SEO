@@ -241,6 +241,9 @@ BanThuoc-SEO/
 │       ├── hooks/
 │       │   └── use-debounce.ts
 │       │
+│       ├── lib/
+│       │   └── api-mapper.ts
+│       │
 │       └── features/                     # Feature-based modules
 │           │
 │           ├── admin/                    # Admin feature

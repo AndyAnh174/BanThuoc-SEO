@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import { useOrdersStore } from "../stores/orders.store";
 import { Order, OrderStatus } from "../types/admin.types";
-import { 
-    Table, 
-    TableBody, 
-    TableCell, 
-    TableHead, 
-    TableHeader, 
-    TableRow 
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,10 +23,10 @@ import { vi } from "date-fns/locale";
 
 export function OrderTable() {
     const router = useRouter();
-    const { 
-        orders, 
-        isLoading, 
-        loadOrders, 
+    const {
+        orders,
+        isLoading,
+        loadOrders,
         filterStatus,
         setFilterStatus,
         setSearchQuery,
@@ -77,8 +77,8 @@ export function OrderTable() {
             <div className="flex justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm border">
                 <div className="flex items-center gap-2 flex-1 max-w-sm">
                     <Search className="w-4 h-4 text-gray-400" />
-                    <Input 
-                        placeholder="Tìm theo Mã đơn, Tên KH, SĐT..." 
+                    <Input
+                        placeholder="Tìm theo Mã đơn, Tên KH, SĐT..."
                         className="border-none shadow-none focus-visible:ring-0 pl-0"
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -151,17 +151,17 @@ export function OrderTable() {
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex items-center justify-end gap-1">
-                                            <Button 
-                                                variant="ghost" 
-                                                size="icon" 
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
                                                 onClick={(e) => handleDownloadInvoice(e, order.id)}
                                                 title="Tải hóa đơn"
                                             >
                                                 <FileText className="w-4 h-4 text-gray-500" />
                                             </Button>
-                                            <Button 
-                                                variant="ghost" 
-                                                size="icon" 
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
                                                 onClick={(e) => { e.stopPropagation(); handleViewDetail(order); }}
                                             >
                                                 <Eye className="w-4 h-4 text-gray-500" />

@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.13-slim
+FROM python:3.13-slim-bookworm
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -19,6 +19,13 @@ RUN apt-get update && apt-get install -y \
 # Install python dependencies
 COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Install Playwright dependencies manually
+
+# Install Playwright and its dependencies
+RUN apt-get update && playwright install --with-deps chromium && rm -rf /var/lib/apt/lists/*
+
+
 
 # Copy project
 COPY . /app/
