@@ -60,6 +60,10 @@ class Order(models.Model):
     class Meta:
         ordering = ['-created_at']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._old_status = self.status if self.pk else None
+
     def __str__(self):
         return f"Order #{self.id} - {self.full_name}"
 
@@ -82,7 +86,20 @@ class OrderItem(models.Model):
 
 # Signals
 @receiver(post_save, sender=Order)
-def update_user_loyalty_points(sender, instance, created, **kwargs):
+def order_post_save_handler(sender, instance, created, **kwargs):
+    """Handle order notifications and loyalty points on save."""
+    from orders.notifications import send_order_confirmation, send_order_status_change
+
+    if created:
+        send_order_confirmation(instance)
+    else:
+        # Detect status change by checking tracker or using a simple approach
+        # Since we don't have a field tracker, we send on every non-create save
+        # The notification function handles missing emails gracefully
+        old_status = getattr(instance, '_old_status', None)
+        if old_status and old_status != instance.status:
+            send_order_status_change(instance, old_status, instance.status)
+
     if instance.status == Order.Status.DELIVERED and instance.user and not instance.points_awarded:
         points = instance.calculate_loyalty_points()
         

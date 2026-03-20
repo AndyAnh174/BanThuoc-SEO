@@ -128,18 +128,11 @@ export function CheckoutPage() {
             voucher_code: appliedVoucher?.code || undefined
         };
         
-        await createOrder(orderData);
-        
-        
-        toast.success("Đặt hàng thành công! Đơn hàng đang được xử lý.");
-        // Clear cart
-        useCartStore.getState().clearCart(); 
-        
-        // Redirect with params
-        // Redirect with params
-        // createOrder returns AxiosResponse, so we need .data
-        const newOrder = await createOrder(orderData); 
+        const newOrder = await createOrder(orderData);
         const orderId = newOrder.data?.id;
+
+        toast.success("Đặt hàng thành công! Đơn hàng đang được xử lý.");
+        useCartStore.getState().clearCart();
         
         router.push(`/checkout/success?orderId=${orderId}&method=${data.paymentMethod}`);
     } catch (error: any) {

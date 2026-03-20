@@ -5,10 +5,14 @@ from .views.file_upload import FileUploadView, FileDeleteView
 from .views.profile import UserProfileView, UserProfileUpdateView, UserAvatarUploadView, ChangePasswordView
 from .views.loyalty import UserPointLogListView
 from .views.verify_email import VerifyEmailView
+from .views.password_reset import RequestPasswordResetView, ConfirmPasswordResetView
+from .views.address import AddressListCreateView, AddressDetailView
 
 urlpatterns = [
     path('auth/register', RegisterB2BView.as_view(), name='register-b2b'),
     path('auth/verify-email/<str:token>/', VerifyEmailView.as_view(), name='verify-email'),
+    path('auth/forgot-password/', RequestPasswordResetView.as_view(), name='forgot-password'),
+    path('auth/reset-password/', ConfirmPasswordResetView.as_view(), name='reset-password'),
     
     # File Upload
     path('files/upload/', FileUploadView.as_view(), name='file-upload'),
@@ -20,6 +24,8 @@ urlpatterns = [
     path('me/avatar/', UserAvatarUploadView.as_view(), name='user-avatar-upload'),
     path('me/change-password/', ChangePasswordView.as_view(), name='user-change-password'),
     path('me/points/', UserPointLogListView.as_view(), name='user-point-history'),
+    path('me/addresses/', AddressListCreateView.as_view(), name='user-addresses'),
+    path('me/addresses/<int:pk>/', AddressDetailView.as_view(), name='user-address-detail'),
     
     # Admin Management
     path('admin/users', AdminUserListView.as_view(), name='admin-user-list'),

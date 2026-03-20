@@ -57,3 +57,7 @@ export const updateOrderStatus = async (id: number, status: string) => {
 export const getOrder = async (id: string | number) => {
   return http.get(`/orders/${id}/`);
 };
+
+export const cancelOrder = async (id: number | string) => {
+  return http.post(`/orders/${id}/cancel/`);
+};

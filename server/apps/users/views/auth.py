@@ -38,3 +38,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    throttle_classes = []
+
+    def get_throttles(self):
+        from core.throttles import LoginRateThrottle
+        return [LoginRateThrottle()]

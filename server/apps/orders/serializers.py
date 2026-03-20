@@ -37,15 +37,18 @@ class OrderSerializer(serializers.ModelSerializer):
         return ", ".join([p for p in parts if p])
 
     def create(self, validated_data):
+        from django.db import transaction
+        from django.db.models import F
+
         items_data = validated_data.pop('items_input')
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             validated_data['user'] = request.user
-        
+
         # Calculate totals server-side
         total_amount = 0
         from products.models import Product
-        
+
         # Validate items and calculate total
         validated_items = []
         for item in items_data:
@@ -53,13 +56,20 @@ class OrderSerializer(serializers.ModelSerializer):
                 product = Product.objects.get(pk=item['product'])
             except Product.DoesNotExist:
                 raise serializers.ValidationError({"items_input": f"Product {item['product']} not found"})
-            
+
+            quantity = item['quantity']
+
+            # Validate stock availability
+            if product.stock_quantity is not None and product.stock_quantity < quantity:
+                raise serializers.ValidationError({
+                    "items_input": f"San pham '{product.name}' chi con {product.stock_quantity} san pham trong kho."
+                })
+
             # Use current price from DB, ignore client price for security
             price = product.sale_price if product.sale_price else product.price
-            quantity = item['quantity']
             item_total = price * quantity
             total_amount += item_total
-            
+
             validated_items.append({
                 'product': product,
                 'product_name': product.name,
@@ -115,29 +125,38 @@ class OrderSerializer(serializers.ModelSerializer):
 
         validated_data['discount_amount'] = discount_amount
         validated_data['final_amount'] = max(0, total_amount + validated_data.get('shipping_fee', 0) - discount_amount)
-        
-        # Create order
-        order = Order.objects.create(**validated_data)
-        
-        # Create items
-        for item in validated_items:
-            OrderItem.objects.create(order=order, **item)
-            
-        # Record Voucher Usage
-        if voucher and discount_amount > 0 and request and request.user.is_authenticated:
-            from vouchers.models import UserVoucher
-            
-            # Check if user already claimed/saved, otherwise create new
-            user_voucher = UserVoucher.objects.filter(user=request.user, voucher=voucher).first()
-            if not user_voucher:
-                user_voucher = UserVoucher.objects.create(
-                    user=request.user,
-                    voucher=voucher,
-                    status=UserVoucher.Status.CLAIMED
-                )
-            
-            # Mark as used
-            user_voucher.use(discount_amount=discount_amount, order_id=order.id)
-        
-        # Calculate Loyalty Points (if not handled by model save/signal logic, but we have signal)
+
+        # Create order within atomic transaction
+        with transaction.atomic():
+            order = Order.objects.create(**validated_data)
+
+            for item in validated_items:
+                OrderItem.objects.create(order=order, **item)
+
+                # Decrement stock
+                if item['product'].stock_quantity is not None:
+                    updated = Product.objects.filter(
+                        pk=item['product'].pk,
+                        stock_quantity__gte=item['quantity']
+                    ).update(stock_quantity=F('stock_quantity') - item['quantity'])
+
+                    if not updated:
+                        raise serializers.ValidationError({
+                            "items_input": f"San pham '{item['product_name']}' da het hang."
+                        })
+
+            # Record Voucher Usage
+            if voucher and discount_amount > 0 and request and request.user.is_authenticated:
+                from vouchers.models import UserVoucher
+
+                user_voucher = UserVoucher.objects.filter(user=request.user, voucher=voucher).first()
+                if not user_voucher:
+                    user_voucher = UserVoucher.objects.create(
+                        user=request.user,
+                        voucher=voucher,
+                        status=UserVoucher.Status.CLAIMED
+                    )
+
+                user_voucher.use(discount_amount=discount_amount, order_id=order.id)
+
         return order

@@ -31,8 +31,8 @@ def update_product_in_elasticsearch(product):
                 doc.delete()
                 logger.info(f"Elasticsearch: Removed inactive product {product.sku}")
             except Exception:
-                pass  # Document might not exist
-                
+                logger.debug(f"Elasticsearch: Product {product.sku} not found in index (may not have been indexed)")
+
     except Exception as e:
         logger.error(f"Elasticsearch sync failed for product {product.sku}: {str(e)}")
 
@@ -47,8 +47,8 @@ def delete_product_from_elasticsearch(product_id):
             doc.delete()
             logger.info(f"Elasticsearch: Deleted product {product_id}")
         except Exception:
-            pass  # Document might not exist
-            
+            logger.debug(f"Elasticsearch: Product {product_id} not found in index for deletion")
+
     except Exception as e:
         logger.error(f"Elasticsearch delete failed for product {product_id}: {str(e)}")
 

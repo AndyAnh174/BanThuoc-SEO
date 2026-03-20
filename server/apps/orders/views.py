@@ -2,6 +2,7 @@ from rest_framework import viewsets, permissions, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import F
 from .models import Order
 from .serializers import OrderSerializer
 
@@ -27,6 +28,55 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    @action(detail=True, methods=['post'], url_path='cancel')
+    def cancel(self, request, pk=None):
+        """
+        Cancel an order. Only allowed when status is PENDING or CONFIRMED.
+        POST /api/orders/{id}/cancel/
+        """
+        order = self.get_object()
+
+        if order.status not in [Order.Status.PENDING, Order.Status.CONFIRMED]:
+            return Response(
+                {"error": "Chi co the huy don hang o trang thai 'Cho xu ly' hoac 'Da xac nhan'."},
+                status=400
+            )
+
+        # Restore stock
+        for item in order.items.all():
+            if item.product:
+                from products.models import Product
+                from django.db.models import F
+                Product.objects.filter(pk=item.product.pk).update(
+                    stock_quantity=F('stock_quantity') + item.quantity
+                )
+
+        # Restore voucher usage if applicable
+        if order.discount_amount > 0 and order.user:
+            try:
+                from vouchers.models import UserVoucher, Voucher
+                user_vouchers = UserVoucher.objects.filter(
+                    user=order.user,
+                    order_id=order.id,
+                    status=UserVoucher.Status.USED
+                )
+                for uv in user_vouchers:
+                    uv.status = UserVoucher.Status.CLAIMED
+                    uv.times_used = max(0, uv.times_used - 1)
+                    uv.save()
+                    # Decrement global usage count
+                    Voucher.objects.filter(pk=uv.voucher.pk).update(
+                        usage_count=F('usage_count') - 1
+                    )
+            except Exception:
+                pass  # Voucher restoration is best-effort
+
+        order.status = Order.Status.CANCELLED
+        order.save()
+
+        serializer = self.get_serializer(order)
+        return Response(serializer.data)
 
     @action(detail=False, methods=['get'], url_path='my-orders')
     def my_orders(self, request):

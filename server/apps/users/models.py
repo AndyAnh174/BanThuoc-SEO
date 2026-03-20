@@ -69,6 +69,54 @@ class EmailVerificationToken(models.Model):
         return f"Token for {self.user.email}"
 
 
+class Address(models.Model):
+    """User saved addresses for checkout."""
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='addresses'
+    )
+    full_name = models.CharField(max_length=255)
+    phone = models.CharField(max_length=20)
+    address = models.TextField()
+    province = models.CharField(max_length=100)
+    district = models.CharField(max_length=100, blank=True)
+    ward = models.CharField(max_length=100, blank=True)
+    is_default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-is_default', '-created_at']
+
+    def __str__(self):
+        return f"{self.full_name} - {self.address}"
+
+    def save(self, *args, **kwargs):
+        # Ensure only one default address per user
+        if self.is_default:
+            Address.objects.filter(user=self.user, is_default=True).exclude(pk=self.pk).update(is_default=False)
+        super().save(*args, **kwargs)
+
+
+class PasswordResetToken(models.Model):
+    """Token for password reset."""
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='password_reset_tokens'
+    )
+    token = models.CharField(max_length=64, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Password reset token for {self.user.email}"
+
+
 class RewardPointLog(models.Model):
     class Reason(models.TextChoices):
         ORDER_EARN = 'ORDER_EARN', _('Earned from Order')

@@ -41,6 +41,12 @@ from products.views.flash_sale import (
     FlashSaleItemDetailView,
     CheckFlashSaleForProductView,
 )
+from products.views.review import (
+    ProductReviewListCreateView,
+    ProductReviewStatsView,
+    AdminReviewListView,
+    AdminReviewModerateView,
+)
 
 app_name = 'products'
 
@@ -92,6 +98,14 @@ urlpatterns = [
     path('flash-sale/items/', FlashSaleItemListView.as_view(), name='flash-sale-items'),
     path('flash-sale/items/<uuid:pk>/', FlashSaleItemDetailView.as_view(), name='flash-sale-item-detail'),
     path('flash-sale/check/', CheckFlashSaleForProductView.as_view(), name='flash-sale-check'),
+
+    # ========================================
+    # Reviews
+    # ========================================
+    path('products/<uuid:product_id>/reviews/', ProductReviewListCreateView.as_view(), name='product-reviews'),
+    path('products/<uuid:product_id>/reviews/stats/', ProductReviewStatsView.as_view(), name='product-review-stats'),
+    path('admin/reviews/', AdminReviewListView.as_view(), name='admin-reviews'),
+    path('admin/reviews/<uuid:review_id>/moderate/', AdminReviewModerateView.as_view(), name='admin-review-moderate'),
 ]
 
 # --- Admin ViewSets (Router) ---

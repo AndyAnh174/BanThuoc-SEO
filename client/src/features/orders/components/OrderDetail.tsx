@@ -20,7 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getOrder, downloadInvoice } from '../api/orders.api';
+import { getOrder, downloadInvoice, cancelOrder } from '../api/orders.api';
 import { toast } from 'sonner';
 import Image from 'next/image';
 
@@ -74,6 +74,25 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
 
         fetchOrder();
     }, [orderId]);
+
+    const [cancelling, setCancelling] = useState(false);
+
+    const handleCancelOrder = async () => {
+        if (!order) return;
+        if (!confirm('Ban co chac chan muon huy don hang nay khong?')) return;
+
+        setCancelling(true);
+        try {
+            const response = await cancelOrder(order.id);
+            setOrder(response.data);
+            toast.success('Da huy don hang thanh cong');
+        } catch (error: any) {
+            const message = error.response?.data?.error || 'Khong the huy don hang';
+            toast.error(message);
+        } finally {
+            setCancelling(false);
+        }
+    };
 
    const handleDownloadInvoice = async () => {
         if (!order) return;
@@ -174,10 +193,19 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                 <div className="flex gap-3">
                      <Button variant="outline" onClick={handleDownloadInvoice} className="gap-2">
                         <Download className="w-4 h-4" />
-                        Xuất hóa đơn
+                        Xuat hoa don
                     </Button>
-                    {/* Only show Re-buy if completed? Or always? Assuming always or based on logic */}
-                    <Button className="bg-primary hover:bg-primary/90">Mua lại đơn này</Button>
+                    {(order.status === 'PENDING' || order.status === 'CONFIRMED') && (
+                        <Button
+                            variant="destructive"
+                            onClick={handleCancelOrder}
+                            disabled={cancelling}
+                            className="gap-2"
+                        >
+                            <XCircle className="w-4 h-4" />
+                            {cancelling ? 'Dang huy...' : 'Huy don hang'}
+                        </Button>
+                    )}
                 </div>
             </div>
 
