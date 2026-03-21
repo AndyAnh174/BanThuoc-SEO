@@ -78,6 +78,28 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(order)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['post'], url_path='update-status')
+    def update_status(self, request, pk=None):
+        """
+        Admin-only: Update order status.
+        POST /api/orders/{id}/update-status/
+        Body: {"status": "CONFIRMED"}
+        """
+        if request.user.role != 'ADMIN':
+            return Response({"error": "Permission denied."}, status=403)
+
+        order = self.get_object()
+        new_status = request.data.get('status')
+        valid_statuses = [s.value for s in Order.Status]
+        if not new_status or new_status not in valid_statuses:
+            return Response({"error": f"Invalid status. Valid: {valid_statuses}"}, status=400)
+
+        order.status = new_status
+        order.save()
+
+        serializer = self.get_serializer(order)
+        return Response(serializer.data)
+
     @action(detail=False, methods=['get'], url_path='my-orders')
     def my_orders(self, request):
         """

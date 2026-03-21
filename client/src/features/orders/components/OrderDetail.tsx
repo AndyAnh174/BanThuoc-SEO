@@ -4,23 +4,26 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
-import { 
-    ChevronLeft, 
-    MapPin, 
-    CreditCard, 
-    Truck, 
-    Package, 
-    Clock, 
-    CheckCircle2, 
+import {
+    ChevronLeft,
+    MapPin,
+    CreditCard,
+    Truck,
+    Package,
+    Clock,
+    CheckCircle2,
     XCircle,
-    Download
+    Download,
+    RotateCcw,
+    AlertCircle
 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getOrder, downloadInvoice, cancelOrder } from '../api/orders.api';
+import { getOrder, downloadInvoice, cancelOrder, createReturnRequest, getMyReturnRequests } from '../api/orders.api';
 import { toast } from 'sonner';
 import Image from 'next/image';
 
@@ -53,9 +56,24 @@ interface OrderDetailProps {
     orderId: string | number;
 }
 
+interface ReturnRequest {
+    id: string;
+    order_id: number;
+    reason: string;
+    status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'COMPLETED';
+    refund_amount: number;
+    admin_notes: string;
+    created_at: string;
+    processed_at: string | null;
+}
+
 export function OrderDetail({ orderId }: OrderDetailProps) {
     const [order, setOrder] = useState<OrderDetail | null>(null);
     const [loading, setLoading] = useState(true);
+    const [returnRequest, setReturnRequest] = useState<ReturnRequest | null>(null);
+    const [showReturnForm, setShowReturnForm] = useState(false);
+    const [returnReason, setReturnReason] = useState('');
+    const [submittingReturn, setSubmittingReturn] = useState(false);
 
     useEffect(() => {
         if (!orderId) return;
@@ -75,22 +93,51 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
         fetchOrder();
     }, [orderId]);
 
+    useEffect(() => {
+        if (!orderId) return;
+        getMyReturnRequests().then(res => {
+            const items = res.data?.results || res.data || [];
+            const found = items.find((r: ReturnRequest) => r.order_id === Number(orderId));
+            if (found) setReturnRequest(found);
+        }).catch(() => {});
+    }, [orderId]);
+
     const [cancelling, setCancelling] = useState(false);
 
     const handleCancelOrder = async () => {
         if (!order) return;
-        if (!confirm('Ban co chac chan muon huy don hang nay khong?')) return;
+        if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')) return;
 
         setCancelling(true);
         try {
             const response = await cancelOrder(order.id);
             setOrder(response.data);
-            toast.success('Da huy don hang thanh cong');
+            toast.success('Đã hủy đơn hàng thành công');
         } catch (error: any) {
-            const message = error.response?.data?.error || 'Khong the huy don hang';
+            const message = error.response?.data?.error || 'Không thể hủy đơn hàng';
             toast.error(message);
         } finally {
             setCancelling(false);
+        }
+    };
+
+    const handleSubmitReturn = async () => {
+        if (!order || !returnReason.trim()) {
+            toast.error('Vui lòng nhập lý do trả hàng');
+            return;
+        }
+        setSubmittingReturn(true);
+        try {
+            const res = await createReturnRequest(order.id, returnReason.trim());
+            setReturnRequest(res.data);
+            setShowReturnForm(false);
+            setReturnReason('');
+            toast.success('Đã gửi yêu cầu trả hàng');
+        } catch (error: any) {
+            const msg = error.response?.data?.error || error.response?.data?.detail || 'Không thể gửi yêu cầu trả hàng';
+            toast.error(msg);
+        } finally {
+            setSubmittingReturn(false);
         }
     };
 
@@ -119,6 +166,8 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                 return { label: 'Giao thành công', color: 'text-green-600', bg: 'bg-green-50', icon: CheckCircle2, step: 4 };
             case 'CANCELLED':
                 return { label: 'Đã hủy', color: 'text-red-600', bg: 'bg-red-50', icon: XCircle, step: 0 };
+            case 'RETURNED':
+                return { label: 'Đã trả hàng', color: 'text-orange-600', bg: 'bg-orange-50', icon: RotateCcw, step: 0 };
             default:
                 return { label: status, color: 'text-gray-600', bg: 'bg-gray-50', icon: Package, step: 0 };
         }
@@ -193,7 +242,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                 <div className="flex gap-3">
                      <Button variant="outline" onClick={handleDownloadInvoice} className="gap-2">
                         <Download className="w-4 h-4" />
-                        Xuat hoa don
+                        Xuất hóa đơn
                     </Button>
                     {(order.status === 'PENDING' || order.status === 'CONFIRMED') && (
                         <Button
@@ -203,7 +252,17 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                             className="gap-2"
                         >
                             <XCircle className="w-4 h-4" />
-                            {cancelling ? 'Dang huy...' : 'Huy don hang'}
+                            {cancelling ? 'Đang hủy...' : 'Hủy đơn hàng'}
+                        </Button>
+                    )}
+                    {order.status === 'COMPLETED' && !returnRequest && (
+                        <Button
+                            variant="outline"
+                            onClick={() => setShowReturnForm(v => !v)}
+                            className="gap-2 border-orange-300 text-orange-600 hover:bg-orange-50"
+                        >
+                            <RotateCcw className="w-4 h-4" />
+                            Yêu cầu trả hàng
                         </Button>
                     )}
                 </div>
@@ -230,6 +289,74 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* Return Request Form */}
+                    {showReturnForm && (
+                        <Card className="border-orange-200 bg-orange-50/30">
+                            <CardHeader className="pb-3">
+                                <CardTitle className="text-base flex items-center gap-2 text-orange-700">
+                                    <RotateCcw className="w-4 h-4" />
+                                    Yêu cầu trả hàng
+                                </CardTitle>
+                                <CardDescription>Chính sách trả hàng trong vòng 7 ngày kể từ ngày nhận hàng.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-3">
+                                <Textarea
+                                    placeholder="Mô tả lý do trả hàng (sản phẩm lỗi, không đúng mô tả, ...)"
+                                    value={returnReason}
+                                    onChange={e => setReturnReason(e.target.value)}
+                                    rows={3}
+                                    className="resize-none"
+                                />
+                                <div className="flex gap-2 justify-end">
+                                    <Button variant="outline" size="sm" onClick={() => { setShowReturnForm(false); setReturnReason(''); }}>
+                                        Hủy
+                                    </Button>
+                                    <Button size="sm" onClick={handleSubmitReturn} disabled={submittingReturn || !returnReason.trim()}
+                                        className="bg-orange-600 hover:bg-orange-700">
+                                        {submittingReturn ? 'Đang gửi...' : 'Gửi yêu cầu'}
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {/* Return Request Status */}
+                    {returnRequest && (
+                        <Card className={`border-l-4 ${
+                            returnRequest.status === 'APPROVED' || returnRequest.status === 'COMPLETED'
+                                ? 'border-l-green-500 bg-green-50/30'
+                                : returnRequest.status === 'REJECTED'
+                                ? 'border-l-red-500 bg-red-50/30'
+                                : 'border-l-orange-400 bg-orange-50/30'
+                        }`}>
+                            <CardContent className="p-4 flex items-start gap-3">
+                                <AlertCircle className={`w-5 h-5 mt-0.5 shrink-0 ${
+                                    returnRequest.status === 'APPROVED' || returnRequest.status === 'COMPLETED' ? 'text-green-600'
+                                    : returnRequest.status === 'REJECTED' ? 'text-red-600' : 'text-orange-500'
+                                }`} />
+                                <div className="flex-1 text-sm">
+                                    <p className="font-semibold text-gray-800">
+                                        Yêu cầu trả hàng — {
+                                            returnRequest.status === 'PENDING' ? 'Đang chờ xử lý'
+                                            : returnRequest.status === 'APPROVED' ? 'Đã duyệt'
+                                            : returnRequest.status === 'REJECTED' ? 'Bị từ chối'
+                                            : 'Hoàn tất'
+                                        }
+                                    </p>
+                                    <p className="text-gray-600 mt-0.5">Lý do: {returnRequest.reason}</p>
+                                    {returnRequest.admin_notes && (
+                                        <p className="text-gray-600 mt-1">Ghi chú admin: {returnRequest.admin_notes}</p>
+                                    )}
+                                    {returnRequest.refund_amount > 0 && (
+                                        <p className="font-medium text-green-700 mt-1">
+                                            Hoàn tiền: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(returnRequest.refund_amount)}
+                                        </p>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
 
                     {/* Order Items */}
                     <Card>

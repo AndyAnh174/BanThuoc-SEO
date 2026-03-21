@@ -22,6 +22,7 @@ export function CheckoutPage() {
   const router = useRouter();
   const { cart, isLoading } = useCartStore();
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [orderPlaced, setOrderPlaced] = useState(false);
 
   const methods = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema) as any,
@@ -53,13 +54,13 @@ export function CheckoutPage() {
     fetchRelated();
   }, []);
 
-  // Redirect if empty
+  // Redirect if empty (but not when order was just placed - that clears the cart intentionally)
   useEffect(() => {
-    if (!isLoading && cart && cart.items.length === 0) {
+    if (!orderPlaced && !isLoading && cart && cart.items.length === 0) {
         toast.error("Giỏ hàng trống, vui lòng chọn sản phẩm");
         router.push('/products');
     }
-  }, [cart, isLoading, router]);
+  }, [cart, isLoading, orderPlaced, router]);
 
   const handleApplyVoucher = async (code: string) => {
       if (!code || !cart) return;
@@ -132,8 +133,9 @@ export function CheckoutPage() {
         const orderId = newOrder.data?.id;
 
         toast.success("Đặt hàng thành công! Đơn hàng đang được xử lý.");
+        setOrderPlaced(true);
         useCartStore.getState().clearCart();
-        
+
         router.push(`/checkout/success?orderId=${orderId}&method=${data.paymentMethod}`);
     } catch (error: any) {
         console.error("Order creation failed:", error);

@@ -8,6 +8,6 @@ echo "Running migrations..."
 python manage.py migrate
 
 echo "Collecting static files..."
-python manage.py collectstatic --noinput
+python manage.py collectstatic --noinput --clear 2>/dev/null || python manage.py collectstatic --noinput 2>/dev/null || echo "Warning: collectstatic had issues, continuing..."
 
 exec "$@"

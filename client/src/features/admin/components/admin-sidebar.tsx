@@ -20,7 +20,9 @@ import {
     BarChart3,
     Boxes,
     Megaphone,
-    Cog
+    Cog,
+    Star,
+    RotateCcw
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -75,6 +77,8 @@ const sidebarSections: SidebarSection[] = [
         defaultOpen: false,
         items: [
             { label: "Đơn hàng", href: "/admin/orders", icon: ShoppingCart },
+            { label: "Đánh giá", href: "/admin/reviews", icon: Star },
+            { label: "Trả hàng", href: "/admin/returns", icon: RotateCcw },
         ]
     },
     {

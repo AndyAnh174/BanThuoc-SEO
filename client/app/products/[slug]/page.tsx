@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/products/${slug}/`,
+      `${process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://backend:8000/api'}/products/${slug}/`,
       { next: { revalidate: 60 } }
     );
     
@@ -92,7 +92,7 @@ export default async function ProductDetailPage({ params }: Props) {
   // Fetch product data on server
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/products/${slug}/`,
+      `${process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://backend:8000/api'}/products/${slug}/`,
       { next: { revalidate: 60 } }
     );
     

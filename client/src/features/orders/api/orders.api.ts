@@ -51,7 +51,7 @@ export const getOrders = async (params?: any) => {
 };
 
 export const updateOrderStatus = async (id: number, status: string) => {
-    return http.patch(`/orders/${id}/`, { status });
+    return http.post(`/orders/${id}/update-status/`, { status });
 };
 
 export const getOrder = async (id: string | number) => {
@@ -60,4 +60,12 @@ export const getOrder = async (id: string | number) => {
 
 export const cancelOrder = async (id: number | string) => {
   return http.post(`/orders/${id}/cancel/`);
+};
+
+export const createReturnRequest = async (orderId: number | string, reason: string) => {
+  return http.post(`/orders/${orderId}/return/`, { reason });
+};
+
+export const getMyReturnRequests = async () => {
+  return http.get('/returns/my/');
 };

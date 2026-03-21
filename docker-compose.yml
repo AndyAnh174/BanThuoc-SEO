@@ -42,6 +42,12 @@ services:
       - REDIS_HOST=redis
       - DJANGO_DEBUG=0
       - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,backend
+      - EMAIL_HOST=${EMAIL_HOST:-smtp.gmail.com}
+      - EMAIL_PORT=${EMAIL_PORT:-587}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS:-True}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER:-}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:-}
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL:-}
     depends_on:
       - db
       - redis
@@ -51,15 +57,13 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: https://banthuoc.andyanh.id.vn/api
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
-      # In browser, localhost works. Server-side, might need internal name?
-      # Actually for server-side rendering fetch, we can just use the public one if DNS allows,
-      # but ideally 'http://backend:8000/api' for internal.
-      # However Next.js dual env for API URL is tricky.
-      # Let's keep public URL for now.
+      - NEXT_PUBLIC_API_URL=https://banthuoc.andyanh.id.vn/api
+      - INTERNAL_API_URL=http://backend:8000/api
     depends_on:
       - backend
 

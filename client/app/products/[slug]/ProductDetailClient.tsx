@@ -25,6 +25,7 @@ import { ProductCard } from '@/src/features/products';
 import { MappedProduct } from '@/src/lib/api-mapper';
 import { toggleFavorite } from '@/src/features/products/api/products.api';
 import { useAuthStore } from '@/src/features/auth/stores/auth.store';
+import { useCartStore } from '@/src/features/cart/stores/cart.store';
 
 interface ProductImage {
   id: string;
@@ -70,6 +71,7 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(product.isLiked || false);
   const { isAuthenticated } = useAuthStore();
+  const { addToCart } = useCartStore();
   const router = useRouter();
 
   // Calculate price
@@ -106,9 +108,13 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
   };
 
   // Handle add to cart
-  const handleAddToCart = () => {
-    // TODO: Implement cart logic
-    toast.success(`Đã thêm ${quantity} ${product.name} vào giỏ hàng`);
+  const handleAddToCart = async () => {
+    if (!isAuthenticated) {
+      toast.error('Vui lòng đăng nhập để thêm vào giỏ hàng');
+      router.push('/auth/login');
+      return;
+    }
+    await addToCart(product.id, quantity);
   };
 
   // Handle share

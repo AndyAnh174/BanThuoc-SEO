@@ -9,8 +9,6 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 # Install system dependencies
-# gcc and others might be needed for some python packages like psycopg2 if we were building from source, 
-# but we used psycopg2-binary so we might be fine. Installing basics just in case.
 RUN apt-get update && apt-get install -y \
     netcat-openbsd \
     dos2unix \
@@ -20,10 +18,9 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Install Playwright dependencies manually
-
-# Install Playwright and its dependencies
-RUN apt-get update && playwright install --with-deps chromium && rm -rf /var/lib/apt/lists/*
+# Install Playwright browsers to a fixed path accessible by all users
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright-browsers
+RUN playwright install --with-deps chromium && rm -rf /var/lib/apt/lists/*
 
 
 
