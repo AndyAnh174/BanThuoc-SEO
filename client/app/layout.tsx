@@ -14,8 +14,38 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BanThuoc - Hệ thống phân phối dược phẩm B2B",
-  description: "Nền tảng phân phối dược phẩm và thực phẩm chức năng cho nhà thuốc",
+  title: {
+    default: "BanThuoc - Nhà thuốc online uy tín | Dược phẩm chính hãng",
+    template: "%s | BanThuoc",
+  },
+  description: "Mua thuốc online chính hãng tại BanThuoc. Hơn 10.000+ sản phẩm dược phẩm, thực phẩm chức năng, thiết bị y tế. Giao nhanh, giá tốt, đảm bảo chất lượng.",
+  keywords: ["mua thuốc online", "nhà thuốc online", "dược phẩm chính hãng", "thực phẩm chức năng", "thiết bị y tế", "banthuoc"],
+  authors: [{ name: "BanThuoc" }],
+  creator: "BanThuoc",
+  metadataBase: new URL("https://banthuoc.andyanh.id.vn"),
+  openGraph: {
+    type: "website",
+    locale: "vi_VN",
+    url: "https://banthuoc.andyanh.id.vn",
+    siteName: "BanThuoc",
+    title: "BanThuoc - Nhà thuốc online uy tín",
+    description: "Mua thuốc online chính hãng tại BanThuoc. Hơn 10.000+ sản phẩm dược phẩm, thực phẩm chức năng, thiết bị y tế.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BanThuoc - Nhà thuốc online uy tín",
+    description: "Mua thuốc online chính hãng tại BanThuoc.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({

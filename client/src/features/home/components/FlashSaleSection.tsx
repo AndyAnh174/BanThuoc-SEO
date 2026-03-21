@@ -6,246 +6,226 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductCard } from '@/src/features/products';
 import { getCurrentFlashSale } from '@/src/features/products';
-import { ArrowRight, Clock, Zap } from 'lucide-react';
+import { ArrowRight, Zap } from 'lucide-react';
 
 interface FlashSaleData {
-  id: string;
-  name: string;
-  slug: string;
-  startTime: string;
-  endTime: string;
-  status: string;
-  items: Array<{
     id: string;
-    product: {
-      id: string;
-      name: string;
-      slug: string;
-      price: number;
-      salePrice: number | null;
-      imageUrl: string | null;
-      category: { name: string; slug: string } | null;
-      manufacturer: { name: string } | null;
-      unit: string;
-      stockQuantity: number;
-    };
-    flashSalePrice: number;
-    quantity: number;
-    soldQuantity: number;
-  }>;
+    name: string;
+    slug: string;
+    startTime: string;
+    endTime: string;
+    status: string;
+    items: Array<{
+        id: string;
+        product: {
+            id: string;
+            name: string;
+            slug: string;
+            price: number;
+            salePrice: number | null;
+            imageUrl: string | null;
+            category: { name: string; slug: string } | null;
+            manufacturer: { name: string } | null;
+            unit: string;
+            stockQuantity: number;
+        };
+        flashSalePrice: number;
+        quantity: number;
+        soldQuantity: number;
+    }>;
 }
 
 interface TimeLeft {
-  hours: number;
-  minutes: number;
-  seconds: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+}
+
+// Compact countdown for the section header
+function SectionCountdown({ endTime }: { endTime: string }) {
+    const [t, setT] = useState<TimeLeft>({ hours: 0, minutes: 0, seconds: 0 });
+
+    useEffect(() => {
+        const calc = (): TimeLeft => {
+            const diff = Math.max(0, new Date(endTime).getTime() - Date.now());
+            return {
+                hours: Math.floor(diff / 3600000),
+                minutes: Math.floor((diff % 3600000) / 60000),
+                seconds: Math.floor((diff % 60000) / 1000),
+            };
+        };
+        setT(calc());
+        const timer = setInterval(() => setT(calc()), 1000);
+        return () => clearInterval(timer);
+    }, [endTime]);
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    const Box = ({ val }: { val: number }) => (
+        <span className="bg-slate-800 text-white font-mono text-sm font-bold w-9 h-9 inline-flex items-center justify-center rounded-md tabular-nums">
+            {pad(val)}
+        </span>
+    );
+
+    return (
+        <div className="flex items-center gap-1">
+            <Box val={t.hours} />
+            <span className="text-slate-400 font-bold text-sm">:</span>
+            <Box val={t.minutes} />
+            <span className="text-slate-400 font-bold text-sm">:</span>
+            <Box val={t.seconds} />
+        </div>
+    );
 }
 
 export function FlashSaleSection() {
-  const [flashSale, setFlashSale] = useState<FlashSaleData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ hours: 0, minutes: 0, seconds: 0 });
+    const [flashSale, setFlashSale] = useState<FlashSaleData | null>(null);
+    const [loading, setLoading] = useState(true);
 
-  // Calculate time left
-  const calculateTimeLeft = useCallback((endTime: string): TimeLeft => {
-    const end = new Date(endTime).getTime();
-    const now = new Date().getTime();
-    const diff = Math.max(0, end - now);
+    useEffect(() => {
+        const fetchFlashSale = async () => {
+            try {
+                const response = await getCurrentFlashSale();
+                const data = response.data;
+                const session = data.current_session || data.upcoming_session;
 
-    return {
-      hours: Math.floor(diff / (1000 * 60 * 60)),
-      minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
-      seconds: Math.floor((diff % (1000 * 60)) / 1000),
-    };
-  }, []);
+                if (session && data.featured_items && data.featured_items.length > 0) {
+                    const transformed: FlashSaleData = {
+                        id: session.id,
+                        name: session.name,
+                        slug: session.slug,
+                        startTime: session.start_time,
+                        endTime: session.end_time,
+                        status: session.status,
+                        items: data.featured_items.map((item: any) => ({
+                            id: item.id,
+                            product: {
+                                id: item.product.id,
+                                name: item.product.name,
+                                slug: item.product.slug,
+                                price: parseFloat(item.product.price) || 0,
+                                salePrice: item.product.sale_price ? parseFloat(item.product.sale_price) : null,
+                                imageUrl: item.product.primary_image?.image_url || item.product.primary_image || null,
+                                category: item.product.category ? { name: item.product.category.name, slug: item.product.category.slug } : null,
+                                manufacturer: item.product.manufacturer ? { name: item.product.manufacturer.name } : null,
+                                unit: item.product.unit || '',
+                                stockQuantity: item.remaining_quantity || 0,
+                            },
+                            flashSalePrice: parseFloat(item.flash_sale_price) || 0,
+                            quantity: item.total_quantity || 0,
+                            soldQuantity: item.sold_quantity || 0,
+                        })),
+                    };
+                    setFlashSale(transformed);
+                }
+            } catch {
+                // silently ignore
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchFlashSale();
+    }, []);
 
-  // Fetch flash sale data
-  useEffect(() => {
-    const fetchFlashSale = async () => {
-      try {
-        const response = await getCurrentFlashSale();
-        const data = response.data;
+    // Loading
+    if (loading) {
+        return (
+            <section className="bg-white border-y border-gray-100 py-8">
+                <div className="container mx-auto px-4">
+                    <div className="flex items-center justify-between mb-6">
+                        <Skeleton className="h-7 w-44" />
+                        <Skeleton className="h-9 w-32" />
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <Skeleton key={i} className="h-72 rounded-xl" />
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
+    }
 
-        // Get the current session (or upcoming if no current)
-        const session = data.current_session || data.upcoming_session;
+    if (!flashSale || flashSale.items.length === 0) return null;
 
-        if (session && data.featured_items && data.featured_items.length > 0) {
-          // Transform the API response to match the expected FlashSaleData format
-          const transformedData: FlashSaleData = {
-            id: session.id,
-            name: session.name,
-            slug: session.slug,
-            startTime: session.start_time,
-            endTime: session.end_time,
-            status: session.status,
-            items: data.featured_items.map((item: any) => ({
-              id: item.id,
-              product: {
-                id: item.product.id,
-                name: item.product.name,
-                slug: item.product.slug,
-                price: parseFloat(item.product.price) || 0,
-                salePrice: item.product.sale_price ? parseFloat(item.product.sale_price) : null,
-                imageUrl: item.product.primary_image?.image_url || null,
-                category: item.product.category ? {
-                  name: item.product.category.name,
-                  slug: item.product.category.slug,
-                } : null,
-                manufacturer: item.product.manufacturer ? {
-                  name: item.product.manufacturer.name,
-                } : null,
-                unit: item.product.unit || '',
-                stockQuantity: item.remaining_quantity || 0,
-              },
-              flashSalePrice: parseFloat(item.flash_sale_price) || 0,
-              quantity: item.total_quantity || 0,
-              soldQuantity: item.sold_quantity || 0,
-            })),
-          };
-          setFlashSale(transformedData);
-        }
-      } catch (error) {
-        console.error('Failed to fetch flash sale:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFlashSale();
-  }, []);
-
-  // Countdown timer
-  useEffect(() => {
-    if (!flashSale?.endTime) return;
-
-    const timer = setInterval(() => {
-      const left = calculateTimeLeft(flashSale.endTime);
-      setTimeLeft(left);
-
-      // Refresh if sale ended
-      if (left.hours === 0 && left.minutes === 0 && left.seconds === 0) {
-        clearInterval(timer);
-        // Could trigger a refetch here
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [flashSale?.endTime, calculateTimeLeft]);
-
-  // Loading skeleton
-  if (loading) {
     return (
-      <section className="py-12 bg-linear-to-r from-red-50 to-orange-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <Skeleton className="h-10 w-48" />
-            <Skeleton className="h-10 w-32" />
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {[...Array(5)].map((_, i) => (
-              <Skeleton key={i} className="h-80 rounded-lg" />
-            ))}
-          </div>
-        </div>
-      </section>
+        <section className="bg-white border-y border-gray-100 py-8">
+            <div className="container mx-auto px-4">
+
+                {/* Section header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div className="flex items-center gap-3">
+                        {/* Red accent bar */}
+                        <div className="w-1 h-8 bg-red-600 rounded-full shrink-0" />
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-1.5">
+                                    <Zap className="h-5 w-5 text-red-600 fill-red-600" />
+                                    Flash Sale
+                                </h2>
+                                <span className="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-2 py-0.5 rounded-full border border-red-100">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                    ĐANG DIỄN RA
+                                </span>
+                            </div>
+                            <p className="text-sm text-gray-400 mt-0.5">{flashSale.name}</p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 shrink-0">
+                        {/* Countdown */}
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-400 font-medium hidden sm:block">Kết thúc sau</span>
+                            <SectionCountdown endTime={flashSale.endTime} />
+                        </div>
+
+                        {/* View all */}
+                        <Link href="/flash-sale">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="rounded-full border-gray-200 text-gray-700 hover:border-red-200 hover:text-red-600 hover:bg-red-50 transition-colors gap-1.5 text-sm"
+                            >
+                                Xem tất cả
+                                <ArrowRight className="h-3.5 w-3.5" />
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Product grid */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {flashSale.items.slice(0, 5).map((item) => {
+                        const soldPercentage = item.quantity > 0
+                            ? Math.round((item.soldQuantity / item.quantity) * 100)
+                            : 0;
+                        const remainingQuantity = item.quantity - item.soldQuantity;
+
+                        return (
+                            <ProductCard
+                                key={item.id}
+                                id={item.product.id}
+                                name={item.product.name}
+                                slug={item.product.slug}
+                                price={item.product.price}
+                                salePrice={item.product.salePrice}
+                                imageUrl={item.product.imageUrl || undefined}
+                                category={item.product.category || undefined}
+                                manufacturer={item.product.manufacturer || undefined}
+                                unit={item.product.unit}
+                                stockQuantity={remainingQuantity}
+                                flashSale={{
+                                    flashSalePrice: item.flashSalePrice,
+                                    soldPercentage,
+                                    remainingQuantity,
+                                }}
+                            />
+                        );
+                    })}
+                </div>
+            </div>
+        </section>
     );
-  }
-
-  // No active flash sale
-  if (!flashSale || !flashSale.items || flashSale.items.length === 0) {
-    return null;
-  }
-
-  const formatNumber = (n: number) => n.toString().padStart(2, '0');
-
-  return (
-    <section className="py-12 bg-linear-to-r from-red-50 to-orange-50 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-red-100 rounded-full blur-3xl opacity-50" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-100 rounded-full blur-3xl opacity-50" />
-      </div>
-
-      <div className="container mx-auto px-4 relative">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center animate-pulse">
-              <Zap className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                ⚡ Flash Sale
-              </h2>
-              <p className="text-gray-600">{flashSale.name}</p>
-            </div>
-          </div>
-
-          {/* Countdown */}
-          <div className="flex items-center gap-3">
-            <Clock className="w-5 h-5 text-red-500" />
-            <span className="text-gray-600 font-medium">Kết thúc sau:</span>
-            <div className="flex gap-2">
-              <div className="bg-red-500 text-white px-3 py-2 rounded-lg font-bold text-lg min-w-[48px] text-center">
-                {formatNumber(timeLeft.hours)}
-              </div>
-              <span className="text-2xl font-bold text-red-500">:</span>
-              <div className="bg-red-500 text-white px-3 py-2 rounded-lg font-bold text-lg min-w-[48px] text-center">
-                {formatNumber(timeLeft.minutes)}
-              </div>
-              <span className="text-2xl font-bold text-red-500">:</span>
-              <div className="bg-red-500 text-white px-3 py-2 rounded-lg font-bold text-lg min-w-[48px] text-center">
-                {formatNumber(timeLeft.seconds)}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Products grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {flashSale.items.slice(0, 5).map((item) => {
-            const soldPercentage = item.quantity > 0
-              ? Math.round((item.soldQuantity / item.quantity) * 100)
-              : 0;
-            const remainingQuantity = item.quantity - item.soldQuantity;
-
-            return (
-              <ProductCard
-                key={item.id}
-                id={item.product.id}
-                name={item.product.name}
-                slug={item.product.slug}
-                price={item.product.price}
-                salePrice={item.product.salePrice}
-                imageUrl={item.product.imageUrl || undefined}
-                category={item.product.category || undefined}
-                manufacturer={item.product.manufacturer || undefined}
-                unit={item.product.unit}
-                stockQuantity={remainingQuantity}
-                flashSale={{
-                  flashSalePrice: item.flashSalePrice,
-                  soldPercentage,
-                  remainingQuantity,
-                }}
-              />
-            );
-          })}
-        </div>
-
-        {/* View all button */}
-        {flashSale.items.length > 5 && (
-          <div className="text-center mt-8">
-            <Button variant="outline" size="lg" className="bg-white" asChild>
-              <Link href={`/flash-sale/${flashSale.slug}`}>
-                Xem tất cả ({flashSale.items.length} sản phẩm)
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Link>
-            </Button>
-          </div>
-        )}
-      </div>
-    </section>
-  );
 }
 
 export default FlashSaleSection;

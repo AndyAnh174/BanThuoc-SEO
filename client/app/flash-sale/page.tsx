@@ -3,138 +3,159 @@
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Zap, Clock, Package, ShoppingCart, AlertCircle } from 'lucide-react';
+import { Zap, Package, ShoppingCart, AlertCircle, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
 import { MainLayout } from '@/src/features/layout';
 import { flashSaleApi, CurrentFlashSaleResponse, FlashSaleItem } from '@/src/features/flash-sale/api/flash-sale.api';
 
-// Format price in VND
-const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-};
+const formatPrice = (price: number) =>
+    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
 
-// Countdown timer component
+// ── Countdown Timer ────────────────────────────────────────────────────────────
 function CountdownTimer({ endTime, onEnd }: { endTime: string; onEnd?: () => void }) {
     const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
     useEffect(() => {
-        const calculateTimeLeft = () => {
-            const end = new Date(endTime).getTime();
-            const now = Date.now();
-            const diff = Math.max(0, end - now);
-
-            if (diff === 0 && onEnd) {
-                onEnd();
-            }
-
+        const calc = () => {
+            const diff = Math.max(0, new Date(endTime).getTime() - Date.now());
+            if (diff === 0 && onEnd) onEnd();
             return {
-                hours: Math.floor(diff / (1000 * 60 * 60)),
-                minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
-                seconds: Math.floor((diff % (1000 * 60)) / 1000),
+                hours: Math.floor(diff / 3600000),
+                minutes: Math.floor((diff % 3600000) / 60000),
+                seconds: Math.floor((diff % 60000) / 1000),
             };
         };
-
-        setTimeLeft(calculateTimeLeft());
-        const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
-        return () => clearInterval(timer);
+        setTimeLeft(calc());
+        const t = setInterval(() => setTimeLeft(calc()), 1000);
+        return () => clearInterval(t);
     }, [endTime, onEnd]);
 
+    const Segment = ({ value, label }: { value: number; label: string }) => (
+        <div className="flex flex-col items-center">
+            <span className="bg-slate-800 text-white font-mono font-bold text-xl w-12 h-12 flex items-center justify-center rounded-lg tabular-nums">
+                {String(value).padStart(2, '0')}
+            </span>
+            <span className="text-[10px] font-medium text-gray-400 mt-1 tracking-widest uppercase">{label}</span>
+        </div>
+    );
+
     return (
-        <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-red-500" />
-            <div className="flex gap-1 font-mono text-lg font-bold">
-                <span className="bg-red-600 text-white px-2 py-1 rounded">
-                    {String(timeLeft.hours).padStart(2, '0')}
-                </span>
-                <span className="text-red-600">:</span>
-                <span className="bg-red-600 text-white px-2 py-1 rounded">
-                    {String(timeLeft.minutes).padStart(2, '0')}
-                </span>
-                <span className="text-red-600">:</span>
-                <span className="bg-red-600 text-white px-2 py-1 rounded">
-                    {String(timeLeft.seconds).padStart(2, '0')}
-                </span>
-            </div>
+        <div className="flex items-end gap-1">
+            <Segment value={timeLeft.hours} label="Giờ" />
+            <span className="text-slate-400 font-bold text-xl mb-3.5 leading-none">:</span>
+            <Segment value={timeLeft.minutes} label="Phút" />
+            <span className="text-slate-400 font-bold text-xl mb-3.5 leading-none">:</span>
+            <Segment value={timeLeft.seconds} label="Giây" />
         </div>
     );
 }
 
-// Flash sale item card
+// ── Product Card ───────────────────────────────────────────────────────────────
 function FlashSaleItemCard({ item }: { item: FlashSaleItem }) {
-    const primaryImage = item.product.images?.find(img => img.is_primary) || item.product.images?.[0];
+    const imageUrl: string | null =
+        (item.product as any).primary_image?.image_url ||
+        (item.product as any).primary_image ||
+        item.product.images?.find(img => img.is_primary)?.image_url ||
+        item.product.images?.[0]?.image_url ||
+        null;
 
     return (
-        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden group">
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden group flex flex-col">
             {/* Image */}
-            <div className="relative aspect-square bg-gray-100">
-                {primaryImage ? (
+            <div className="relative aspect-square bg-gray-50 shrink-0">
+                {imageUrl ? (
                     <Image
-                        src={primaryImage.image_url}
+                        src={imageUrl}
                         alt={item.product.name}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="object-contain p-3 group-hover:scale-105 transition-transform duration-300"
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                        <Package className="h-16 w-16 text-gray-300" />
+                        <Package className="h-14 w-14 text-gray-200" />
                     </div>
                 )}
 
                 {/* Discount badge */}
-                <Badge className="absolute top-2 left-2 bg-red-600 text-white font-bold">
+                <div className="absolute top-2.5 left-2.5 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                     -{item.discount_percentage}%
-                </Badge>
+                </div>
 
                 {/* Sold out overlay */}
                 {item.is_sold_out && (
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                        <span className="text-white text-xl font-bold">HẾT HÀNG</span>
+                    <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+                        <span className="text-gray-500 font-semibold text-sm border border-gray-300 px-3 py-1 rounded-full">
+                            Hết hàng
+                        </span>
                     </div>
                 )}
             </div>
 
             {/* Content */}
-            <div className="p-4 space-y-3">
-                <Link href={`/products/${item.product.slug}`}>
-                    <h3 className="font-medium text-gray-900 line-clamp-2 hover:text-green-600 transition-colors">
+            <div className="p-3.5 flex flex-col flex-1 gap-2.5">
+                <Link href={`/products/${item.product.slug}`} className="block">
+                    <h3 className="text-sm font-medium text-gray-800 line-clamp-2 leading-snug hover:text-red-600 transition-colors">
                         {item.product.name}
                     </h3>
                 </Link>
 
                 {/* Price */}
-                <div className="space-y-1">
-                    <div className="text-xl font-bold text-red-600">
+                <div className="flex items-baseline gap-2 flex-wrap">
+                    <span className="text-lg font-bold text-red-600 leading-none">
                         {formatPrice(item.flash_sale_price)}
-                    </div>
-                    <div className="text-sm text-gray-400 line-through">
+                    </span>
+                    <span className="text-xs text-gray-400 line-through">
                         {formatPrice(item.original_price)}
-                    </div>
+                    </span>
                 </div>
 
-                {/* Progress bar */}
+                {/* Progress */}
                 <div className="space-y-1">
-                    <Progress value={item.sold_percentage} className="h-2" />
-                    <div className="flex justify-between text-xs text-gray-500">
-                        <span>Đã bán: {item.sold_quantity}</span>
-                        <span>Còn: {item.remaining_quantity}</span>
+                    <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                            className="h-full bg-amber-400 rounded-full transition-all duration-500"
+                            style={{ width: `${Math.min(item.sold_percentage, 100)}%` }}
+                        />
+                    </div>
+                    <div className="flex justify-between text-[11px] text-gray-400">
+                        <span>Đã bán {item.sold_quantity}</span>
+                        <span>Còn {item.remaining_quantity}</span>
                     </div>
                 </div>
 
-                {/* Add to cart button */}
-                <Button
-                    className="w-full bg-red-600 hover:bg-red-700"
+                {/* CTA */}
+                <button
                     disabled={item.is_sold_out}
+                    className="mt-auto w-full h-10 rounded-xl bg-red-600 hover:bg-red-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors flex items-center justify-center gap-2"
                 >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    {item.is_sold_out ? 'Hết hàng' : 'Mua ngay'}
-                </Button>
+                    <ShoppingCart className="h-4 w-4 shrink-0" />
+                    <span>{item.is_sold_out ? 'Hết hàng' : 'Mua ngay'}</span>
+                </button>
             </div>
         </div>
     );
 }
 
+// ── Loading skeleton ───────────────────────────────────────────────────────────
+function CardSkeleton() {
+    return (
+        <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+            <Skeleton className="aspect-square w-full" />
+            <div className="p-3.5 space-y-2.5">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-5 w-2/3" />
+                <Skeleton className="h-1.5 w-full" />
+                <Skeleton className="h-10 w-full rounded-xl" />
+            </div>
+        </div>
+    );
+}
+
+// ── Page ───────────────────────────────────────────────────────────────────────
 export default function FlashSalePage() {
     const [data, setData] = useState<CurrentFlashSaleResponse | null>(null);
     const [loading, setLoading] = useState(true);
@@ -145,58 +166,68 @@ export default function FlashSalePage() {
             setLoading(true);
             const response = await flashSaleApi.getCurrent();
             setData(response.data);
-        } catch (err: any) {
+        } catch {
             setError('Không thể tải dữ liệu Flash Sale');
-            console.error('Flash sale error:', err);
         } finally {
             setLoading(false);
         }
     }, []);
 
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+    useEffect(() => { fetchData(); }, [fetchData]);
 
+    const session = data?.current_session || data?.upcoming_session;
+    const isActive = !!data?.current_session;
+
+    // ── Loading ──
     if (loading) {
         return (
             <MainLayout>
-                <div className="min-h-screen bg-gradient-to-b from-red-50 to-white flex items-center justify-center">
-                    <div className="animate-pulse flex flex-col items-center gap-4">
-                        <Zap className="h-16 w-16 text-red-500" />
-                        <p className="text-gray-500">Đang tải Flash Sale...</p>
+                <div className="min-h-screen bg-gray-50">
+                    <div className="bg-white border-b border-gray-100">
+                        <div className="max-w-6xl mx-auto px-4 py-8">
+                            <Skeleton className="h-6 w-32 mb-3" />
+                            <Skeleton className="h-9 w-64 mb-2" />
+                            <Skeleton className="h-4 w-96" />
+                        </div>
+                    </div>
+                    <div className="max-w-6xl mx-auto px-4 py-8">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)}
+                        </div>
                     </div>
                 </div>
             </MainLayout>
         );
     }
 
+    // ── Error ──
     if (error) {
         return (
             <MainLayout>
-                <div className="min-h-screen bg-gradient-to-b from-red-50 to-white flex items-center justify-center">
+                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                     <div className="text-center">
-                        <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-                        <p className="text-gray-600">{error}</p>
-                        <Button onClick={fetchData} className="mt-4">Thử lại</Button>
+                        <AlertCircle className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                        <p className="text-gray-500 mb-4">{error}</p>
+                        <Button variant="outline" onClick={fetchData} className="rounded-xl">Thử lại</Button>
                     </div>
                 </div>
             </MainLayout>
         );
     }
 
-    const session = data?.current_session || data?.upcoming_session;
-    const isActive = data?.current_session !== null;
-
+    // ── Empty ──
     if (!session) {
         return (
             <MainLayout>
-                <div className="min-h-screen bg-gradient-to-b from-red-50 to-white">
-                    <div className="container mx-auto px-4 py-16 text-center">
-                        <Zap className="h-24 w-24 text-gray-300 mx-auto mb-6" />
-                        <h1 className="text-3xl font-bold text-gray-700 mb-4">Chưa có Flash Sale</h1>
-                        <p className="text-gray-500 mb-8">Hiện tại chưa có chương trình Flash Sale nào. Hãy quay lại sau nhé!</p>
+                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                    <div className="text-center">
+                        <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                            <Zap className="h-9 w-9 text-gray-300" />
+                        </div>
+                        <h1 className="text-xl font-bold text-gray-700 mb-2">Chưa có Flash Sale</h1>
+                        <p className="text-sm text-gray-400 mb-6">Hãy quay lại sau để săn deal hot nhé!</p>
                         <Link href="/">
-                            <Button size="lg">Về trang chủ</Button>
+                            <Button variant="outline" className="rounded-xl">Về trang chủ</Button>
                         </Link>
                     </div>
                 </div>
@@ -204,71 +235,88 @@ export default function FlashSalePage() {
         );
     }
 
+    const items = data?.featured_items ?? [];
+
     return (
         <MainLayout>
-            <div className="min-h-screen bg-gradient-to-b from-red-50 to-white">
-                {/* Hero Section */}
-                <div className="bg-gradient-to-r from-red-600 to-orange-500 text-white">
-                    <div className="container mx-auto px-4 py-12">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                            <div className="flex items-center gap-4">
-                                <Zap className="h-12 w-12" />
+            <div className="min-h-screen bg-gray-50">
+
+                {/* ── Hero header ── */}
+                <div className="bg-white border-b border-gray-100">
+                    <div className="max-w-6xl mx-auto px-4 py-7">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+
+                            {/* Left: title block */}
+                            <div className="flex items-start gap-4">
+                                {/* Red accent bar */}
+                                <div className="w-1 self-stretch bg-red-600 rounded-full shrink-0" />
                                 <div>
-                                    <h1 className="text-3xl md:text-4xl font-bold">{session.name}</h1>
-                                    <p className="text-white/80 mt-1">{session.description || 'Săn deal hot - Giá sốc mỗi ngày!'}</p>
+                                    {/* Labels row */}
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="inline-flex items-center gap-1.5 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                                            <Zap className="h-3 w-3" />
+                                            FLASH SALE
+                                        </span>
+                                        {isActive ? (
+                                            <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-green-200">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                                ĐANG DIỄN RA
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-amber-200">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                                                SẮP DIỄN RA
+                                            </span>
+                                        )}
+                                    </div>
+                                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+                                        {session.name}
+                                    </h1>
+                                    {session.description && (
+                                        <p className="text-sm text-gray-500 mt-1">{session.description}</p>
+                                    )}
+                                    {/* Breadcrumb */}
+                                    <nav className="flex items-center gap-1 text-xs text-gray-400 mt-3">
+                                        <Link href="/" className="hover:text-gray-600 transition-colors">Trang chủ</Link>
+                                        <ChevronRight className="h-3 w-3" />
+                                        <span className="text-gray-600">Flash Sale</span>
+                                    </nav>
                                 </div>
                             </div>
 
-                            <div className="text-center">
-                                {isActive ? (
-                                    <>
-                                        <p className="text-sm text-white/80 mb-2">Kết thúc sau:</p>
-                                        <CountdownTimer endTime={session.end_time} onEnd={fetchData} />
-                                    </>
-                                ) : (
-                                    <>
-                                        <p className="text-sm text-white/80 mb-2">Bắt đầu sau:</p>
-                                        <CountdownTimer endTime={session.start_time} onEnd={fetchData} />
-                                    </>
-                                )}
+                            {/* Right: countdown */}
+                            <div className="flex flex-col items-start md:items-end gap-1.5">
+                                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                    {isActive ? 'Kết thúc sau' : 'Bắt đầu sau'}
+                                </p>
+                                <CountdownTimer
+                                    endTime={isActive ? session.end_time : session.start_time}
+                                    onEnd={fetchData}
+                                />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Banner */}
-                {session.banner_image && (
-                    <div className="container mx-auto px-4 -mt-6">
-                        <div className="relative w-full h-48 md:h-64 rounded-xl overflow-hidden shadow-lg">
-                            <Image
-                                src={session.banner_image}
-                                alt={session.name}
-                                fill
-                                className="object-cover"
-                            />
-                        </div>
-                    </div>
-                )}
-
-                {/* Products Grid */}
-                <div className="container mx-auto px-4 py-12">
-                    <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-2xl font-bold text-gray-900">
-                            Sản phẩm đang giảm giá
-                            <span className="text-red-600 ml-2">({data?.featured_items?.length || 0})</span>
+                {/* ── Products ── */}
+                <div className="max-w-6xl mx-auto px-4 py-8">
+                    <div className="flex items-center justify-between mb-5">
+                        <h2 className="text-base font-semibold text-gray-700">
+                            Sản phẩm giảm giá
+                            <span className="ml-2 text-sm font-normal text-gray-400">({items.length})</span>
                         </h2>
                     </div>
 
-                    {data?.featured_items && data.featured_items.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                            {data.featured_items.map((item) => (
+                    {items.length > 0 ? (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {items.map((item) => (
                                 <FlashSaleItemCard key={item.id} item={item} />
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-16">
-                            <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                            <p className="text-gray-500">Chưa có sản phẩm nào trong Flash Sale này</p>
+                        <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
+                            <Package className="h-12 w-12 text-gray-200 mx-auto mb-3" />
+                            <p className="text-sm text-gray-400">Chưa có sản phẩm trong Flash Sale này</p>
                         </div>
                     )}
                 </div>

@@ -30,7 +30,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Loader2, Plus, X } from 'lucide-react';
+import { Loader2, Plus, X, Package, Tag, DollarSign, FileText, Image as ImageIcon, Star, AlertTriangle } from 'lucide-react';
 
 import { useProductsStore } from '../stores/products.store';
 import { useProductTypesStore } from '@/src/features/admin/stores/product-types.store';
@@ -105,6 +105,36 @@ const productSchema = z.object({
 
 type ProductFormData = z.infer<typeof productSchema>;
 
+const TAB_CONFIG = [
+    { value: 'general', label: 'Thông tin', icon: Package },
+    { value: 'pricing', label: 'Giá & Kho', icon: DollarSign },
+    { value: 'details', label: 'Chi tiết', icon: FileText },
+    { value: 'images', label: 'Hình ảnh', icon: ImageIcon },
+];
+
+function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
+    return (
+        <Label className="text-sm font-medium text-gray-700">
+            {children}
+            {required && <span className="text-red-500 ml-0.5">*</span>}
+        </Label>
+    );
+}
+
+function FieldError({ message }: { message?: string }) {
+    if (!message) return null;
+    return <p className="text-xs text-red-500 mt-1">{message}</p>;
+}
+
+function SectionHeader({ children }: { children: React.ReactNode }) {
+    return (
+        <div className="flex items-center gap-2 pt-1">
+            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest whitespace-nowrap">{children}</p>
+            <div className="flex-1 h-px bg-gray-100" />
+        </div>
+    );
+}
+
 export function ProductModal() {
     const {
         isModalOpen,
@@ -137,7 +167,7 @@ export function ProductModal() {
         resolver: zodResolver(productSchema) as any,
         defaultValues: {
             status: 'DRAFT',
-            product_type: '', // No default hardcoded
+            product_type: '',
             unit: 'Hộp',
             requires_prescription: false,
             is_featured: false,
@@ -152,7 +182,6 @@ export function ProductModal() {
         if (isModalOpen) {
             if (categoryTree.length === 0) fetchCategoryTree(false);
             if (productTypes.length === 0) fetchProductTypes();
-            // Fetch manufacturers (public endpoint)
             getManufacturers()
                 .then(res => setManufacturers(res.data.results || []))
                 .catch(err => console.error(err));
@@ -163,27 +192,19 @@ export function ProductModal() {
     useEffect(() => {
         if (isModalOpen) {
             if (modalMode === 'edit' && selectedProduct) {
-                console.log('Editing Product Data:', selectedProduct);
-
-                // Fetch full product details to ensure we have all fields (ingredients, desc, etc.)
-                const { getProductById } = require('../api/products.api'); // Dynamic import to avoid cycles if any, or just import top level
+                const { getProductById } = require('../api/products.api');
 
                 getProductById(selectedProduct.id)
                     .then((fullProduct: any) => {
-                        // Safely map enum values (ensure uppercase)
                         const safeStatus = String(fullProduct.status || 'DRAFT').toUpperCase();
 
-                        // Handle product_type FK
-                        // If it's an object (from expand), get ID. If string, use as is.
                         let pType = fullProduct.product_type;
                         if (typeof pType === 'object' && pType !== null) {
                             pType = pType.id;
                         }
 
-                        // Map product data to form
                         reset({
                             ...fullProduct,
-                            // Ensure optional keys exist with defaults if null
                             stock_quantity: fullProduct.stock_quantity ?? 0,
                             low_stock_threshold: fullProduct.low_stock_threshold ?? 10,
                             unit: fullProduct.unit || 'Hộp',
@@ -193,13 +214,11 @@ export function ProductModal() {
                                 : 'DRAFT',
                         });
 
-                        // Force tab to general
                         setActiveTab('general');
                     })
                     .catch((err: any) => {
                         console.error("Failed to fetch full product details", err);
                         toast.error("Không thể tải chi tiết sản phẩm đầy đủ");
-                        // Fallback to selectedProduct
                         reset({
                             ...selectedProduct,
                             unit: selectedProduct.unit || 'Hộp',
@@ -225,9 +244,7 @@ export function ProductModal() {
     }, [isModalOpen, modalMode, selectedProduct, reset, productTypes]);
 
     const onSubmit: SubmitHandler<ProductFormData> = async (data) => {
-        // Clean up empty optional strings to null/undefined if needed
         console.log('Submitting Form Data:', data);
-
         if (modalMode === 'create') {
             await createProduct(data as ProductCreateInput);
         } else if (selectedProduct) {
@@ -244,7 +261,6 @@ export function ProductModal() {
 
     const removeImage = (index: number) => {
         const newImages = images.filter((_, i) => i !== index);
-        // Reassign primary if needed
         if (images[index].is_primary && newImages.length > 0) {
             newImages[0].is_primary = true;
         }
@@ -254,301 +270,445 @@ export function ProductModal() {
     const onError = (errors: any) => {
         console.error('Form Validation Errors:', errors);
         const invalidFields = Object.keys(errors).join(', ');
-
-        // Show specific message for product_type
         if (errors.product_type) {
-            toast.error(`Lỗi loại sản phẩm: ${errors.product_type.message} (Có thể do giá trị không hợp lệ)`);
+            toast.error(`Lỗi loại sản phẩm: ${errors.product_type.message}`);
         } else {
             toast.error(`Vui lòng kiểm tra lại: ${invalidFields}`);
         }
     };
 
+    const activeTabConfig = TAB_CONFIG.find(t => t.value === activeTab);
+    const isLoading = isCreating || isUpdating;
+
     return (
         <Dialog open={isModalOpen} onOpenChange={closeModal}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle>{modalMode === 'create' ? 'Thêm sản phẩm mới' : 'Cập nhật sản phẩm'}</DialogTitle>
-                </DialogHeader>
+            <DialogContent className="max-w-3xl max-h-[92vh] overflow-hidden flex flex-col p-0 gap-0">
+                {/* Header */}
+                <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3 shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+                        <Package className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div>
+                        <h2 className="text-base font-semibold text-gray-900">
+                            {modalMode === 'create' ? 'Thêm sản phẩm mới' : 'Cập nhật sản phẩm'}
+                        </h2>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                            {modalMode === 'create' ? 'Điền đầy đủ thông tin để tạo sản phẩm' : 'Chỉnh sửa thông tin sản phẩm'}
+                        </p>
+                    </div>
+                </div>
 
-                <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-6">
-                    <Tabs value={activeTab} onValueChange={setActiveTab}>
-                        <TabsList className="grid w-full grid-cols-4">
-                            <TabsTrigger value="general">Thông tin chung</TabsTrigger>
-                            <TabsTrigger value="pricing">Giá & Kho</TabsTrigger>
-                            <TabsTrigger value="details">Chi tiết & SEO</TabsTrigger>
-                            <TabsTrigger value="images">Hình ảnh</TabsTrigger>
-                        </TabsList>
-
-                        {/* Tab 1: General Info */}
-                        <TabsContent value="general" className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Tên sản phẩm *</Label>
-                                    <Input {...register('name')} placeholder="Nhập tên sản phẩm" />
-                                    {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Mã SKU *</Label>
-                                    <Input {...register('sku')} placeholder="SKU-001" />
-                                    {errors.sku && <p className="text-red-500 text-sm">{errors.sku.message}</p>}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Loại sản phẩm *</Label>
-                                    <Controller
-                                        control={control}
-                                        name="product_type"
-                                        render={({ field }) => (
-                                            <Select onValueChange={field.onChange} value={field.value || ''}>
-                                                <SelectTrigger><SelectValue placeholder="Chọn loại sản phẩm" /></SelectTrigger>
-                                                <SelectContent>
-                                                    {productTypes.map((type) => (
-                                                        <SelectItem key={type.id} value={type.id}>{type.name}</SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        )}
-                                    />
-                                    {errors.product_type && <p className="text-red-500 text-sm">{errors.product_type.message}</p>}
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Trạng thái *</Label>
-                                    <Controller
-                                        control={control}
-                                        name="status"
-                                        render={({ field }) => (
-                                            <Select onValueChange={field.onChange} value={field.value || 'DRAFT'}>
-                                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="ACTIVE">Đang bán</SelectItem>
-                                                    <SelectItem value="DRAFT">Nháp</SelectItem>
-                                                    <SelectItem value="INACTIVE">Ngừng kinh doanh</SelectItem>
-                                                    <SelectItem value="OUT_OF_STOCK">Hết hàng</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        )}
-                                    />
-                                    {errors.status && <p className="text-red-500 text-sm">{errors.status.message}</p>}
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label>Slug URL *</Label>
-                                <Input {...register('slug')} placeholder="ten-san-pham" />
-                                {errors.slug && <p className="text-red-500 text-sm">{errors.slug.message}</p>}
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Danh mục *</Label>
-                                    <Controller
-                                        control={control}
-                                        name="category"
-                                        render={({ field }) => (
-                                            <CategorySelector
-                                                value={field.value}
-                                                onChange={field.onChange}
-                                                tree={categoryTree}
-                                                error={errors.category?.message}
-                                            />
-                                        )}
-                                    />
-                                    {errors.category && <p className="text-red-500 text-sm">{errors.category.message}</p>}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label>Nhà sản xuất *</Label>
-                                    <div className="flex gap-2">
-                                        <Controller
-                                            control={control}
-                                            name="manufacturer"
-                                            render={({ field }) => (
-                                                <Select onValueChange={field.onChange} value={field.value}>
-                                                    <SelectTrigger className="flex-1">
-                                                        <SelectValue placeholder="Chọn nhà sản xuất" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {manufacturers.map((m: any) => (
-                                                            <SelectItem key={m.id} value={String(m.id)}>{m.name}</SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            )}
-                                        />
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="icon"
-                                            onClick={async () => {
-                                                const name = prompt("Nhập tên Nhà sản xuất mới:");
-                                                if (name) {
-                                                    try {
-                                                        // Use shared http client
-                                                        const { http } = require('@/lib/http');
-                                                        const res = await http.post('/admin/manufacturers/', { name });
-                                                        const newM = res.data;
-                                                        setManufacturers(prev => [...prev, newM]);
-                                                        setValue('manufacturer', newM.id);
-                                                        toast.success(`Đã thêm NSX: ${name}`);
-                                                    } catch (e) {
-                                                        console.error(e);
-                                                        toast.error('Lỗi thêm NSX. Vui lòng thử lại.');
-                                                    }
-                                                }
-                                            }}
-                                        >
-                                            <Plus className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                    {errors.manufacturer && <p className="text-red-500 text-sm">{errors.manufacturer.message}</p>}
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label>Mô tả ngắn</Label>
-                                <Textarea {...register('short_description')} rows={3} />
-                            </div>
-                        </TabsContent>
-
-                        {/* Tab 2: Pricing & Inventory */}
-                        <TabsContent value="pricing" className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Giá bán lẻ (VNĐ) *</Label>
-                                    <Input type="number" step="1000" {...register('price')} />
-                                    {errors.price && <p className="text-red-500 text-sm">{errors.price.message}</p>}
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Giá khuyến mãi (VNĐ)</Label>
-                                    <Input type="number" step="1000" {...register('sale_price')} />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Số lượng trong kho</Label>
-                                    <Input type="number" {...register('stock_quantity')} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Cảnh báo sắp hết hàng (ngưỡng)</Label>
-                                    <Input type="number" {...register('low_stock_threshold')} />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Đơn vị tính (VD: Hộp, Chai)</Label>
-                                    <Input {...register('unit')} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Quy cách đóng gói (VD: 10 vỉ x 10 viên)</Label>
-                                    <Input {...register('quantity_per_unit')} />
-                                </div>
-                            </div>
-                        </TabsContent>
-
-                        {/* Tab 3: Details & SEO */}
-                        <TabsContent value="details" className="space-y-4">
-                            <div className="space-y-2">
-                                <div className="flex items-center space-x-2">
-                                    <Controller
-                                        control={control}
-                                        name="requires_prescription"
-                                        render={({ field }) => (
-                                            <Switch
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                            />
-                                        )}
-                                    />
-                                    <Label>Yêu cầu đơn thuốc bác sĩ</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Controller
-                                        control={control}
-                                        name="is_featured"
-                                        render={({ field }) => (
-                                            <Switch
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                            />
-                                        )}
-                                    />
-                                    <Label>Sản phẩm nổi bật</Label>
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label>Thành phần</Label>
-                                <Textarea {...register('ingredients')} rows={2} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Cách dùng</Label>
-                                <Textarea {...register('usage')} rows={2} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Liều dùng</Label>
-                                <Textarea {...register('dosage')} rows={2} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Tác dụng phụ</Label>
-                                <Textarea {...register('side_effects')} rows={2} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Bảo quản</Label>
-                                <Textarea {...register('storage')} rows={2} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Chống chỉ định</Label>
-                                <Textarea {...register('contraindications')} rows={2} />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label>Mô tả chi tiết (SEO)</Label>
-                                <Textarea {...register('description')} rows={5} />
-                            </div>
-                        </TabsContent>
-
-                        {/* Tab 4: Images */}
-                        <TabsContent value="images" className="space-y-4">
-                            <div className="grid grid-cols-4 gap-4">
-                                {images.map((img, idx) => (
-                                    <div key={idx} className="relative group border rounded-lg p-2">
-                                        <img src={img.image_url} alt="Product" className="w-full h-32 object-cover rounded" />
-                                        <button
-                                            type="button"
-                                            onClick={() => removeImage(idx)}
-                                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition"
-                                        >
-                                            <X size={12} />
-                                        </button>
-                                        {img.is_primary && (
-                                            <div className="absolute bottom-1 left-1 bg-green-500 text-white text-xs px-2 py-0.5 rounded">Primary</div>
-                                        )}
-                                    </div>
+                <form onSubmit={handleSubmit(onSubmit, onError)} className="flex flex-col flex-1 overflow-hidden min-h-0">
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-1 overflow-hidden min-h-0">
+                        {/* Tab navigation */}
+                        <div className="px-6 pt-4 shrink-0">
+                            <TabsList className="flex gap-1 bg-gray-100 p-1 rounded-xl h-auto w-full">
+                                {TAB_CONFIG.map(({ value, label, icon: Icon }) => (
+                                    <TabsTrigger
+                                        key={value}
+                                        value={value}
+                                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-all
+                                            data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-gray-900 data-[state=active]:font-medium
+                                            data-[state=inactive]:text-gray-500 data-[state=inactive]:hover:text-gray-700"
+                                    >
+                                        <Icon className="w-3.5 h-3.5 shrink-0" />
+                                        <span>{label}</span>
+                                    </TabsTrigger>
                                 ))}
+                            </TabsList>
+                        </div>
 
-                                <div className="border-2 border-dashed rounded-lg flex items-center justify-center h-32 bg-gray-50">
-                                    <ImageUpload
-                                        value=""
-                                        onChange={addImage}
-                                        folder="products"
-                                    />
+                        {/* Scrollable content area */}
+                        <div className="flex-1 overflow-y-auto px-6 py-5 min-h-0">
+
+                            {/* ── Tab 1: General ── */}
+                            <TabsContent value="general" className="mt-0 space-y-5">
+                                <div className="space-y-4">
+                                    <SectionHeader>Định danh sản phẩm</SectionHeader>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <FieldLabel required>Tên sản phẩm</FieldLabel>
+                                            <Input className="h-9" {...register('name')} placeholder="Nhập tên sản phẩm" />
+                                            <FieldError message={errors.name?.message} />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <FieldLabel required>Mã SKU</FieldLabel>
+                                            <Input className="h-9" {...register('sku')} placeholder="VD: SKU-001" />
+                                            <FieldError message={errors.sku?.message} />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <FieldLabel required>Slug URL</FieldLabel>
+                                        <Input className="h-9" {...register('slug')} placeholder="ten-san-pham-viet-thuong" />
+                                        <FieldError message={errors.slug?.message} />
+                                    </div>
                                 </div>
-                            </div>
-                        </TabsContent>
 
+                                <div className="space-y-4">
+                                    <SectionHeader>Phân loại</SectionHeader>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <FieldLabel required>Loại sản phẩm</FieldLabel>
+                                            <Controller
+                                                control={control}
+                                                name="product_type"
+                                                render={({ field }) => (
+                                                    <Select onValueChange={field.onChange} value={field.value || ''}>
+                                                        <SelectTrigger className="h-9"><SelectValue placeholder="Chọn loại sản phẩm" /></SelectTrigger>
+                                                        <SelectContent>
+                                                            {productTypes.map((type) => (
+                                                                <SelectItem key={type.id} value={type.id}>{type.name}</SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                )}
+                                            />
+                                            <FieldError message={errors.product_type?.message} />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <FieldLabel required>Trạng thái</FieldLabel>
+                                            <Controller
+                                                control={control}
+                                                name="status"
+                                                render={({ field }) => (
+                                                    <Select onValueChange={field.onChange} value={field.value || 'DRAFT'}>
+                                                        <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="ACTIVE">
+                                                                <span className="flex items-center gap-2">
+                                                                    <span className="w-2 h-2 rounded-full bg-green-500" />
+                                                                    Đang bán
+                                                                </span>
+                                                            </SelectItem>
+                                                            <SelectItem value="DRAFT">
+                                                                <span className="flex items-center gap-2">
+                                                                    <span className="w-2 h-2 rounded-full bg-gray-400" />
+                                                                    Nháp
+                                                                </span>
+                                                            </SelectItem>
+                                                            <SelectItem value="INACTIVE">
+                                                                <span className="flex items-center gap-2">
+                                                                    <span className="w-2 h-2 rounded-full bg-orange-400" />
+                                                                    Ngừng kinh doanh
+                                                                </span>
+                                                            </SelectItem>
+                                                            <SelectItem value="OUT_OF_STOCK">
+                                                                <span className="flex items-center gap-2">
+                                                                    <span className="w-2 h-2 rounded-full bg-red-400" />
+                                                                    Hết hàng
+                                                                </span>
+                                                            </SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                )}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <FieldLabel required>Danh mục</FieldLabel>
+                                            <Controller
+                                                control={control}
+                                                name="category"
+                                                render={({ field }) => (
+                                                    <CategorySelector
+                                                        value={field.value}
+                                                        onChange={field.onChange}
+                                                        tree={categoryTree}
+                                                        error={errors.category?.message}
+                                                    />
+                                                )}
+                                            />
+                                            <FieldError message={errors.category?.message} />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <FieldLabel required>Nhà sản xuất</FieldLabel>
+                                            <div className="flex gap-2">
+                                                <Controller
+                                                    control={control}
+                                                    name="manufacturer"
+                                                    render={({ field }) => (
+                                                        <Select onValueChange={field.onChange} value={field.value}>
+                                                            <SelectTrigger className="flex-1 h-9">
+                                                                <SelectValue placeholder="Chọn nhà sản xuất" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {manufacturers.map((m: any) => (
+                                                                    <SelectItem key={m.id} value={String(m.id)}>{m.name}</SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    )}
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="icon"
+                                                    className="h-9 w-9 shrink-0"
+                                                    title="Thêm nhà sản xuất mới"
+                                                    onClick={async () => {
+                                                        const name = prompt("Nhập tên Nhà sản xuất mới:");
+                                                        if (name) {
+                                                            try {
+                                                                const { http } = require('@/lib/http');
+                                                                const res = await http.post('/admin/manufacturers/', { name });
+                                                                const newM = res.data;
+                                                                setManufacturers(prev => [...prev, newM]);
+                                                                setValue('manufacturer', newM.id);
+                                                                toast.success(`Đã thêm NSX: ${name}`);
+                                                            } catch (e) {
+                                                                console.error(e);
+                                                                toast.error('Lỗi thêm NSX. Vui lòng thử lại.');
+                                                            }
+                                                        }
+                                                    }}
+                                                >
+                                                    <Plus className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                            <FieldError message={errors.manufacturer?.message} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <SectionHeader>Mô tả</SectionHeader>
+                                    <div className="space-y-1.5">
+                                        <FieldLabel>Mô tả ngắn</FieldLabel>
+                                        <Textarea
+                                            {...register('short_description')}
+                                            rows={3}
+                                            className="resize-none text-sm"
+                                            placeholder="Mô tả ngắn gọn về sản phẩm..."
+                                        />
+                                    </div>
+                                </div>
+                            </TabsContent>
+
+                            {/* ── Tab 2: Pricing & Inventory ── */}
+                            <TabsContent value="pricing" className="mt-0 space-y-5">
+                                <div className="space-y-4">
+                                    <SectionHeader>Giá bán</SectionHeader>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <FieldLabel required>Giá bán lẻ (VNĐ)</FieldLabel>
+                                            <Input className="h-9" type="number" step="1000" {...register('price')} placeholder="0" />
+                                            <FieldError message={errors.price?.message} />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <FieldLabel>Giá khuyến mãi (VNĐ)</FieldLabel>
+                                            <Input className="h-9" type="number" step="1000" {...register('sale_price')} placeholder="Để trống nếu không có" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <SectionHeader>Kho hàng</SectionHeader>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <FieldLabel>Số lượng trong kho</FieldLabel>
+                                            <Input className="h-9" type="number" {...register('stock_quantity')} placeholder="0" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <FieldLabel>Ngưỡng cảnh báo sắp hết</FieldLabel>
+                                            <Input className="h-9" type="number" {...register('low_stock_threshold')} placeholder="10" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <SectionHeader>Đóng gói</SectionHeader>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <FieldLabel>Đơn vị tính</FieldLabel>
+                                            <Input className="h-9" {...register('unit')} placeholder="VD: Hộp, Chai, Vỉ" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <FieldLabel>Quy cách đóng gói</FieldLabel>
+                                            <Input className="h-9" {...register('quantity_per_unit')} placeholder="VD: 10 vỉ x 10 viên" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </TabsContent>
+
+                            {/* ── Tab 3: Details & SEO ── */}
+                            <TabsContent value="details" className="mt-0 space-y-5">
+                                <div className="space-y-4">
+                                    <SectionHeader>Thuộc tính đặc biệt</SectionHeader>
+                                    <div className="flex flex-col gap-3">
+                                        <label className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
+                                                    <AlertTriangle className="w-4 h-4 text-orange-500" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-800">Yêu cầu đơn thuốc</p>
+                                                    <p className="text-xs text-gray-500">Bắt buộc có toa bác sĩ khi mua</p>
+                                                </div>
+                                            </div>
+                                            <Controller
+                                                control={control}
+                                                name="requires_prescription"
+                                                render={({ field }) => (
+                                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                                )}
+                                            />
+                                        </label>
+                                        <label className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-yellow-50 flex items-center justify-center">
+                                                    <Star className="w-4 h-4 text-yellow-500" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-800">Sản phẩm nổi bật</p>
+                                                    <p className="text-xs text-gray-500">Hiển thị trên trang chủ và đầu danh sách</p>
+                                                </div>
+                                            </div>
+                                            <Controller
+                                                control={control}
+                                                name="is_featured"
+                                                render={({ field }) => (
+                                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                                )}
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <SectionHeader>Thông tin dược phẩm</SectionHeader>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <FieldLabel>Thành phần</FieldLabel>
+                                            <Textarea className="resize-none text-sm" {...register('ingredients')} rows={3} placeholder="Liệt kê các hoạt chất..." />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <FieldLabel>Cách dùng</FieldLabel>
+                                            <Textarea className="resize-none text-sm" {...register('usage')} rows={3} placeholder="Hướng dẫn sử dụng..." />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <FieldLabel>Liều dùng</FieldLabel>
+                                            <Textarea className="resize-none text-sm" {...register('dosage')} rows={3} placeholder="Liều dùng hàng ngày..." />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <FieldLabel>Tác dụng phụ</FieldLabel>
+                                            <Textarea className="resize-none text-sm" {...register('side_effects')} rows={3} placeholder="Các tác dụng phụ có thể xảy ra..." />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <FieldLabel>Bảo quản</FieldLabel>
+                                            <Textarea className="resize-none text-sm" {...register('storage')} rows={2} placeholder="Điều kiện bảo quản..." />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <FieldLabel>Chống chỉ định</FieldLabel>
+                                            <Textarea className="resize-none text-sm" {...register('contraindications')} rows={2} placeholder="Các trường hợp chống chỉ định..." />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <SectionHeader>Mô tả & SEO</SectionHeader>
+                                    <div className="space-y-1.5">
+                                        <FieldLabel>Mô tả chi tiết</FieldLabel>
+                                        <Textarea
+                                            className="resize-none text-sm"
+                                            {...register('description')}
+                                            rows={5}
+                                            placeholder="Mô tả đầy đủ về sản phẩm, công dụng, lợi ích..."
+                                        />
+                                    </div>
+                                </div>
+                            </TabsContent>
+
+                            {/* ── Tab 4: Images ── */}
+                            <TabsContent value="images" className="mt-0 space-y-4">
+                                <SectionHeader>Hình ảnh sản phẩm</SectionHeader>
+                                <p className="text-xs text-gray-500">Ảnh đầu tiên sẽ là ảnh chính. Kéo để sắp xếp thứ tự hiển thị.</p>
+                                <div className="grid grid-cols-3 gap-3">
+                                    {images.map((img, idx) => (
+                                        <div key={idx} className="relative group rounded-xl overflow-hidden border border-gray-100 bg-gray-50 aspect-square">
+                                            <img
+                                                src={img.image_url}
+                                                alt={`Product image ${idx + 1}`}
+                                                className="w-full h-full object-contain p-2"
+                                            />
+                                            {/* Hover overlay */}
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeImage(idx)}
+                                                    className="opacity-0 group-hover:opacity-100 bg-white text-red-500 rounded-full p-1.5 shadow-lg transition-all duration-200 hover:bg-red-50"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
+                                            {img.is_primary && (
+                                                <div className="absolute top-2 left-2 bg-green-500 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                                                    Ảnh chính
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+
+                                    {/* Upload area */}
+                                    <div className="border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center aspect-square bg-gray-50 hover:bg-gray-100 hover:border-gray-300 transition-colors">
+                                        <ImageUpload
+                                            value=""
+                                            onChange={addImage}
+                                            folder="products"
+                                        />
+                                    </div>
+                                </div>
+                                {images.length === 0 && (
+                                    <div className="text-center py-4">
+                                        <p className="text-xs text-gray-400">Chưa có hình ảnh. Upload ảnh để hiển thị sản phẩm đẹp hơn.</p>
+                                    </div>
+                                )}
+                            </TabsContent>
+
+                        </div>
                     </Tabs>
 
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={closeModal} disabled={isCreating || isUpdating}>Hủy</Button>
-                        <Button type="submit" disabled={isCreating || isUpdating}>
-                            {isCreating || isUpdating ? <Loader2 className="animate-spin mr-2" /> : null}
-                            {modalMode === 'create' ? 'Tạo mới' : 'Lưu thay đổi'}
-                        </Button>
-                    </DialogFooter>
+                    {/* Footer */}
+                    <div className="shrink-0 border-t border-gray-100 px-6 py-4 flex items-center justify-between bg-white">
+                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                            {activeTabConfig && (
+                                <>
+                                    <activeTabConfig.icon className="w-3.5 h-3.5" />
+                                    <span>{activeTabConfig.label}</span>
+                                    <span className="text-gray-200">•</span>
+                                    <span>
+                                        {TAB_CONFIG.findIndex(t => t.value === activeTab) + 1}/{TAB_CONFIG.length}
+                                    </span>
+                                </>
+                            )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={closeModal}
+                                disabled={isLoading}
+                                className="h-8 px-4 text-sm"
+                            >
+                                Hủy
+                            </Button>
+                            <Button
+                                type="submit"
+                                size="sm"
+                                disabled={isLoading}
+                                className="h-8 px-5 text-sm bg-green-600 hover:bg-green-700 text-white"
+                            >
+                                {isLoading && <Loader2 className="animate-spin w-3.5 h-3.5 mr-1.5" />}
+                                {modalMode === 'create' ? 'Tạo sản phẩm' : 'Lưu thay đổi'}
+                            </Button>
+                        </div>
+                    </div>
                 </form>
             </DialogContent>
         </Dialog>
