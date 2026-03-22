@@ -192,8 +192,8 @@ MINIO_ACCESS_KEY = env("MINIO_ROOT_USER", default="minioadmin")
 MINIO_SECRET_KEY = env("MINIO_ROOT_PASSWORD", default="minioadmin")
 MINIO_BUCKET_NAME = env("MINIO_BUCKET_NAME", default="banthuoc-media")
 
-# User migrating to dedicated domain: miniobanthuoc.andyanh.id.vn
-MINIO_PUBLIC_ENDPOINT = env("MINIO_PUBLIC_ENDPOINT", default="https://miniobanthuoc.andyanh.id.vn")
+# User migrating to dedicated domain: minio.banthuocsi.vn
+MINIO_PUBLIC_ENDPOINT = env("MINIO_PUBLIC_ENDPOINT", default="https://minio.banthuocsi.vn")
 
 
 

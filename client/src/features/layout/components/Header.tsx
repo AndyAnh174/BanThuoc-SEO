@@ -136,19 +136,19 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
           <div className="flex items-center justify-between gap-4 md:gap-8">
             {/* Logo */}
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-              <div className="relative w-12 h-12 md:w-14 md:h-14 transition-transform duration-300 group-hover:scale-105">
-                <Image 
-                  src="/2.png" 
-                  alt="BanThuoc Logo" 
+            <Link href="/" className="flex items-center gap-2 shrink-0 group">
+              <div className="relative w-12 h-12 md:w-14 md:h-14 shrink-0 transition-transform duration-300 group-hover:scale-105">
+                <Image
+                  src="/2.png"
+                  alt="BanThuoc Logo"
                   fill
                   className="object-contain"
                   priority
                 />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight group-hover:text-primary transition-colors">BanThuoc</h1>
-                <p className="text-[10px] uppercase font-bold tracking-widest text-primary/80">Nhà thuốc uy tín</p>
+                <p className="text-lg md:text-xl font-bold text-gray-900 leading-tight group-hover:text-primary transition-colors" style={{ fontFamily: 'var(--font-be-vietnam)' }}>Bán Thuốc Sỉ</p>
+                <p className="text-[10px] text-gray-400 tracking-wide" style={{ fontFamily: 'var(--font-be-vietnam)' }}>Thuốc tốt · Giá tốt · Dịch vụ tốt</p>
               </div>
             </Link>
 

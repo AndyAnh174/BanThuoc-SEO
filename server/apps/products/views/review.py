@@ -11,7 +11,12 @@ from orders.models import Order, OrderItem
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    user_name = serializers.CharField(source='user.full_name', read_only=True)
+    user_name = serializers.SerializerMethodField()
+
+    def get_user_name(self, obj):
+        user = obj.user
+        full_name = getattr(user, 'full_name', '') or user.get_full_name()
+        return full_name.strip() if full_name.strip() else user.username
 
     class Meta:
         model = Review

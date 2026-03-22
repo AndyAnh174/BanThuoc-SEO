@@ -17,14 +17,14 @@ const websiteJsonLd = {
   '@type': 'Pharmacy',
   name: 'BanThuoc',
   description: 'Nhà thuốc online uy tín - Dược phẩm chính hãng',
-  url: 'https://banthuoc.andyanh.id.vn',
-  logo: 'https://banthuoc.andyanh.id.vn/logo.png',
+  url: 'https://banthuocsi.vn',
+  logo: 'https://banthuocsi.vn/logo.png',
   sameAs: [],
   potentialAction: {
     '@type': 'SearchAction',
     target: {
       '@type': 'EntryPoint',
-      urlTemplate: 'https://banthuoc.andyanh.id.vn/products?search={search_term_string}',
+      urlTemplate: 'https://banthuocsi.vn/products?search={search_term_string}',
     },
     'query-input': 'required name=search_term_string',
   },

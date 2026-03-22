@@ -1,4 +1,11 @@
+import { Metadata } from 'next';
 import { LoginForm } from "../../../src/features/auth/components/login-form";
+
+export const metadata: Metadata = {
+  title: 'Đăng nhập',
+  description: 'Đăng nhập vào tài khoản BanThuoc để mua thuốc, theo dõi đơn hàng và nhận ưu đãi.',
+  robots: { index: false, follow: false },
+};
 
 export default function LoginPage() {
   return (

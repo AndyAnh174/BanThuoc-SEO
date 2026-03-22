@@ -133,6 +133,22 @@ export const deleteProduct = async (id: string) => {
   return api.delete(`/admin/products/${id}/`);
 };
 
+// Reviews
+export const getProductReviews = async (productId: string, page = 1) => {
+  return api.get(`/products/${productId}/reviews/`, { params: { page, page_size: 10 } });
+};
+
+export const getProductReviewStats = async (productId: string) => {
+  return api.get(`/products/${productId}/reviews/stats/`);
+};
+
+export const createProductReview = async (
+  productId: string,
+  data: { rating: number; title?: string; content: string }
+) => {
+  return api.post(`/products/${productId}/reviews/`, data);
+};
+
 export const productsApi = {
   getProducts,
   getProduct,

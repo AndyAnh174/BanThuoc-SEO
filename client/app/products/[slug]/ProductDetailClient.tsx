@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ProductCard } from '@/src/features/products';
+import { ProductReviews } from '@/src/features/products/components/ProductReviews';
 import { MappedProduct } from '@/src/lib/api-mapper';
 import { toggleFavorite } from '@/src/features/products/api/products.api';
 import { useAuthStore } from '@/src/features/auth/stores/auth.store';
@@ -423,6 +424,17 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
           >
             Thành phần
           </TabsTrigger>
+          <TabsTrigger
+            value="reviews"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
+          >
+            Đánh giá
+            {product.reviewCount && product.reviewCount > 0 ? (
+              <span className="ml-1.5 text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5">
+                {product.reviewCount}
+              </span>
+            ) : null}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="description" className="pt-6">
@@ -476,6 +488,10 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
           ) : (
             <p className="text-gray-500">Chưa có thông tin thành phần</p>
           )}
+        </TabsContent>
+
+        <TabsContent value="reviews" className="pt-6">
+          <ProductReviews productId={product.id} />
         </TabsContent>
       </Tabs>
 

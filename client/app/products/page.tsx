@@ -5,11 +5,22 @@ import { ProductsClient } from '@/src/features/products/components/ProductsClien
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const metadata: Metadata = {
-  title: 'Sản phẩm | BanThuoc - Nhà thuốc online uy tín',
-  description: 'Khám phá hơn 10.000+ sản phẩm dược phẩm chính hãng: thuốc kê đơn, thuốc không kê đơn, thực phẩm chức năng, dược mỹ phẩm tại BanThuoc.',
+  title: 'Danh sách sản phẩm',
+  description: 'Khám phá hơn 10.000+ sản phẩm dược phẩm chính hãng: thuốc, thực phẩm chức năng, thiết bị y tế tại BanThuoc. Lọc theo danh mục, giá, nhà sản xuất. Giao hàng nhanh toàn quốc.',
+  keywords: ['mua thuốc online', 'dược phẩm chính hãng', 'thực phẩm chức năng', 'thiết bị y tế', 'thuốc không kê đơn', 'banthuoc'],
+  alternates: { canonical: 'https://banthuocsi.vn/products' },
   openGraph: {
-    title: 'Sản phẩm | BanThuoc',
-    description: 'Khám phá hơn 10.000+ sản phẩm dược phẩm chính hãng',
+    type: 'website',
+    url: 'https://banthuocsi.vn/products',
+    siteName: 'BanThuoc',
+    locale: 'vi_VN',
+    title: 'Danh sách sản phẩm | BanThuoc',
+    description: 'Khám phá hơn 10.000+ sản phẩm dược phẩm chính hãng. Giao hàng nhanh, giá tốt.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Danh sách sản phẩm | BanThuoc',
+    description: 'Khám phá hơn 10.000+ sản phẩm dược phẩm chính hãng tại BanThuoc.',
   },
 };
 
