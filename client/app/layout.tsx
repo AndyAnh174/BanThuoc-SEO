@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Be_Vietnam_Pro } from "next/font/google";
 import { Toaster } from "sonner";
+import FloatingContact from "@/src/components/FloatingContact";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -76,7 +77,8 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
-        <Toaster 
+        <FloatingContact />
+        <Toaster
           position="top-right" 
           richColors 
           closeButton
