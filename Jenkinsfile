@@ -19,7 +19,7 @@ pipeline {
             steps {
                 sh """
                     docker build \
-                        --build-arg NEXT_PUBLIC_API_URL=https://banthuoc.andyanh.id.vn/api \
+                        --build-arg NEXT_PUBLIC_API_URL=https://banthuocsi.vn/api \
                         -t ${FRONTEND_IMAGE}:${IMAGE_TAG} \
                         -t ${FRONTEND_IMAGE}:latest \
                         ./client
