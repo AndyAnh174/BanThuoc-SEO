@@ -6,6 +6,7 @@ pipeline {
         FRONTEND_IMAGE = "${DOCKERHUB_USER}/banthuoc-frontend"
         BACKEND_IMAGE = "${DOCKERHUB_USER}/banthuoc-backend"
         IMAGE_TAG = "${BUILD_NUMBER}"
+        KUBECONFIG = '/var/lib/jenkins/.kube/config'
     }
 
     stages {
@@ -49,17 +50,15 @@ pipeline {
             }
         }
 
-        stage('Deploy to BanThuoc Server') {
+        stage('Deploy to K8s') {
             steps {
-                sshagent(credentials: ['banthuoc-server-ssh']) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no root@192.168.1.92 '
-                            cd /root/BanThuoc-SEO && \
-                            docker compose -f docker-compose.prod.yml pull frontend backend && \
-                            docker compose -f docker-compose.prod.yml up -d frontend backend
-                        '
-                    """
-                }
+                sh """
+                    kubectl apply -f k8s/
+                    kubectl set image deployment/frontend frontend=${FRONTEND_IMAGE}:${IMAGE_TAG} -n banthuoc
+                    kubectl set image deployment/backend backend=${BACKEND_IMAGE}:${IMAGE_TAG} -n banthuoc
+                    kubectl rollout status deployment/frontend -n banthuoc --timeout=120s
+                    kubectl rollout status deployment/backend -n banthuoc --timeout=120s
+                """
             }
         }
     }
