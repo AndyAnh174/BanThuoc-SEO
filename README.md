@@ -1,5 +1,10 @@
 # BanThuoc Project
 
+[![Build Status](https://jenkins.andyanh.id.vn/buildStatus/icon?job=banthuoc-seo)](https://jenkins.andyanh.id.vn/job/banthuoc-seo/)
+[![Kubernetes](https://img.shields.io/badge/K8s-deployed-blue?logo=kubernetes)](https://k8s.andyanh.id.vn)
+[![Monitoring](https://img.shields.io/badge/Grafana-monitoring-orange?logo=grafana)](https://grafana.andyanh.id.vn)
+[![Website](https://img.shields.io/badge/Website-banthuocsi.vn-green)](https://banthuocsi.vn)
+
 ## Overview
 This project is a comprehensive e-commerce platform for selling pharmaceutical products ("Bán Thuốc"). It utilizes a modern tech stack with a Django backend, Next.js frontend, and a robust Dockerized infrastructure.
 
