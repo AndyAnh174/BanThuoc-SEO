@@ -9,11 +9,11 @@ data:
   REDIS_HOST: redis-service
   REDIS_PORT: "6379"
   DJANGO_DEBUG: "0"
-  DJANGO_ALLOWED_HOSTS: "banthuocsi.vn,localhost,127.0.0.1,backend-service"
+  DJANGO_ALLOWED_HOSTS: "banthuocsi.vn,www.banthuocsi.vn,minio.banthuocsi.vn,localhost,127.0.0.1,backend-service"
   DJANGO_SETTINGS_MODULE: core.settings.prod
   DJANGO_SECURE_SSL_REDIRECT: "False"
-  DJANGO_CSRF_TRUSTED_ORIGINS: "https://banthuocsi.vn"
-  DJANGO_CORS_ALLOWED_ORIGINS: "https://banthuocsi.vn"
+  DJANGO_CSRF_TRUSTED_ORIGINS: "https://banthuocsi.vn,https://www.banthuocsi.vn"
+  DJANGO_CORS_ALLOWED_ORIGINS: "https://banthuocsi.vn,https://www.banthuocsi.vn"
   DJANGO_CORS_ALLOW_ALL_ORIGINS: "False"
   MINIO_ENDPOINT: "http://minio-service:9000"
   MINIO_BUCKET_NAME: banthuoc-storage
