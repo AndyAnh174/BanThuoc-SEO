@@ -7,6 +7,8 @@ pipeline {
         BACKEND_IMAGE = "${DOCKERHUB_USER}/banthuoc-backend"
         IMAGE_TAG = "${BUILD_NUMBER}"
         KUBECONFIG = '/var/lib/jenkins/.kube/config'
+        GITHUB_TOKEN = credentials('github-pat')
+        GITHUB_REPO = 'AndyAnh174/BanThuoc-SEO'
     }
 
     stages {
@@ -65,9 +67,27 @@ pipeline {
 
     post {
         success {
+            script {
+                sh """
+                    curl -s -X POST \
+                        -H "Authorization: token \${GITHUB_TOKEN_PSW}" \
+                        -H "Accept: application/vnd.github.v3+json" \
+                        "https://api.github.com/repos/\${GITHUB_REPO}/statuses/\${GIT_COMMIT}" \
+                        -d '{"state":"success","target_url":"${BUILD_URL}","description":"Build #${BUILD_NUMBER} passed","context":"CI/CD Pipeline / Continuous Deployment (push)"}'
+                """
+            }
             echo '✅ BanThuoc CI/CD SUCCESS!'
         }
         failure {
+            script {
+                sh """
+                    curl -s -X POST \
+                        -H "Authorization: token \${GITHUB_TOKEN_PSW}" \
+                        -H "Accept: application/vnd.github.v3+json" \
+                        "https://api.github.com/repos/\${GITHUB_REPO}/statuses/\${GIT_COMMIT}" \
+                        -d '{"state":"failure","target_url":"${BUILD_URL}","description":"Build #${BUILD_NUMBER} failed","context":"CI/CD Pipeline / Continuous Deployment (push)"}'
+                """
+            }
             echo '❌ BanThuoc CI/CD FAILED!'
         }
         always {
