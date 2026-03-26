@@ -19,6 +19,13 @@ spec:
           command: ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "core.wsgi:application"]
           ports:
             - containerPort: 8000
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
           envFrom:
             - configMapRef:
                 name: banthuoc-config
