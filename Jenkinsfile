@@ -56,8 +56,8 @@ pipeline {
                     kubectl apply -f k8s/
                     kubectl set image deployment/frontend frontend=${FRONTEND_IMAGE}:${IMAGE_TAG} -n banthuoc
                     kubectl set image deployment/backend backend=${BACKEND_IMAGE}:${IMAGE_TAG} -n banthuoc
-                    kubectl rollout status deployment/frontend -n banthuoc --timeout=120s
-                    kubectl rollout status deployment/backend -n banthuoc --timeout=120s
+                    kubectl rollout status deployment/frontend -n banthuoc --timeout=600s
+                    kubectl rollout status deployment/backend -n banthuoc --timeout=600s
                 """
             }
         }
