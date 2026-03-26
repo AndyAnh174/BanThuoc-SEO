@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: banthuoc-config
+  namespace: banthuoc
+data:
+  POSTGRES_HOST: postgres-service
+  POSTGRES_PORT: "5432"
+  REDIS_HOST: redis-service
+  REDIS_PORT: "6379"
+  DJANGO_DEBUG: "0"
+  DJANGO_ALLOWED_HOSTS: "banthuocsi.vn,localhost,127.0.0.1,backend-service"
+  DJANGO_SETTINGS_MODULE: core.settings.prod
+  DJANGO_SECURE_SSL_REDIRECT: "False"
+  DJANGO_CSRF_TRUSTED_ORIGINS: "https://banthuocsi.vn"
+  DJANGO_CORS_ALLOWED_ORIGINS: "https://banthuocsi.vn"
+  DJANGO_CORS_ALLOW_ALL_ORIGINS: "False"
+  MINIO_ENDPOINT: "http://minio-service:9000"
+  MINIO_BUCKET_NAME: banthuoc-storage
+  MINIO_PUBLIC_ENDPOINT: "https://minio.banthuocsi.vn"
+  EMAIL_HOST: smtp.gmail.com
+  EMAIL_PORT: "587"
+  EMAIL_USE_TLS: "True"
+  NEXT_PUBLIC_API_URL: "https://banthuocsi.vn/api"
+  INTERNAL_API_URL: "http://backend-service:8000/api"
