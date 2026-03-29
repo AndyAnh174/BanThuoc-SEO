@@ -27,11 +27,39 @@ spec:
               cpu: "300m"
           env:
             - name: GF_SECURITY_ADMIN_USER
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secret
+                  key: admin_user
             - name: GF_SECURITY_ADMIN_PASSWORD
-              value: "banthuoc2024"
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secret
+                  key: admin_password
             - name: GF_SERVER_ROOT_URL
               value: "https://grafana.andyanh.id.vn"
+            # SMTP Email config
+            - name: GF_SMTP_ENABLED
+              value: "true"
+            - name: GF_SMTP_HOST
+              value: "smtp.gmail.com:587"
+            - name: GF_SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secret
+                  key: smtp_user
+            - name: GF_SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secret
+                  key: smtp_password
+            - name: GF_SMTP_FROM_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secret
+                  key: smtp_user
+            - name: GF_SMTP_FROM_NAME
+              value: "BanThuoc Monitoring"
           volumeMounts:
             - name: grafana-storage
               mountPath: /var/lib/grafana
