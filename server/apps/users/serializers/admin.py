@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from django.contrib.auth.password_validation import validate_password
 from ..models import BusinessProfile
 from ..utils.file_upload import MinioHandler
 
@@ -77,7 +76,7 @@ class AdminUserStatusUpdateSerializer(serializers.Serializer):
 
 class AdminUserCreateSerializer(serializers.ModelSerializer):
     """Serializer for admin to create new users."""
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password = serializers.CharField(write_only=True, required=True)
     password_confirm = serializers.CharField(write_only=True, required=True)
     
     class Meta:
@@ -123,7 +122,7 @@ class AdminUserCreateSerializer(serializers.ModelSerializer):
 
 class AdminUserUpdateSerializer(serializers.ModelSerializer):
     """Serializer for admin to update user info."""
-    password = serializers.CharField(write_only=True, required=False, validators=[validate_password])
+    password = serializers.CharField(write_only=True, required=False)
     
     class Meta:
         model = User
