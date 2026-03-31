@@ -84,14 +84,18 @@ class MinioHandler:
         Generates a presigned URL for GET request.
         """
         try:
-             # Check if object exists (optional, but good for safety) or just sign it.
-             # Presigned GET
              url = self.client.get_presigned_url(
                  "GET",
                  self.bucket_name,
                  object_name,
                  expires=timedelta(hours=1)
              )
+             # Replace internal K8s hostname with public endpoint
+             public_endpoint = os.environ.get('MINIO_PUBLIC_ENDPOINT') or getattr(settings, 'MINIO_PUBLIC_ENDPOINT', None)
+             if public_endpoint:
+                 internal_endpoint = settings.MINIO_ENDPOINT.rstrip('/')
+                 public_endpoint = public_endpoint.rstrip('/')
+                 url = url.replace(internal_endpoint, public_endpoint)
              return url
         except Exception as e:
              print(f"Error generating presigned URL: {e}")
