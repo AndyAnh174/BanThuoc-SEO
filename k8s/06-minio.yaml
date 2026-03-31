@@ -31,6 +31,10 @@ spec:
                 secretKeyRef:
                   name: banthuoc-secrets
                   key: MINIO_ROOT_PASSWORD
+            - name: MINIO_SERVER_URL
+              value: "https://minio.banthuocsi.vn"
+            - name: MINIO_BROWSER_REDIRECT_URL
+              value: "https://minio.banthuocsi.vn/minio-console"
           volumeMounts:
             - name: minio-data
               mountPath: /data
