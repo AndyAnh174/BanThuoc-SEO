@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Leaf } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useAuthStore } from "../stores/auth.store";
 import { useRouter } from "next/navigation";
@@ -94,10 +95,7 @@ export function LoginForm() {
 
                 <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-8">
-                        <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                            <Leaf className="w-8 h-8" />
-                        </div>
-                        <span className="text-2xl font-bold tracking-wide">BanThuoc</span>
+                        <Image src="/2.png" alt="BanThuoc Logo" width={80} height={80} className="rounded-xl" />
                     </div>
                     <h2 className="text-3xl font-bold leading-tight mb-4">Chào mừng trở lại!</h2>
                     <p className="text-green-50 text-base opacity-90">Đăng nhập để tiếp tục quản lý và kết nối.</p>

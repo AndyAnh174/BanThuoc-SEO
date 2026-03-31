@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, Leaf, ArrowRight } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useAuthStore } from "../stores/auth.store";
 import { useRouter } from "next/navigation";
@@ -146,10 +147,7 @@ export function RegisterForm() {
 
             <div className="relative z-10 mb-8 lg:mb-0">
                 <div className="flex items-center gap-2 mb-8">
-                    <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                        <Leaf className="w-8 h-8" />
-                    </div>
-                    <span className="text-2xl font-bold tracking-wide">BanThuoc</span>
+                    <Image src="/2.png" alt="BanThuoc Logo" width={80} height={80} className="rounded-xl" />
                 </div>
                 <h2 className="text-3xl lg:text-4xl font-bold leading-tight mb-4">Chào mừng đến với hệ thống!</h2>
                 <p className="text-green-50 text-base lg:text-lg opacity-90">Chúng tôi kết nối các nhà thuốc và doanh nghiệp dược phẩm hàng đầu.</p>
