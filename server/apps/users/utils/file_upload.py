@@ -81,25 +81,36 @@ class MinioHandler:
 
     def get_presigned_url(self, object_name):
         """
-        Generates a presigned URL for GET request.
+        Generates a presigned URL using public endpoint so signature matches.
         """
         try:
-             url = self.client.get_presigned_url(
-                 "GET",
-                 self.bucket_name,
-                 object_name,
-                 expires=timedelta(hours=1)
-             )
-             # Replace internal K8s hostname with public endpoint
-             public_endpoint = os.environ.get('MINIO_PUBLIC_ENDPOINT') or getattr(settings, 'MINIO_PUBLIC_ENDPOINT', None)
-             if public_endpoint:
-                 internal_endpoint = settings.MINIO_ENDPOINT.rstrip('/')
-                 public_endpoint = public_endpoint.rstrip('/')
-                 url = url.replace(internal_endpoint, public_endpoint)
-             return url
+            public_endpoint = os.environ.get('MINIO_PUBLIC_ENDPOINT') or getattr(settings, 'MINIO_PUBLIC_ENDPOINT', None)
+            if public_endpoint:
+                # Use public endpoint client so signature is computed with public host
+                public_host = public_endpoint.replace('https://', '').replace('http://', '').rstrip('/')
+                is_ssl = public_endpoint.startswith('https://')
+                public_client = Minio(
+                    endpoint=public_host,
+                    access_key=settings.MINIO_ACCESS_KEY,
+                    secret_key=settings.MINIO_SECRET_KEY,
+                    secure=is_ssl
+                )
+                return public_client.get_presigned_url(
+                    "GET",
+                    self.bucket_name,
+                    object_name,
+                    expires=timedelta(hours=1)
+                )
+            # Fallback: use internal client
+            return self.client.get_presigned_url(
+                "GET",
+                self.bucket_name,
+                object_name,
+                expires=timedelta(hours=1)
+            )
         except Exception as e:
-             print(f"Error generating presigned URL: {e}")
-             return None
+            print(f"Error generating presigned URL: {e}")
+            return None
 
 def handle_license_upload(file_obj):
     handler = MinioHandler()
