@@ -83,14 +83,9 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
     : 0;
   const isOutOfStock = product.stockQuantity <= 0;
 
-  // Images are now pre-transformed with url field (from SSR transformation)
+  // Images are pre-sorted by sort_order from API
   const productImages = Array.isArray(product.images) ? product.images : [];
-  const validImages = productImages.filter(img => img && img.url && img.url.trim() !== '');
-  
-  // Use imageUrl (primary) or first valid image
-  const allImages = product.imageUrl && product.imageUrl.trim() !== ''
-    ? [{ id: 'main', url: product.imageUrl, alt: product.name }, ...validImages.filter(img => img.url !== product.imageUrl)]
-    : validImages;
+  const allImages = productImages.filter(img => img && img.url && img.url.trim() !== '');
 
   // Format price
   const formatPrice = (value: number) => {
