@@ -10,19 +10,23 @@ import { http } from '@/lib/http';
 interface ImageUploadProps {
   value?: string;
   onChange: (url: string) => void;
+  onMultipleChange?: (urls: string[]) => void;
   onRemove?: () => void;
   folder?: string;
   className?: string;
   disabled?: boolean;
+  multiple?: boolean;
 }
 
 export function ImageUpload({
   value,
   onChange,
+  onMultipleChange,
   onRemove,
   folder = 'categories',
   className,
   disabled = false,
+  multiple = false,
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -62,10 +66,56 @@ export function ImageUpload({
     }
   };
 
+  const uploadMultipleFiles = async (files: File[]) => {
+    const validFiles = files.filter(file => {
+      if (!file.type.startsWith('image/')) {
+        toast.error(`${file.name}: Chỉ chấp nhận file ảnh`);
+        return false;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`${file.name}: Kích thước file tối đa 5MB`);
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length === 0) return;
+
+    setIsUploading(true);
+    const urls: string[] = [];
+
+    try {
+      for (const file of validFiles) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('folder', folder);
+
+        const response = await http.post('/files/upload/', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        urls.push(response.data.url);
+      }
+
+      if (onMultipleChange) {
+        onMultipleChange(urls);
+      }
+      toast.success(`Đã tải lên ${urls.length} ảnh`);
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Không thể tải ảnh lên. Vui lòng thử lại.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      uploadFile(file);
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    if (multiple && files.length > 1 && onMultipleChange) {
+      uploadMultipleFiles(Array.from(files));
+    } else {
+      uploadFile(files[0]);
     }
     // Reset input
     if (inputRef.current) {
@@ -77,11 +127,15 @@ export function ImageUpload({
     e.preventDefault();
     setDragOver(false);
 
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      uploadFile(file);
+    const files = e.dataTransfer.files;
+    if (!files || files.length === 0) return;
+
+    if (multiple && files.length > 1 && onMultipleChange) {
+      uploadMultipleFiles(Array.from(files));
+    } else {
+      uploadFile(files[0]);
     }
-  }, []);
+  }, [multiple, onMultipleChange]);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -104,6 +158,7 @@ export function ImageUpload({
         ref={inputRef}
         type="file"
         accept="image/*"
+        multiple={multiple}
         onChange={handleFileSelect}
         className="hidden"
         disabled={disabled || isUploading}

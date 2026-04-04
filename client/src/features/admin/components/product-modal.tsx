@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -30,7 +30,24 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Loader2, Plus, X, Package, Tag, DollarSign, FileText, Image as ImageIcon, Star, AlertTriangle } from 'lucide-react';
+import { Loader2, Plus, X, Package, Tag, DollarSign, FileText, Image as ImageIcon, Star, AlertTriangle, GripVertical } from 'lucide-react';
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    rectSortingStrategy,
+    useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 import { useProductsStore } from '../stores/products.store';
 import { useProductTypesStore } from '@/src/features/admin/stores/product-types.store';
@@ -131,6 +148,66 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
         <div className="flex items-center gap-2 pt-1">
             <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest whitespace-nowrap">{children}</p>
             <div className="flex-1 h-px bg-gray-100" />
+        </div>
+    );
+}
+
+function SortableImageItem({ id, img, idx, onRemove }: {
+    id: string;
+    img: { image_url: string; is_primary: boolean; sort_order: number };
+    idx: number;
+    onRemove: (index: number) => void;
+}) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+        zIndex: isDragging ? 10 : 1,
+    };
+
+    return (
+        <div
+            ref={setNodeRef}
+            style={style}
+            className="relative group rounded-xl overflow-hidden border border-gray-100 bg-gray-50 aspect-square"
+        >
+            <img
+                src={img.image_url}
+                alt={`Product image ${idx + 1}`}
+                className="w-full h-full object-contain p-2"
+            />
+            {/* Drag handle */}
+            <div
+                {...attributes}
+                {...listeners}
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-white/90 rounded-md p-1 cursor-grab active:cursor-grabbing shadow transition-opacity"
+            >
+                <GripVertical size={14} className="text-gray-500" />
+            </div>
+            {/* Hover overlay */}
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center pointer-events-none">
+                <button
+                    type="button"
+                    onClick={() => onRemove(idx)}
+                    className="opacity-0 group-hover:opacity-100 bg-white text-red-500 rounded-full p-1.5 shadow-lg transition-all duration-200 hover:bg-red-50 pointer-events-auto"
+                >
+                    <X size={14} />
+                </button>
+            </div>
+            {img.is_primary && (
+                <div className="absolute top-2 left-2 bg-green-500 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                    Ảnh chính
+                </div>
+            )}
         </div>
     );
 }
@@ -254,8 +331,25 @@ export function ProductModal() {
 
     const images = watch('images') || [];
 
+    const sensors = useSensors(
+        useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+        useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    );
+
     const addImage = (url: string) => {
         const newImages = [...images, { image_url: url, is_primary: images.length === 0, sort_order: images.length }];
+        setValue('images', newImages);
+    };
+
+    const addMultipleImages = (urls: string[]) => {
+        const newImages = [...images];
+        urls.forEach((url, i) => {
+            newImages.push({
+                image_url: url,
+                is_primary: newImages.length === 0,
+                sort_order: newImages.length,
+            });
+        });
         setValue('images', newImages);
     };
 
@@ -265,6 +359,23 @@ export function ProductModal() {
             newImages[0].is_primary = true;
         }
         setValue('images', newImages);
+    };
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+        if (!over || active.id === over.id) return;
+
+        const oldIndex = images.findIndex((_, i) => `img-${i}` === active.id);
+        const newIndex = images.findIndex((_, i) => `img-${i}` === over.id);
+
+        if (oldIndex !== -1 && newIndex !== -1) {
+            const reordered = arrayMove([...images], oldIndex, newIndex).map((img, i) => ({
+                ...img,
+                is_primary: i === 0,
+                sort_order: i,
+            }));
+            setValue('images', reordered);
+        }
     };
 
     const onError = (errors: any) => {
@@ -628,41 +739,36 @@ export function ProductModal() {
                             <TabsContent value="images" className="mt-0 space-y-4">
                                 <SectionHeader>Hình ảnh sản phẩm</SectionHeader>
                                 <p className="text-xs text-gray-500">Ảnh đầu tiên sẽ là ảnh chính. Kéo để sắp xếp thứ tự hiển thị.</p>
-                                <div className="grid grid-cols-3 gap-3">
-                                    {images.map((img, idx) => (
-                                        <div key={idx} className="relative group rounded-xl overflow-hidden border border-gray-100 bg-gray-50 aspect-square">
-                                            <img
-                                                src={img.image_url}
-                                                alt={`Product image ${idx + 1}`}
-                                                className="w-full h-full object-contain p-2"
-                                            />
-                                            {/* Hover overlay */}
-                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeImage(idx)}
-                                                    className="opacity-0 group-hover:opacity-100 bg-white text-red-500 rounded-full p-1.5 shadow-lg transition-all duration-200 hover:bg-red-50"
-                                                >
-                                                    <X size={14} />
-                                                </button>
-                                            </div>
-                                            {img.is_primary && (
-                                                <div className="absolute top-2 left-2 bg-green-500 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                                                    Ảnh chính
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
+                                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                                    <SortableContext items={images.map((_, i) => `img-${i}`)} strategy={rectSortingStrategy}>
+                                        <div className="grid grid-cols-3 gap-3">
+                                            {images.map((img, idx) => (
+                                                <SortableImageItem
+                                                    key={`img-${idx}`}
+                                                    id={`img-${idx}`}
+                                                    img={img}
+                                                    idx={idx}
+                                                    onRemove={removeImage}
+                                                />
+                                            ))}
 
-                                    {/* Upload area */}
-                                    <div className="border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center aspect-square bg-gray-50 hover:bg-gray-100 hover:border-gray-300 transition-colors">
-                                        <ImageUpload
-                                            value=""
-                                            onChange={addImage}
-                                            folder="products"
-                                        />
-                                    </div>
-                                </div>
+                                            {/* Upload area */}
+                                            <div className="border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center aspect-square bg-gray-50 hover:bg-gray-100 hover:border-gray-300 transition-colors">
+                                                <ImageUpload
+                                                    value=""
+                                                    onChange={addImage}
+                                                    onMultipleChange={addMultipleImages}
+                                                    folder="products"
+                                                    multiple
+                                                />
+                                            </div>
+                                        </div>
+                                    </SortableContext>
+                                </DndContext>
+                                <p className="text-xs text-gray-400 flex items-center gap-1">
+                                    <ImageIcon className="w-3 h-3" />
+                                    Hình ảnh · {images.length}/{images.length > 0 ? images.length : 0}
+                                </p>
                                 {images.length === 0 && (
                                     <div className="text-center py-4">
                                         <p className="text-xs text-gray-400">Chưa có hình ảnh. Upload ảnh để hiển thị sản phẩm đẹp hơn.</p>

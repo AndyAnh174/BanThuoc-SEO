@@ -300,7 +300,7 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
 
           {/* Short description */}
           {product.shortDescription && (
-            <p className="text-gray-600">{product.shortDescription}</p>
+            <p className="text-gray-600 whitespace-pre-line">{product.shortDescription}</p>
           )}
 
           {/* Stock status */}
@@ -449,31 +449,31 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
             {product.dosage && (
               <div>
                 <h3 className="font-semibold mb-2">Liều dùng</h3>
-                <p className="text-gray-600">{product.dosage}</p>
+                <p className="text-gray-600 whitespace-pre-line">{product.dosage}</p>
               </div>
             )}
             {product.usage && (
               <div>
                 <h3 className="font-semibold mb-2">Hướng dẫn sử dụng</h3>
-                <p className="text-gray-600">{product.usage}</p>
+                <p className="text-gray-600 whitespace-pre-line">{product.usage}</p>
               </div>
             )}
             {product.contraindications && (
               <div>
                 <h3 className="font-semibold mb-2">Chống chỉ định</h3>
-                <p className="text-gray-600">{product.contraindications}</p>
+                <p className="text-gray-600 whitespace-pre-line">{product.contraindications}</p>
               </div>
             )}
             {product.sideEffects && (
               <div>
                 <h3 className="font-semibold mb-2">Tác dụng phụ</h3>
-                <p className="text-gray-600">{product.sideEffects}</p>
+                <p className="text-gray-600 whitespace-pre-line">{product.sideEffects}</p>
               </div>
             )}
             {product.storage && (
               <div>
                 <h3 className="font-semibold mb-2">Bảo quản</h3>
-                <p className="text-gray-600">{product.storage}</p>
+                <p className="text-gray-600 whitespace-pre-line">{product.storage}</p>
               </div>
             )}
             {!product.dosage && !product.usage && !product.sideEffects && !product.storage && (
@@ -484,7 +484,7 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
 
         <TabsContent value="ingredients" className="pt-6">
           {product.ingredients ? (
-            <p className="text-gray-600">{product.ingredients}</p>
+            <p className="text-gray-600 whitespace-pre-line">{product.ingredients}</p>
           ) : (
             <p className="text-gray-500">Chưa có thông tin thành phần</p>
           )}
