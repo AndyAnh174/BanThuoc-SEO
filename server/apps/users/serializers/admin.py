@@ -113,7 +113,12 @@ class AdminUserCreateSerializer(serializers.ModelSerializer):
         
         # Set is_active based on status
         validated_data['is_active'] = validated_data.get('status') == User.Status.ACTIVE
-        
+
+        # Sync is_staff/is_superuser with role so DRF IsAdminUser works
+        is_admin = validated_data.get('role') == User.Role.ADMIN
+        validated_data['is_staff'] = is_admin
+        validated_data['is_superuser'] = is_admin
+
         user = User.objects.create(**validated_data)
         user.set_password(password)
         user.save()
@@ -143,7 +148,13 @@ class AdminUserUpdateSerializer(serializers.ModelSerializer):
         # Update is_active based on status
         if 'status' in validated_data:
             validated_data['is_active'] = validated_data['status'] == User.Status.ACTIVE
-        
+
+        # Sync is_staff/is_superuser with role so DRF IsAdminUser works
+        if 'role' in validated_data:
+            is_admin = validated_data['role'] == User.Role.ADMIN
+            validated_data['is_staff'] = is_admin
+            validated_data['is_superuser'] = is_admin
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         
