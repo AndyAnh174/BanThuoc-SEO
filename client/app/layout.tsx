@@ -31,6 +31,11 @@ export const metadata: Metadata = {
   authors: [{ name: "BanThuoc" }],
   creator: "BanThuoc",
   metadataBase: new URL("https://banthuocsi.vn"),
+  icons: {
+    icon: [{ url: "/2.png", type: "image/png" }],
+    shortcut: "/2.png",
+    apple: "/2.png",
+  },
   openGraph: {
     type: "website",
     locale: "vi_VN",
