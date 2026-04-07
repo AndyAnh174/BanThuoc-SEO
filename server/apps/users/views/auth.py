@@ -34,6 +34,20 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 code='account_rejected'
             )
 
+        # Audit log: successful login
+        try:
+            from audit.models import AuditLog
+            from audit.utils import write_audit
+            write_audit(
+                action=AuditLog.Action.LOGIN,
+                user=self.user,
+                target_type="users.User",
+                target_id=self.user.pk,
+                target_repr=self.user.username or self.user.email,
+            )
+        except Exception:
+            pass
+
         return data
 
 class CustomTokenObtainPairView(TokenObtainPairView):

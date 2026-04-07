@@ -22,7 +22,8 @@ import {
     Megaphone,
     Cog,
     Star,
-    RotateCcw
+    RotateCcw,
+    History
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -95,6 +96,7 @@ const sidebarSections: SidebarSection[] = [
         defaultOpen: false,
         items: [
             { label: "Cài đặt hệ thống", href: "/admin/settings", icon: Settings },
+            { label: "Audit log", href: "/admin/audit", icon: History },
         ]
     },
 ];

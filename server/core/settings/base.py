@@ -58,12 +58,14 @@ INSTALLED_APPS = [
     "files",
     "cart",
     "orders",
+    "audit",
 ]
 
 MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "core.middleware.RequestLoggingMiddleware", # Custom logging
+    "audit.middleware.AuditContextMiddleware",  # Stash request for audit signals
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
