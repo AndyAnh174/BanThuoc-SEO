@@ -433,10 +433,20 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
         </TabsList>
 
         <TabsContent value="description" className="pt-6">
-          <div 
-            className="prose max-w-none"
-            dangerouslySetInnerHTML={{ __html: product.description || 'Chưa có mô tả' }}
-          />
+          {product.description ? (
+            /<[a-z][\s\S]*>/i.test(product.description) ? (
+              <div
+                className="prose max-w-none"
+                dangerouslySetInnerHTML={{ __html: product.description }}
+              />
+            ) : (
+              <div className="prose max-w-none whitespace-pre-line">
+                {product.description}
+              </div>
+            )
+          ) : (
+            <div className="prose max-w-none">Chưa có mô tả</div>
+          )}
         </TabsContent>
 
         <TabsContent value="usage" className="pt-6">
