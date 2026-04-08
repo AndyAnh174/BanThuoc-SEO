@@ -121,6 +121,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://minio.banthuocsi.vn" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://minio.banthuocsi.vn" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${beVietnamPro.variable} antialiased`}
         suppressHydrationWarning

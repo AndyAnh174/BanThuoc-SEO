@@ -122,6 +122,7 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
                         className="object-cover"
                         priority
                         fetchPriority="high"
+                        quality={65}
                       />
                     )}
                   </div>
