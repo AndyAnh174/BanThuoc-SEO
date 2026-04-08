@@ -58,12 +58,12 @@ const beVietnamPro = Be_Vietnam_Pro({
 
 export const metadata: Metadata = {
   title: {
-    default: "BanThuoc - Nhà thuốc online uy tín | Dược phẩm chính hãng",
-    template: "%s | BanThuoc",
-    // Trang chủ dùng default, các trang con dùng template: "Tên trang | BanThuoc"
+    default: "Bán Thuốc Sỉ - Nhà cung cấp dược phẩm sỉ giá tốt toàn quốc | BanThuocSi",
+    template: "%s | Bán Thuốc Sỉ",
+    // Trang chủ dùng default, các trang con dùng template: "Tên trang | Bán Thuốc Sỉ"
   },
-  description: "Mua thuốc online chính hãng tại BanThuoc. Hơn 10.000+ sản phẩm dược phẩm, thực phẩm chức năng, thiết bị y tế. Giao nhanh, giá tốt, đảm bảo chất lượng.",
-  keywords: ["mua thuốc online", "nhà thuốc online", "dược phẩm chính hãng", "thực phẩm chức năng", "thiết bị y tế", "banthuoc"],
+  description: "Bán thuốc sỉ giá tốt tại BanThuocSi.vn - Sàn thương mại điện tử dược phẩm B2B kết nối nhà thuốc, phòng khám với nhà sản xuất. Hơn 10.000+ sản phẩm thuốc sỉ chính hãng, giá cạnh tranh, giao nhanh toàn quốc.",
+  keywords: ["bán thuốc sỉ", "thuốc sỉ", "nhà thuốc sỉ", "mua thuốc sỉ", "thuốc sỉ giá tốt", "sàn dược phẩm sỉ", "banthuocsi", "banthuocsi.vn", "dược phẩm sỉ", "thuốc sỉ online"],
   authors: [{ name: "BanThuoc" }],
   creator: "BanThuoc",
   metadataBase: new URL("https://banthuocsi.vn"),
@@ -84,23 +84,23 @@ export const metadata: Metadata = {
     type: "website",
     locale: "vi_VN",
     url: "https://banthuocsi.vn",
-    siteName: "BanThuoc",
-    title: "BanThuoc - Nhà thuốc online uy tín",
-    description: "Mua thuốc online chính hãng tại BanThuoc. Hơn 10.000+ sản phẩm dược phẩm, thực phẩm chức năng, thiết bị y tế.",
+    siteName: "BanThuocSi",
+    title: "Bán Thuốc Sỉ - Nhà cung cấp dược phẩm sỉ giá tốt | BanThuocSi.vn",
+    description: "Bán thuốc sỉ giá tốt tại BanThuocSi.vn - Sàn dược phẩm B2B với 10.000+ sản phẩm thuốc sỉ chính hãng cho nhà thuốc, phòng khám toàn quốc.",
     images: [
       {
-        url: "/2.png",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "BanThuoc - Nhà thuốc online uy tín",
+        alt: "Bán Thuốc Sỉ - BanThuocSi.vn",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "BanThuoc - Nhà thuốc online uy tín",
-    description: "Mua thuốc online chính hãng tại BanThuoc.",
-    images: ["/2.png"],
+    title: "Bán Thuốc Sỉ - BanThuocSi.vn",
+    description: "Bán thuốc sỉ giá tốt, sàn dược phẩm B2B với 10.000+ sản phẩm chính hãng.",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
