@@ -18,6 +18,7 @@ import {
 export const metadata: Metadata = {
   title: 'Giới thiệu | BanThuoc - Nhà thuốc online uy tín',
   description: 'BanThuoc - Hệ thống nhà thuốc online uy tín hàng đầu Việt Nam. Cam kết 100% sản phẩm chính hãng, giao hàng nhanh, tư vấn 24/7.',
+  alternates: { canonical: '/about' },
 };
 
 export default function AboutPage() {

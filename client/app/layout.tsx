@@ -1,8 +1,44 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Be_Vietnam_Pro } from "next/font/google";
+import Script from "next/script";
 import { Toaster } from "sonner";
 import FloatingContact from "@/src/components/FloatingContact";
 import "./globals.css";
+
+const SITE_URL = "https://banthuocsi.vn";
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const GSC_VERIFICATION = process.env.NEXT_PUBLIC_GSC_VERIFICATION;
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "BanThuoc",
+  url: SITE_URL,
+  logo: `${SITE_URL}/2.png`,
+  description: "Nhà thuốc online uy tín - Dược phẩm chính hãng",
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer service",
+    areaServed: "VN",
+    availableLanguage: ["Vietnamese"],
+  },
+  sameAs: [],
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "BanThuoc",
+  url: SITE_URL,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${SITE_URL}/products?search={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
+};
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +67,14 @@ export const metadata: Metadata = {
   authors: [{ name: "BanThuoc" }],
   creator: "BanThuoc",
   metadataBase: new URL("https://banthuocsi.vn"),
+  alternates: {
+    canonical: "/",
+  },
+  ...(GSC_VERIFICATION && {
+    verification: {
+      google: GSC_VERIFICATION,
+    },
+  }),
   icons: {
     icon: [{ url: "/2.png", type: "image/png" }],
     shortcut: "/2.png",
@@ -81,6 +125,28 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${beVietnamPro.variable} antialiased`}
         suppressHydrationWarning
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        {GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_ID}');`}
+            </Script>
+          </>
+        )}
         {children}
         <FloatingContact />
         <Toaster

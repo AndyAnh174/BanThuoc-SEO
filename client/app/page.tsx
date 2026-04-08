@@ -5,6 +5,9 @@ import { HeroSection, CategoryShowcase, FeaturedProducts, NewProductsSection, Fl
 export const metadata: Metadata = {
   title: 'BanThuoc - Nhà thuốc online uy tín | Mua thuốc chính hãng',
   description: 'Mua thuốc online tại BanThuoc. Hơn 10.000+ sản phẩm dược phẩm, thực phẩm chức năng, thiết bị y tế chính hãng. Giao hàng nhanh toàn quốc, giá cạnh tranh.',
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: 'BanThuoc - Nhà thuốc online uy tín',
     description: 'Mua thuốc online chính hãng. 10.000+ sản phẩm, giao nhanh toàn quốc.',
@@ -12,22 +15,16 @@ export const metadata: Metadata = {
   },
 };
 
-const websiteJsonLd = {
+const pharmacyJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Pharmacy',
   name: 'BanThuoc',
   description: 'Nhà thuốc online uy tín - Dược phẩm chính hãng',
   url: 'https://banthuocsi.vn',
-  logo: 'https://banthuocsi.vn/logo.png',
-  sameAs: [],
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: {
-      '@type': 'EntryPoint',
-      urlTemplate: 'https://banthuocsi.vn/products?search={search_term_string}',
-    },
-    'query-input': 'required name=search_term_string',
-  },
+  logo: 'https://banthuocsi.vn/2.png',
+  image: 'https://banthuocsi.vn/2.png',
+  priceRange: '$$',
+  areaServed: 'VN',
 };
 
 export default function Home() {
@@ -35,7 +32,7 @@ export default function Home() {
     <MainLayout>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pharmacyJsonLd) }}
       />
       {/* Hero Section with banner + store info */}
       <HeroSection />

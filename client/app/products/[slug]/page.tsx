@@ -189,6 +189,32 @@ function buildJsonLd(apiProduct: any) {
   return jsonLd;
 }
 
+function buildBreadcrumbJsonLd(apiProduct: any) {
+  const items: any[] = [
+    { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: BASE_URL },
+    { '@type': 'ListItem', position: 2, name: 'Sản phẩm', item: `${BASE_URL}/products` },
+  ];
+  if (apiProduct.category?.slug && apiProduct.category?.name) {
+    items.push({
+      '@type': 'ListItem',
+      position: items.length + 1,
+      name: apiProduct.category.name,
+      item: `${BASE_URL}/categories/${apiProduct.category.slug}`,
+    });
+  }
+  items.push({
+    '@type': 'ListItem',
+    position: items.length + 1,
+    name: apiProduct.name,
+    item: `${BASE_URL}/products/${apiProduct.slug}`,
+  });
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items,
+  };
+}
+
 export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
 
@@ -207,12 +233,17 @@ export default async function ProductDetailPage({ params }: Props) {
     // Transform snake_case API response to camelCase for client
     const product = transformProduct(apiProduct);
     const jsonLd = buildJsonLd(apiProduct);
+    const breadcrumbLd = buildBreadcrumbJsonLd(apiProduct);
 
     return (
       <MainLayout>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
         />
         <ProductDetailClient product={product} />
       </MainLayout>

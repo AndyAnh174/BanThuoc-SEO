@@ -30,8 +30,8 @@ async function fetchJson(url: string): Promise<any | null> {
   return null;
 }
 
-async function fetchAllProducts(): Promise<{ slug: string; updated_at: string }[]> {
-  const results: { slug: string; updated_at: string }[] = [];
+async function fetchAllProducts(): Promise<{ slug: string; updated_at: string; image_url?: string }[]> {
+  const results: { slug: string; updated_at: string; image_url?: string }[] = [];
   let nextPath: string | null = '/products/?page_size=100&status=ACTIVE';
   let safety = 0;
 
@@ -41,10 +41,18 @@ async function fetchAllProducts(): Promise<{ slug: string; updated_at: string }[
     if (!data) break;
     const items = data.results || [];
     results.push(
-      ...items.map((p: any) => ({
-        slug: p.slug,
-        updated_at: p.updated_at || p.updatedAt || '',
-      }))
+      ...items.map((p: any) => {
+        const primary =
+          p.primary_image?.image_url ||
+          (Array.isArray(p.images)
+            ? (p.images.find((i: any) => i.is_primary) || p.images[0])?.image_url
+            : undefined);
+        return {
+          slug: p.slug,
+          updated_at: p.updated_at || p.updatedAt || '',
+          image_url: primary,
+        };
+      })
     );
     // data.next is a full absolute URL — extract path portion so we keep using fallback base chain
     if (data.next) {
@@ -72,6 +80,16 @@ async function fetchAllCategories(): Promise<{ slug: string; updated_at: string 
   }));
 }
 
+async function fetchAllManufacturers(): Promise<{ slug: string; updated_at: string }[]> {
+  const data = await fetchJson('/manufacturers/?page_size=200');
+  if (!data) return [];
+  const items = data.results || [];
+  return items.map((m: any) => ({
+    slug: m.slug,
+    updated_at: m.updated_at || '',
+  }));
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
@@ -92,17 +110,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: p.updated_at ? new Date(p.updated_at) : now,
       changeFrequency: 'weekly',
       priority: 0.8,
+      ...(p.image_url ? { images: [p.image_url] } : {}),
     }));
 
   const categories = await fetchAllCategories();
   const categoryPages: MetadataRoute.Sitemap = categories
     .filter((c) => !!c.slug)
     .map((c) => ({
-      url: `${BASE_URL}/products?category=${c.slug}`,
+      url: `${BASE_URL}/categories/${c.slug}`,
       lastModified: c.updated_at ? new Date(c.updated_at) : now,
       changeFrequency: 'weekly',
       priority: 0.7,
     }));
 
-  return [...staticPages, ...productPages, ...categoryPages];
+  const manufacturers = await fetchAllManufacturers();
+  const manufacturerPages: MetadataRoute.Sitemap = manufacturers
+    .filter((m) => !!m.slug)
+    .map((m) => ({
+      url: `${BASE_URL}/manufacturers/${m.slug}`,
+      lastModified: m.updated_at ? new Date(m.updated_at) : now,
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    }));
+
+  return [...staticPages, ...productPages, ...categoryPages, ...manufacturerPages];
 }

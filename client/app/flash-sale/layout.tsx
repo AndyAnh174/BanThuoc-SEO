@@ -4,6 +4,7 @@ export const metadata: Metadata = {
     title: 'Flash Sale - Giảm giá sốc mỗi ngày',
     description: 'Flash Sale tại BanThuoc - Săn ngay ưu đãi khủng, giảm đến 40% dược phẩm và thực phẩm chức năng chính hãng. Số lượng có hạn, nhanh tay kẻo hết!',
     keywords: ['flash sale thuốc', 'giảm giá thuốc', 'ưu đãi dược phẩm', 'mua thuốc giá rẻ', 'flash sale banthuoc'],
+    alternates: { canonical: '/flash-sale' },
     openGraph: {
         title: '⚡ Flash Sale BanThuoc - Giảm đến 40%',
         description: 'Săn ngay ưu đãi khủng! Giảm đến 40% dược phẩm và thực phẩm chức năng chính hãng. Số lượng có hạn!',

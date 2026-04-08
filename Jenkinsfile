@@ -52,6 +52,8 @@ pipeline {
                 sh """
                     docker build \\
                         --build-arg NEXT_PUBLIC_API_URL=https://banthuocsi.vn/api \\
+                        --build-arg NEXT_PUBLIC_GA_ID=G-C15DTPFV53 \\
+                        --build-arg NEXT_PUBLIC_GSC_VERIFICATION=YAfyyFnIquB2iMXK_mof7cCmNotd75OJZhg9E6sn4oY \\
                         -t ${FRONTEND_IMAGE}:${IMAGE_TAG} \\
                         -t ${FRONTEND_IMAGE}:latest \\
                         ./client
