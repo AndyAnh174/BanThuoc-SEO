@@ -41,13 +41,22 @@ const defaultBanner: Banner = {
   text_color: '#000000',
 };
 
-export function HeroSection() {
-  const [banners, setBanners] = useState<Banner[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
+interface HeroSectionProps {
+  initialBanners?: Banner[];
+}
 
-  // Fetch banners
+export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
+  const [banners, setBanners] = useState<Banner[]>(
+    initialBanners && initialBanners.length > 0 ? initialBanners : []
+  );
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(
+    !(initialBanners && initialBanners.length > 0)
+  );
+
+  // Fetch banners only if not pre-loaded from server
   useEffect(() => {
+    if (initialBanners && initialBanners.length > 0) return;
     async function fetchBanners() {
       try {
         const res = await fetch(`${API_URL}/banners/visible/`);
@@ -65,7 +74,7 @@ export function HeroSection() {
       }
     }
     fetchBanners();
-  }, []);
+  }, [initialBanners]);
 
   // Auto-rotate banners
   useEffect(() => {
@@ -109,8 +118,10 @@ export function HeroSection() {
                         src={currentBanner.image_url}
                         alt={currentBanner.title}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 900px"
                         className="object-cover"
                         priority
+                        fetchPriority="high"
                       />
                     )}
                   </div>

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { MainLayout } from '@/src/features/layout';
-import { HeroSection, CategoryShowcase, FeaturedProducts, NewProductsSection, FlashSaleSection, CategoryProductsSection } from '@/src/features/home';
+import { HeroSectionServer, CategoryShowcase, FeaturedProducts, NewProductsSection, FlashSaleSection, CategoryProductsSection } from '@/src/features/home';
 
 export const metadata: Metadata = {
   title: 'BanThuoc - Nhà thuốc online uy tín | Mua thuốc chính hãng',
@@ -34,8 +34,8 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(pharmacyJsonLd) }}
       />
-      {/* Hero Section with banner + store info */}
-      <HeroSection />
+      {/* Hero Section with banner + store info (server-fetched for LCP) */}
+      <HeroSectionServer />
 
       {/* Product Categories */}
       <CategoryShowcase />

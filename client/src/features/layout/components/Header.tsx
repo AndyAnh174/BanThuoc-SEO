@@ -142,6 +142,7 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                   src="/2.png"
                   alt="BanThuoc Logo"
                   fill
+                  sizes="56px"
                   className="object-contain"
                   priority
                 />

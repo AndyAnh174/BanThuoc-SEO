@@ -211,7 +211,7 @@ export function ProductCard({
             alt={name}
             fill
             className="object-contain p-2 transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 200px"
           />
           {isOutOfStock && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
