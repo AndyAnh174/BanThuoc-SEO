@@ -12,10 +12,20 @@ const GSC_VERIFICATION = process.env.NEXT_PUBLIC_GSC_VERIFICATION;
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "BanThuoc",
+  name: "BanThuocSi - Ngọc Kim Ngân Pharma",
+  alternateName: [
+    "BanThuocSi",
+    "Bán Thuốc Sỉ",
+    "Ngọc Kim Ngân",
+    "Ngọc Kim Ngân Pharma",
+    "NKN Pharma",
+    "NKN",
+    "Công ty Dược phẩm Ngọc Kim Ngân",
+  ],
   url: SITE_URL,
   logo: `${SITE_URL}/2.png`,
-  description: "Nhà thuốc online uy tín - Dược phẩm chính hãng",
+  description:
+    "BanThuocSi.vn - Sàn dược phẩm sỉ B2B của Công ty Dược phẩm Ngọc Kim Ngân (NKN Pharma). Cung cấp thuốc sỉ chính hãng cho nhà thuốc, phòng khám toàn quốc.",
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer service",
@@ -28,7 +38,8 @@ const organizationJsonLd = {
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "BanThuoc",
+  name: "BanThuocSi - Ngọc Kim Ngân Pharma",
+  alternateName: ["BanThuocSi", "NKN Pharma", "Ngọc Kim Ngân"],
   url: SITE_URL,
   potentialAction: {
     "@type": "SearchAction",
@@ -58,14 +69,38 @@ const beVietnamPro = Be_Vietnam_Pro({
 
 export const metadata: Metadata = {
   title: {
-    default: "Bán Thuốc Sỉ - Nhà cung cấp dược phẩm sỉ giá tốt toàn quốc | BanThuocSi",
-    template: "%s | Bán Thuốc Sỉ",
-    // Trang chủ dùng default, các trang con dùng template: "Tên trang | Bán Thuốc Sỉ"
+    default: "Bán Thuốc Sỉ - Ngọc Kim Ngân Pharma (NKN) | BanThuocSi.vn",
+    template: "%s | BanThuocSi - NKN Pharma",
+    // Trang chủ dùng default, các trang con dùng template: "Tên trang | BanThuocSi - NKN Pharma"
   },
-  description: "Bán thuốc sỉ giá tốt tại BanThuocSi.vn - Sàn thương mại điện tử dược phẩm B2B kết nối nhà thuốc, phòng khám với nhà sản xuất. Hơn 10.000+ sản phẩm thuốc sỉ chính hãng, giá cạnh tranh, giao nhanh toàn quốc.",
-  keywords: ["bán thuốc sỉ", "thuốc sỉ", "nhà thuốc sỉ", "mua thuốc sỉ", "thuốc sỉ giá tốt", "sàn dược phẩm sỉ", "banthuocsi", "banthuocsi.vn", "dược phẩm sỉ", "thuốc sỉ online"],
-  authors: [{ name: "BanThuoc" }],
-  creator: "BanThuoc",
+  description:
+    "BanThuocSi.vn - Sàn dược phẩm sỉ B2B của Công ty Dược phẩm Ngọc Kim Ngân (NKN Pharma). Bán thuốc sỉ giá tốt, hơn 10.000+ sản phẩm chính hãng cho nhà thuốc, phòng khám toàn quốc. Giao nhanh, giá cạnh tranh.",
+  keywords: [
+    // Core B2B wholesale
+    "bán thuốc sỉ",
+    "thuốc sỉ",
+    "nhà thuốc sỉ",
+    "mua thuốc sỉ",
+    "thuốc sỉ giá tốt",
+    "sàn dược phẩm sỉ",
+    "banthuocsi",
+    "banthuocsi.vn",
+    "dược phẩm sỉ",
+    "thuốc sỉ online",
+    // Brand: Ngọc Kim Ngân / NKN Pharma
+    "ngọc kim ngân",
+    "ngoc kim ngan",
+    "nkn pharma",
+    "nkn",
+    "dược phẩm ngọc kim ngân",
+    "công ty ngọc kim ngân",
+    "công ty dược phẩm ngọc kim ngân",
+    "nkn pharmacy",
+    "nhà thuốc ngọc kim ngân",
+    "ngọc kim ngân pharma",
+  ],
+  authors: [{ name: "Ngọc Kim Ngân Pharma" }],
+  creator: "Ngọc Kim Ngân Pharma",
   metadataBase: new URL("https://banthuocsi.vn"),
   alternates: {
     canonical: "/",
@@ -84,22 +119,24 @@ export const metadata: Metadata = {
     type: "website",
     locale: "vi_VN",
     url: "https://banthuocsi.vn",
-    siteName: "BanThuocSi",
-    title: "Bán Thuốc Sỉ - Nhà cung cấp dược phẩm sỉ giá tốt | BanThuocSi.vn",
-    description: "Bán thuốc sỉ giá tốt tại BanThuocSi.vn - Sàn dược phẩm B2B với 10.000+ sản phẩm thuốc sỉ chính hãng cho nhà thuốc, phòng khám toàn quốc.",
+    siteName: "BanThuocSi - NKN Pharma",
+    title: "Bán Thuốc Sỉ - Ngọc Kim Ngân Pharma (NKN) | BanThuocSi.vn",
+    description:
+      "Sàn dược phẩm sỉ B2B của Công ty Dược phẩm Ngọc Kim Ngân (NKN Pharma). 10.000+ sản phẩm thuốc sỉ chính hãng cho nhà thuốc, phòng khám toàn quốc.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Bán Thuốc Sỉ - BanThuocSi.vn",
+        alt: "BanThuocSi - Ngọc Kim Ngân Pharma (NKN)",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Bán Thuốc Sỉ - BanThuocSi.vn",
-    description: "Bán thuốc sỉ giá tốt, sàn dược phẩm B2B với 10.000+ sản phẩm chính hãng.",
+    title: "Bán Thuốc Sỉ - NKN Pharma | BanThuocSi.vn",
+    description:
+      "Sàn dược phẩm sỉ B2B của Ngọc Kim Ngân Pharma - 10.000+ sản phẩm thuốc sỉ chính hãng.",
     images: ["/og-image.png"],
   },
   robots: {

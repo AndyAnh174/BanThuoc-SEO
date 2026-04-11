@@ -3,14 +3,27 @@ import { MainLayout } from '@/src/features/layout';
 import { HeroSectionServer, CategoryShowcase, FeaturedProducts, NewProductsSection, FlashSaleSection, CategoryProductsSection } from '@/src/features/home';
 
 export const metadata: Metadata = {
-  title: 'BanThuoc - Nhà thuốc online uy tín | Mua thuốc chính hãng',
-  description: 'Mua thuốc online tại BanThuoc. Hơn 10.000+ sản phẩm dược phẩm, thực phẩm chức năng, thiết bị y tế chính hãng. Giao hàng nhanh toàn quốc, giá cạnh tranh.',
+  title: 'Bán Thuốc Sỉ - Ngọc Kim Ngân Pharma (NKN) | BanThuocSi.vn',
+  description:
+    'BanThuocSi.vn - Sàn dược phẩm sỉ B2B của Công ty Dược phẩm Ngọc Kim Ngân (NKN Pharma). 10.000+ sản phẩm thuốc sỉ chính hãng, giá cạnh tranh, giao nhanh toàn quốc cho nhà thuốc, phòng khám.',
+  keywords: [
+    'bán thuốc sỉ',
+    'thuốc sỉ',
+    'banthuocsi.vn',
+    'ngọc kim ngân',
+    'nkn pharma',
+    'nkn',
+    'dược phẩm ngọc kim ngân',
+    'công ty ngọc kim ngân',
+    'nhà thuốc ngọc kim ngân',
+  ],
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'BanThuoc - Nhà thuốc online uy tín',
-    description: 'Mua thuốc online chính hãng. 10.000+ sản phẩm, giao nhanh toàn quốc.',
+    title: 'Bán Thuốc Sỉ - Ngọc Kim Ngân Pharma (NKN) | BanThuocSi.vn',
+    description:
+      'Sàn dược phẩm sỉ B2B của Công ty Dược phẩm Ngọc Kim Ngân (NKN Pharma). 10.000+ sản phẩm thuốc sỉ chính hãng.',
     type: 'website',
   },
 };
@@ -18,8 +31,18 @@ export const metadata: Metadata = {
 const pharmacyJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Pharmacy',
-  name: 'BanThuoc',
-  description: 'Nhà thuốc online uy tín - Dược phẩm chính hãng',
+  name: 'BanThuocSi - Ngọc Kim Ngân Pharma',
+  alternateName: [
+    'BanThuocSi',
+    'Bán Thuốc Sỉ',
+    'Ngọc Kim Ngân',
+    'Ngọc Kim Ngân Pharma',
+    'NKN Pharma',
+    'NKN',
+    'Công ty Dược phẩm Ngọc Kim Ngân',
+  ],
+  description:
+    'Sàn dược phẩm sỉ B2B của Công ty Dược phẩm Ngọc Kim Ngân (NKN Pharma) - bán thuốc sỉ chính hãng cho nhà thuốc, phòng khám toàn quốc.',
   url: 'https://banthuocsi.vn',
   logo: 'https://banthuocsi.vn/2.png',
   image: 'https://banthuocsi.vn/2.png',
