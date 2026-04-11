@@ -29,6 +29,10 @@ from products.views.product import (
     ProductListCreateView as AdminProductListCreateView,
     ProductDetailView as AdminProductDetailView,
 )
+from products.views.bulk_import import (
+    ProductBulkImportView,
+    ProductBulkImportTemplateView,
+)
 from products.views.search import (
     ElasticsearchProductSearchView,
     ElasticsearchSuggestView,
@@ -81,6 +85,8 @@ urlpatterns = [
     # Products (Admin)
     # ========================================
     path('admin/products/', AdminProductListCreateView.as_view(), name='admin-product-list-create'),
+    path('admin/products/bulk-import/', ProductBulkImportView.as_view(), name='admin-product-bulk-import'),
+    path('admin/products/bulk-import/template/', ProductBulkImportTemplateView.as_view(), name='admin-product-bulk-import-template'),
     path('admin/products/<uuid:id>/', AdminProductDetailView.as_view(), name='admin-product-detail'),
     
     # ========================================

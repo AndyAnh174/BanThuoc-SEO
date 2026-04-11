@@ -37,3 +37,4 @@ elasticsearch==8.19.3
 django-filter==25.1
 django-prometheus>=2.3.1
 playwright==1.49.0
+openpyxl==3.1.5
