@@ -83,7 +83,7 @@ Jenkinsfile                   # CI/CD pipeline with GitHub Deployments API
 ### Authentication
 - Custom User model at `users.User` (NOT `auth.User`)
 - Use `get_user_model()` instead of `from django.contrib.auth.models import User`
-- JWT auth via SimpleJWT at `/api/auth/token/` (access: 60min, refresh: 1 day)
+- JWT auth via SimpleJWT at `/api/auth/token/` (access: 1 day, refresh: 7 days)
 - User has `status` field (PENDING/ACTIVE/REJECTED/LOCKED) - must be ACTIVE to login
 - User has `is_verified` field - must be True
 - Admin password validation is disabled (admin can set any password)
