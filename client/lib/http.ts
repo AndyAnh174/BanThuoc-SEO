@@ -7,11 +7,10 @@ export const http = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    withCredentials: true, // Important for session/cookies if used
+    withCredentials: true,
 });
 
-// Add interceptors if needed
-// Add request interceptor to attach token
+// Attach access token to every request
 http.interceptors.request.use(
     (config) => {
         if (typeof window !== 'undefined') {
@@ -22,56 +21,92 @@ http.interceptors.request.use(
         }
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
+
+// Track if a refresh is already in-flight to avoid parallel refreshes
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+function onRefreshed(token: string) {
+    refreshSubscribers.forEach((cb) => cb(token));
+    refreshSubscribers = [];
+}
+
+function addRefreshSubscriber(cb: (token: string) => void) {
+    refreshSubscribers.push(cb);
+}
+
+function clearAuthAndRedirect() {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    if (!window.location.pathname.startsWith('/auth')) {
+        window.location.href = '/auth/login';
+    }
+}
 
 http.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
 
-        // If we get a 401 and haven't already retried
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
-
-            // Check if this might be a public endpoint (no auth required)
-            // Try the request again without the token
-            if (typeof window !== 'undefined') {
-                // Clear potentially invalid/expired token
-                const currentToken = localStorage.getItem('accessToken');
-
-                if (currentToken) {
-                    // Create a new request without the Authorization header
-                    const newConfig = { ...originalRequest };
-                    delete newConfig.headers.Authorization;
-
-                    try {
-                        // Retry without token for public endpoints
-                        return await axios.request({
-                            ...newConfig,
-                            baseURL: API_URL,
-                        });
-                    } catch (retryError: any) {
-                        // If retry also fails with 401, it's truly a protected endpoint
-                        // Clear tokens and redirect to login
-                        if (retryError.response?.status === 401) {
-                            localStorage.removeItem('accessToken');
-                            localStorage.removeItem('refreshToken');
-                            localStorage.removeItem('user');
-
-                            // Only redirect if not already on auth pages
-                            if (!window.location.pathname.startsWith('/auth')) {
-                                window.location.href = '/auth/login';
-                            }
-                        }
-                        return Promise.reject(retryError);
-                    }
-                }
-            }
+        if (error.response?.status !== 401 || originalRequest._retry) {
+            return Promise.reject(error);
         }
 
-        return Promise.reject(error);
+        if (typeof window === 'undefined') {
+            return Promise.reject(error);
+        }
+
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        // No refresh token -> go to login
+        if (!refreshToken) {
+            clearAuthAndRedirect();
+            return Promise.reject(error);
+        }
+
+        // If already refreshing, queue this request
+        if (isRefreshing) {
+            return new Promise((resolve) => {
+                addRefreshSubscriber((newToken: string) => {
+                    originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                    originalRequest._retry = true;
+                    resolve(http(originalRequest));
+                });
+            });
+        }
+
+        // Try to refresh
+        isRefreshing = true;
+        originalRequest._retry = true;
+
+        try {
+            const { data } = await axios.post(`${API_URL}/auth/token/refresh/`, {
+                refresh: refreshToken,
+            });
+
+            const newAccess = data.access;
+            localStorage.setItem('accessToken', newAccess);
+
+            // If backend rotates refresh tokens, save new one
+            if (data.refresh) {
+                localStorage.setItem('refreshToken', data.refresh);
+            }
+
+            isRefreshing = false;
+            onRefreshed(newAccess);
+
+            // Retry original request with new token
+            originalRequest.headers.Authorization = `Bearer ${newAccess}`;
+            return http(originalRequest);
+        } catch (refreshError) {
+            // Refresh token also expired/invalid -> logout
+            isRefreshing = false;
+            refreshSubscribers = [];
+            clearAuthAndRedirect();
+            return Promise.reject(refreshError);
+        }
     }
 );
