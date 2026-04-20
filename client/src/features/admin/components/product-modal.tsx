@@ -102,7 +102,7 @@ const productSchema = z.object({
     quantity_per_unit: z.string().optional(),
     status: z.enum(['DRAFT', 'ACTIVE', 'INACTIVE', 'OUT_OF_STOCK']),
     description: z.string().optional(),
-    short_description: z.string().optional(),
+    short_description: z.string().max(500, 'Mô tả ngắn tối đa 500 ký tự').optional(),
     ingredients: z.string().optional(),
     dosage: z.string().optional(),
     usage: z.string().optional(),
@@ -591,8 +591,9 @@ export function ProductModal() {
                                             {...register('short_description')}
                                             rows={3}
                                             className="resize-none text-sm"
-                                            placeholder="Mô tả ngắn gọn về sản phẩm..."
+                                            placeholder="Mô tả ngắn gọn về sản phẩm (tối đa 500 ký tự)..."
                                         />
+                                        <FieldError message={errors.short_description?.message} />
                                     </div>
                                 </div>
                             </TabsContent>
