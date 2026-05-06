@@ -24,7 +24,7 @@ export function Footer() {
                 />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-white">BanThuoc</h3>
+                <h3 className="text-xl font-bold text-white">Bán Thuốc Sỉ</h3>
                 <p className="text-xs text-slate-400">Nhà thuốc uy tín</p>
               </div>
             </div>

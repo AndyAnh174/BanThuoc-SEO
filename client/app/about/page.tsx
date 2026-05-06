@@ -59,7 +59,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Về <span className="text-primary">BanThuoc</span>
+              Về <span className="text-primary">Bán Thuốc Sỉ</span>
             </h1>
             <p className="text-lg text-gray-600 mb-8">
               Chúng tôi là hệ thống nhà thuốc online uy tín hàng đầu Việt Nam, 
