@@ -82,7 +82,7 @@ export const getCategory = async (slug: string) => {
 
 // Manufacturer APIs
 export const getManufacturers = async () => {
-  return api.get('/manufacturers/');
+  return api.get('/manufacturers/', { params: { page_size: 1000 } });
 };
 
 export const getManufacturer = async (slug: string) => {
