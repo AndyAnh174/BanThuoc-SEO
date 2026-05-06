@@ -23,10 +23,10 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   const stats = [
-    { value: '10K+', label: 'Sản phẩm' },
-    { value: '500K+', label: 'Khách hàng' },
-    { value: '50+', label: 'Chi nhánh' },
-    { value: '100+', label: 'Dược sĩ' },
+    { value: '5K+', label: 'Sản phẩm' },
+    { value: '10K+', label: 'Khách hàng' },
+    { value: '1+', label: 'Chi nhánh' },
+    { value: '10+', label: 'Dược sĩ' },
   ];
 
   const values = [
@@ -38,7 +38,7 @@ export default function AboutPage() {
     {
       icon: <Heart className="w-8 h-8" />,
       title: 'Tận tâm',
-      description: 'Đội ngũ dược sĩ giàu kinh nghiệm, tư vấn tận tình, hỗ trợ 24/7.',
+      description: 'Đội ngũ dược sĩ giàu kinh nghiệm, tư vấn tận tình, hỗ trợ trong giờ làm việc.',
     },
     {
       icon: <Users className="w-8 h-8" />,
@@ -48,7 +48,7 @@ export default function AboutPage() {
     {
       icon: <Award className="w-8 h-8" />,
       title: 'Uy tín',
-      description: 'Hơn 10 năm kinh nghiệm, được hàng triệu khách hàng tin tưởng.',
+      description: 'Giấy phép kinh doanh số: 0319116538, được khách hàng tin tưởng.',
     },
   ];
 
@@ -105,8 +105,8 @@ export default function AboutPage() {
                 đảm bảo 100% chính hãng và có nguồn gốc rõ ràng.
               </p>
               <p className="text-gray-600">
-                Với đội ngũ hơn 100 dược sĩ giàu kinh nghiệm, chúng tôi cam kết 
-                tư vấn tận tình, hỗ trợ khách hàng 24/7, giúp bạn và gia đình 
+                Với đội ngũ dược sĩ giàu kinh nghiệm, chúng tôi cam kết
+                tư vấn tận tình, giúp bạn và gia đình
                 luôn khỏe mạnh.
               </p>
             </div>
@@ -164,7 +164,7 @@ export default function AboutPage() {
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">Địa chỉ</h3>
                   <p className="text-gray-600">
-                    123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh
+                    117/127C/27 Phan Huy Ích, Phường Tân Sơn, TP. Hồ Chí Minh
                   </p>
                 </div>
               </div>
@@ -175,7 +175,7 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">Hotline</h3>
-                  <p className="text-gray-600">1900 xxxx</p>
+                  <p className="text-gray-600">096.770.5287</p>
                 </div>
               </div>
 
@@ -185,7 +185,7 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                  <p className="text-gray-600">contact@banthuoc.vn</p>
+                  <p className="text-gray-600">ngockimnganpharm@gmail.com</p>
                 </div>
               </div>
 
@@ -195,7 +195,7 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">Giờ làm việc</h3>
-                  <p className="text-gray-600">8:00 - 22:00, Thứ 2 - Chủ Nhật</p>
+                  <p className="text-gray-600">8:00 - 17:00, T2 - CN</p>
                 </div>
               </div>
             </div>
@@ -210,7 +210,7 @@ export default function AboutPage() {
             Bắt đầu mua sắm ngay hôm nay
           </h2>
           <p className="text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
-            Khám phá hơn 10.000+ sản phẩm dược phẩm chính hãng với giá tốt nhất
+            Khám phá hơn 5.000+ sản phẩm dược phẩm chính hãng với giá tốt nhất
           </p>
           <Button size="lg" variant="secondary" asChild>
             <Link href="/products">
