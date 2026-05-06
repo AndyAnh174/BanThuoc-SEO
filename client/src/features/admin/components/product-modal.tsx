@@ -54,6 +54,7 @@ import { useProductTypesStore } from '@/src/features/admin/stores/product-types.
 import { useCategoriesStore } from '../stores/categories.store';
 import { ImageUpload } from './image-upload';
 import { CategorySelector } from './category-selector';
+import { SearchableSelect } from '@/components/ui/searchable-select';
 import type { ProductCreateInput, ProductType, ProductStatus } from '../types/product.types';
 import { getManufacturers } from '@/src/features/products/api/products.api';
 import { http } from '@/lib/http';
@@ -540,16 +541,15 @@ export function ProductModal() {
                                                     control={control}
                                                     name="manufacturer"
                                                     render={({ field }) => (
-                                                        <Select onValueChange={field.onChange} value={field.value}>
-                                                            <SelectTrigger className="flex-1 h-9">
-                                                                <SelectValue placeholder="Chọn nhà sản xuất" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {manufacturers.map((m: any) => (
-                                                                    <SelectItem key={m.id} value={String(m.id)}>{m.name}</SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
+                                                        <SearchableSelect
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            items={manufacturers.map((m: any) => ({ id: String(m.id), name: m.name }))}
+                                                            placeholder="Chọn nhà sản xuất"
+                                                            emptyText="Không tìm thấy nhà sản xuất"
+                                                            error={errors.manufacturer?.message}
+                                                            className="flex-1"
+                                                        />
                                                     )}
                                                 />
                                                 <Button
