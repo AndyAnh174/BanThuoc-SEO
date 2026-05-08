@@ -33,6 +33,9 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # However, if we use 'pnpm run build', we need pnpm.
 RUN corepack enable pnpm
 
+# Prevent pnpm from prompting for TTY in CI
+ENV CI=true
+
 # Pass environment variable at build time
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
