@@ -58,6 +58,7 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(pharmacyJsonLd) }}
       />
       {/* Hero Section with banner + store info (server-fetched for LCP) */}
+      <h1 className="sr-only">Bán Thuốc Sỉ - Ngọc Kim Ngân Pharma (NKN) - Sàn Dược Phẩm Sỉ B2B Chính Hãng</h1>
       <HeroSectionServer />
 
       {/* Product Categories */}

@@ -78,7 +78,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const description =
       p.short_description ||
       (p.description ? p.description.replace(/<[^>]+>/g, '').slice(0, 155) + '...' : null) ||
-      `Mua ${p.name} chính hãng tại BanThuoc. Giá ${priceFormatted}. Giao hàng nhanh toàn quốc.`;
+      `Mua ${p.name} chính hãng tại Bán Thuốc Sỉ. Giá ${priceFormatted}. Giao hàng nhanh toàn quốc.`;
 
     // Build keywords from product data
     const keywords = [
@@ -95,7 +95,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const canonicalUrl = `${BASE_URL}/products/${slug}`;
 
     return {
-      // title sẽ được xử lý qua template "%s | BanThuoc" từ layout
+      // title sẽ được xử lý qua template "%s | BanThuocSi - NKN Pharma" từ layout
       title: p.name,
       description,
       keywords,
@@ -105,9 +105,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       openGraph: {
         type: 'website',
         url: canonicalUrl,
-        siteName: 'BanThuoc',
+        siteName: 'Bán Thuốc Sỉ - NKN Pharma',
         locale: 'vi_VN',
-        title: `${p.name} | BanThuoc`,
+        title: `${p.name} | Bán Thuốc Sỉ`,
         description,
         images: imageUrl
           ? [
@@ -122,7 +122,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
       twitter: {
         card: 'summary_large_image',
-        title: `${p.name} | BanThuoc`,
+        title: `${p.name} | Bán Thuốc Sỉ`,
         description,
         ...(imageUrl ? { images: [imageUrl] } : {}),
       },
@@ -164,7 +164,7 @@ function buildJsonLd(apiProduct: any) {
         (apiProduct.stock_quantity ?? 0) > 0
           ? 'https://schema.org/InStock'
           : 'https://schema.org/OutOfStock',
-      seller: { '@type': 'Organization', name: 'BanThuoc' },
+      seller: { '@type': 'Organization', name: 'Bán Thuốc Sỉ' },
     },
   };
 

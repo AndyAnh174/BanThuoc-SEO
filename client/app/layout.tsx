@@ -29,10 +29,15 @@ const organizationJsonLd = {
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer service",
+    telephone: "096.770.5287",
+    email: "ngockimnganpharm@gmail.com",
     areaServed: "VN",
     availableLanguage: ["Vietnamese"],
   },
-  sameAs: [],
+  sameAs: [
+    "https://www.facebook.com/profile.php?id=61589330195385",
+    "https://www.tiktok.com/@ngockimnganpharmacy",
+  ],
 };
 
 const websiteJsonLd = {
