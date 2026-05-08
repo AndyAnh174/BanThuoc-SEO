@@ -34,7 +34,7 @@ export function Footer() {
             </p>
             <div className="flex gap-3">
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/profile.php?id=61589330195385"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-slate-900 hover:bg-primary flex items-center justify-center transition-colors"
@@ -54,7 +54,7 @@ export function Footer() {
                 </svg>
               </a>
               <a
-                href="https://tiktok.com"
+                href="https://www.tiktok.com/@ngockimnganpharmacy?_r=1&_t=ZS-96BT93MtIiT"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-slate-900 hover:bg-pink-600 flex items-center justify-center transition-colors"
