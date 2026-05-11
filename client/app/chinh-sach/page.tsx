@@ -184,5 +184,3 @@ export default function ChinhSachPage() {
     </MainLayout>
   );
 }
-
-export default ChinhSachPage;
