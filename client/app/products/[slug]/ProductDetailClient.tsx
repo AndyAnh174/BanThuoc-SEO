@@ -400,28 +400,28 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
 
       {/* Product details tabs */}
       <Tabs defaultValue="description" className="mb-12">
-        <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent">
+        <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent overflow-x-auto flex flex-nowrap">
           <TabsTrigger 
             value="description"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 sm:px-6 py-3 shrink-0"
           >
             Mô tả sản phẩm
           </TabsTrigger>
           <TabsTrigger 
             value="usage"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 sm:px-6 py-3 shrink-0"
           >
             Cách dùng
           </TabsTrigger>
           <TabsTrigger 
             value="ingredients"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 sm:px-6 py-3 shrink-0"
           >
             Thành phần
           </TabsTrigger>
           <TabsTrigger
             value="reviews"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 sm:px-6 py-3 shrink-0"
           >
             Đánh giá
             {product.reviewCount && product.reviewCount > 0 ? (
