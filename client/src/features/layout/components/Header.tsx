@@ -149,7 +149,7 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
               </div>
               <div className="hidden sm:block">
                 <p className="text-lg md:text-xl font-bold text-gray-900 leading-tight group-hover:text-primary transition-colors" style={{ fontFamily: 'var(--font-be-vietnam)' }}>Bán Thuốc Sỉ</p>
-                <p className="text-[10px] text-gray-400 tracking-wide" style={{ fontFamily: 'var(--font-be-vietnam)' }}>Thuốc tốt · Giá tốt · Dịch vụ tốt</p>
+                <p className="text-xs text-gray-400 tracking-wide" style={{ fontFamily: 'var(--font-be-vietnam)' }}>Thuốc tốt · Giá tốt · Dịch vụ tốt</p>
               </div>
             </Link>
 
@@ -192,7 +192,7 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                     <Link href="/cart" className="relative">
                       <ShoppingCart className="w-5 h-5" />
                       {displayCount > 0 && (
-                        <span className="absolute -top-0.5 -right-0.5 h-5 w-5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold border-2 border-white shadow-xs animate-in zoom-in-50">
+                        <span className="absolute -top-0.5 -right-0.5 h-5 w-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold border-2 border-white shadow-xs animate-in zoom-in-50">
                           {displayCount}
                         </span>
                       )}
@@ -212,7 +212,7 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden rounded-full hover:bg-gray-100"
+                className="md:hidden rounded-full hover:bg-gray-100 min-w-11 min-h-11"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
                 {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

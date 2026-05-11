@@ -145,7 +145,7 @@ export function ProductsClient() {
     <div className="min-h-screen bg-gray-50">
       {/* Breadcrumb / hero strip */}
       <div className="bg-white border-b border-gray-100">
-        <div className="container mx-auto px-4 py-3">
+        <div className="px-4 py-3">
           <nav className="flex items-center gap-1.5 text-sm text-gray-500">
             <Link href="/" className="flex items-center gap-1 hover:text-green-600 transition-colors">
               <Home className="w-3.5 h-3.5" />
@@ -157,7 +157,7 @@ export function ProductsClient() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-6">
 
           {/* ── Sidebar Desktop ── */}
@@ -372,7 +372,7 @@ export function ProductsClient() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setShowMobileFilters(false)}
           />
-          <div className="absolute left-0 top-0 bottom-0 w-80 bg-white shadow-xl overflow-y-auto">
+          <div className="absolute left-0 top-0 bottom-0 w-[85vw] max-w-80 bg-white shadow-xl overflow-y-auto">
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
               <h3 className="font-semibold text-gray-900">Bộ lọc</h3>
               <Button

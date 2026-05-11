@@ -131,7 +131,7 @@ export function FlashSaleSection() {
     if (loading) {
         return (
             <section className="bg-white border-y border-gray-100 py-8">
-                <div className="container mx-auto px-4">
+                <div>
                     <div className="flex items-center justify-between mb-6">
                         <Skeleton className="h-7 w-44" />
                         <Skeleton className="h-9 w-32" />
@@ -150,7 +150,7 @@ export function FlashSaleSection() {
 
     return (
         <section className="bg-white border-y border-gray-100 py-8">
-            <div className="container mx-auto px-4">
+            <div>
 
                 {/* Section header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">

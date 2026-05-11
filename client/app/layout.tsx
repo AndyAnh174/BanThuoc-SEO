@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Be_Vietnam_Pro } from "next/font/google";
 import Script from "next/script";
 import { Toaster } from "sonner";
@@ -156,6 +156,17 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#16a34a" },
+    { media: "(prefers-color-scheme: dark)", color: "#166534" },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -168,7 +179,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://minio.banthuocsi.vn" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${beVietnamPro.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${beVietnamPro.variable} antialiased overflow-x-hidden`}
         suppressHydrationWarning
       >
         <script

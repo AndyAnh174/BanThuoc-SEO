@@ -137,7 +137,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 shrink-0 text-primary" />
-                <span>ngockimnganpharm@gmail.com</span>
+                <span className="break-all">ngockimnganpharm@gmail.com</span>
               </li>
               <li className="flex items-center gap-3">
                 <Clock className="w-5 h-5 shrink-0 text-primary" />

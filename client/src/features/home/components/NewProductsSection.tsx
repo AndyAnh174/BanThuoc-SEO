@@ -40,7 +40,7 @@ export function NewProductsSection() {
   if (loading) {
     return (
       <section className="py-12">
-        <div className="container mx-auto px-4">
+        <div>
           <div className="flex items-center justify-between mb-8">
             <Skeleton className="h-10 w-48" />
             <Skeleton className="h-10 w-32" />
@@ -61,7 +61,7 @@ export function NewProductsSection() {
 
   return (
     <section className="py-8">
-      <div className="container mx-auto px-4">
+      <div>
         {/* Section Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           {/* Colored Header - Solid green */}
@@ -91,7 +91,7 @@ export function NewProductsSection() {
           </div>
 
           {/* Products grid */}
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {products.map((product) => (
                 <ProductCard

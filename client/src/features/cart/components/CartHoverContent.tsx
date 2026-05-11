@@ -14,7 +14,7 @@ export function CartHoverContent() {
 
   if (itemCount === 0) {
     return (
-      <div className="w-80 bg-white rounded-xl shadow-xl border border-gray-100 p-6 flex flex-col items-center justify-center text-center animate-in fade-in zoom-in-95 duration-200">
+      <div className="w-80 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-xl border border-gray-100 p-6 flex flex-col items-center justify-center text-center animate-in fade-in zoom-in-95 duration-200">
         <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
           <ShoppingCart className="w-8 h-8 text-gray-300" />
         </div>
@@ -28,7 +28,7 @@ export function CartHoverContent() {
   }
 
   return (
-    <div className="w-96 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div className="w-96 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
       {/* Header */}
       <div className="p-4 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
         <h3 className="font-semibold text-gray-900">Giỏ hàng ({itemCount})</h3>

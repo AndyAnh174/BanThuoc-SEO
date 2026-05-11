@@ -117,7 +117,7 @@ export function CategoryShowcase() {
         </div>
 
         {/* Categories grid */}
-        <div className="relative grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-3">
+        <div className="relative grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-3">
           {categories.map((category) => {
             // Keep fallback icon if no image
             const IconComponent = categoryIcons[category.slug] || <Pill className="w-8 h-8" />;
@@ -145,7 +145,7 @@ export function CategoryShowcase() {
                 <h3 className="text-xs font-semibold text-center text-gray-800 line-clamp-2 leading-tight min-h-[2.5em]">
                   {category.name}
                 </h3>
-                <span className="text-[10px] text-gray-500 mt-1">
+                <span className="text-xs text-gray-500 mt-1">
                   {count !== undefined ? `${count} sản phẩm` : 'Sản phẩm'}
                 </span>
               </Link>

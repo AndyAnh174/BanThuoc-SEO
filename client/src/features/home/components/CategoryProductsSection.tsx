@@ -58,7 +58,7 @@ const DEFAULT_STYLE = {
 function SectionSkeleton() {
     return (
         <section className="py-6">
-            <div className="container mx-auto px-4">
+            <div>
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                         <Skeleton className="h-7 w-48" />
@@ -80,7 +80,7 @@ function CategoryBlock({ section }: { section: CategorySection }) {
 
     return (
         <section className="py-6">
-            <div className="container mx-auto px-4">
+            <div>
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                     {/* Header */}
                     <div className="px-6 py-4 border-b border-gray-100">

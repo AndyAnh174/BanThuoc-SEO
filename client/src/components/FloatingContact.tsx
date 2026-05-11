@@ -72,9 +72,9 @@ export default function FloatingContact() {
         )}
       </button>
 
-      {/* Pulse animation khi đóng */}
+      {/* Pulse animation khi đóng — animate only once */}
       {!open && (
-        <span className="absolute bottom-0 right-0 w-14 h-14 rounded-full bg-green-500 opacity-40 animate-ping pointer-events-none" />
+        <span className="absolute bottom-0 right-0 w-14 h-14 rounded-full bg-green-500 opacity-40 animate-ping [animation-iteration-count:3] pointer-events-none" />
       )}
     </div>
   );

@@ -198,7 +198,7 @@ export function ProductCard({
         {/* Wishlist button */}
         <button
           onClick={handleToggleWishlist}
-          className={`absolute top-3 right-3 z-10 transition-colors ${isLikedState ? 'text-red-500 hover:text-red-600' : 'text-gray-400 hover:text-red-500'}`}
+          className={`absolute top-3 right-3 z-10 p-2 transition-colors ${isLikedState ? 'text-red-500 hover:text-red-600' : 'text-gray-400 hover:text-red-500'}`}
           aria-label={isLikedState ? "Remove from wishlist" : "Add to wishlist"}
         >
           <Heart className={`w-5 h-5 ${isLikedState ? 'fill-current' : ''}`} />
@@ -225,17 +225,17 @@ export function ProductCard({
         {/* Badges */}
         <div className="flex flex-col gap-1 items-start mb-2 min-h-[24px]">
           {requiresPrescription && (
-            <div className="bg-[#0057B7] text-[#FFD700] text-[10px] font-bold px-2 py-1 uppercase leading-tight inline-block rounded-sm">
+            <div className="bg-[#0057B7] text-[#FFD700] text-xs font-bold px-2 py-1 uppercase leading-tight inline-block rounded-sm">
               Theo đơn<br />bệnh viện
             </div>
           )}
           {flashSale && (
-             <Badge className="bg-red-600 hover:bg-red-700 text-white rounded-sm px-1.5 py-0.5 text-[10px]">
+             <Badge className="bg-red-600 hover:bg-red-700 text-white rounded-sm px-1.5 py-0.5 text-xs">
                Flash Sale
              </Badge>
           )}
            {!flashSale && isFeatured && (
-             <Badge className="bg-green-600 hover:bg-green-700 text-white rounded-sm px-1.5 py-0.5 text-[10px]">
+             <Badge className="bg-green-600 hover:bg-green-700 text-white rounded-sm px-1.5 py-0.5 text-xs">
                MỚI
              </Badge>
           )}
