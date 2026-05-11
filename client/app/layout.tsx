@@ -204,6 +204,11 @@ gtag('config', '${GA_ID}');`}
             </Script>
           </>
         )}
+        <Script
+          src="https://analytics25nam.hcmutertic.com/script.js"
+          data-website-id="f047dbb5-70dc-43bf-a226-fa0f617f92ca"
+          strategy="afterInteractive"
+        />
         {children}
         <FloatingContact />
         <Toaster

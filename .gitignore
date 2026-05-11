@@ -125,3 +125,4 @@ media/
 # !**/migrations/__init__.py
 
 CLAUDE.md
+screenshots/

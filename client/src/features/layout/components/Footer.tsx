@@ -118,6 +118,11 @@ export function Footer() {
                   Chính sách bảo mật
                 </Link>
               </li>
+              <li>
+                <Link href="/chinh-sach" className="text-slate-400 hover:text-primary transition-colors">
+                  Chính sách hủy đơn
+                </Link>
+              </li>
             </ul>
           </div>
 
