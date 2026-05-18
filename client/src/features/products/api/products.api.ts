@@ -63,8 +63,8 @@ export const getNewProducts = async () => {
 };
 
 export const searchProducts = async (query: string, params?: ProductListParams) => {
-  const res = await api.get('/search/', { params: { q: query, ...params } });
-  return { ...res, data: transformProductList(res.data) }; // SearchResponse has results array
+  const res = await api.get('/products/', { params: { search: query, ...params } });
+  return { ...res, data: transformProductList(res.data) };
 };
 
 export const getSuggestions = async (query: string) => {

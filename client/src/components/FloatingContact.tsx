@@ -4,8 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { Phone, X, MessageCircle } from "lucide-react";
 
-const HOTLINE = "1800 xxxx";           // ← đổi thành số thật
-const ZALO_LINK = "https://zalo.me/0xxxxxxxxx"; // ← đổi thành link Zalo thật
+const HOTLINE = "0967705287";
+const ZALO_LINK = "https://zalo.me/1852235396176317113";
 
 export default function FloatingContact() {
   const [open, setOpen] = useState(false);
