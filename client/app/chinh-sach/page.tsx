@@ -10,6 +10,13 @@ import {
   ChevronRight,
   FileText,
   Clock,
+  Lock,
+  Eye,
+  UserCheck,
+  Cookie,
+  Database,
+  Truck,
+  Package,
 } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -45,6 +52,137 @@ const policies = [
     ],
     note: 'Nếu Quý khách hàng yêu cầu hủy đơn 3 lần liên tiếp hoặc hủy đơn 4 lần trong 30 ngày sẽ bị khóa tài khoản. Trường hợp khách hàng muốn mở lại tài khoản, BanThuocSi sẽ thu cước phí để mở lại tài khoản là 200.000 VNĐ/1 lần.',
     footer: 'Quý khách hãy cân nhắc kiểm tra kỹ thông tin sản phẩm hoặc trao đổi thêm với nhân viên tư vấn hoặc nhân viên chăm sóc khách hàng để được hỗ trợ trước khi đặt hàng.',
+  },
+  {
+    id: 'doi-tra-hang',
+    icon: <RefreshCw className="w-6 h-6" />,
+    title: 'Chính sách đổi trả & hoàn tiền',
+    date: '25.12.2023',
+    sections: [
+      {
+        heading: '1. Điều kiện đổi trả hàng:',
+        items: [
+          'Sản phẩm bị lỗi kỹ thuật, hư hỏng do nhà sản xuất.',
+          'Sản phẩm giao không đúng với đơn đặt hàng (sai sản phẩm, sai số lượng, sai quy cách).',
+          'Sản phẩm còn nguyên vẹn bao bì, chưa qua sử dụng, còn đầy đủ tem nhãn.',
+          'Sản phẩm còn hạn sử dụng tối thiểu 6 tháng tính từ ngày trả hàng.',
+          'Thời gian yêu cầu đổi trả: trong vòng 7 ngày kể từ ngày nhận hàng.',
+        ],
+      },
+      {
+        heading: '2. Các trường hợp KHÔNG được đổi trả:',
+        items: [
+          'Sản phẩm đã bị mở bao bì, rách tem niêm phong, hoặc có dấu hiệu đã qua sử dụng.',
+          'Sản phẩm là thuốc kê đơn đã được giao đúng theo đơn.',
+          'Sản phẩm khuyến mãi, hàng tặng kèm, hàng thanh lý.',
+          'Sản phẩm đông lạnh, vắc-xin hoặc các sản phẩm yêu cầu bảo quản đặc biệt.',
+        ],
+      },
+      {
+        heading: '3. Quy trình đổi trả:',
+        items: [
+          'Bước 1: Liên hệ với BanThuocSi qua hotline 096.770.5287 hoặc chat Zalo để thông báo yêu cầu đổi trả.',
+          'Bước 2: Cung cấp thông tin đơn hàng, hình ảnh/video sản phẩm cần đổi trả.',
+          'Bước 3: BanThuocSi xác nhận và hướng dẫn quy trình gửi trả hàng.',
+          'Bước 4: Sau khi nhận được hàng trả về và kiểm tra, BanThuocSi sẽ tiến hành đổi sản phẩm mới hoặc hoàn tiền trong vòng 5-7 ngày làm việc.',
+        ],
+      },
+    ],
+    note: 'Phí vận chuyển trả hàng sẽ do BanThuocSi chi trả nếu lỗi từ phía BanThuocSi. Trường hợp khách hàng đổi ý, phí vận chuyển trả hàng do khách hàng chi trả.',
+  },
+  {
+    id: 'bao-mat',
+    icon: <Lock className="w-6 h-6" />,
+    title: 'Chính sách bảo mật thông tin',
+    date: '25.12.2023',
+    sections: [
+      {
+        heading: '1. Thu thập thông tin:',
+        items: [
+          'Thông tin cá nhân: họ tên, số điện thoại, email, địa chỉ giao hàng.',
+          'Thông tin giao dịch: lịch sử mua hàng, sản phẩm đã xem, đơn hàng đã đặt.',
+          'Thông tin tài khoản: tên đăng nhập, mật khẩu (được mã hóa), vai trò người dùng.',
+          'Thông tin doanh nghiệp (đối với khách hàng B2B): giấy phép kinh doanh, mã số thuế.',
+        ],
+      },
+      {
+        heading: '2. Mục đích sử dụng thông tin:',
+        items: [
+          'Xử lý đơn hàng: xác nhận, giao hàng, và liên hệ khi cần thiết.',
+          'Chăm sóc khách hàng: tư vấn sản phẩm, hỗ trợ sau bán hàng, giải đáp thắc mắc.',
+          'Cải thiện dịch vụ: phân tích xu hướng mua sắm để nâng cao trải nghiệm người dùng.',
+          'Thông báo khuyến mãi, sản phẩm mới (chỉ khi có sự đồng ý của Quý khách).',
+        ],
+      },
+      {
+        heading: '3. Bảo vệ thông tin:',
+        items: [
+          'Mọi thông tin cá nhân được lưu trữ trên hệ thống máy chủ bảo mật, có tường lửa và mã hóa dữ liệu.',
+          'Giao dịch trên website được bảo vệ bằng chứng chỉ SSL (Secure Socket Layer) 256-bit.',
+          'Thông tin thanh toán được xử lý qua cổng thanh toán an toàn, BanThuocSi không lưu trữ thông tin thẻ ngân hàng.',
+          'Hệ thống được giám sát 24/7 để phát hiện và ngăn chặn các truy cập trái phép.',
+        ],
+      },
+      {
+        heading: '4. Chia sẻ thông tin:',
+        items: [
+          'BanThuocSi cam kết KHÔNG bán, trao đổi hoặc cho thuê thông tin cá nhân của Quý khách cho bên thứ ba.',
+          'Thông tin chỉ được chia sẻ với đối tác vận chuyển để giao hàng (họ tên, địa chỉ, số điện thoại).',
+          'Trong trường hợp có yêu cầu từ cơ quan pháp luật có thẩm quyền, chúng tôi có nghĩa vụ cung cấp thông tin theo quy định.',
+        ],
+      },
+      {
+        heading: '5. Quyền của khách hàng:',
+        items: [
+          'Quyền truy cập và chỉnh sửa thông tin cá nhân trong tài khoản.',
+          'Quyền yêu cầu xóa tài khoản và dữ liệu cá nhân.',
+          'Quyền từ chối nhận email quảng cáo bất cứ lúc nào.',
+        ],
+      },
+    ],
+    note: 'Cookie được sử dụng để lưu trữ thông tin đăng nhập, giỏ hàng và tùy chọn ngôn ngữ. Quý khách có thể tắt cookie trong trình duyệt, tuy nhiên một số tính năng có thể không hoạt động.',
+  },
+  {
+    id: 'giao-dich-chung',
+    icon: <FileText className="w-6 h-6" />,
+    title: 'Điều kiện giao dịch chung',
+    date: '25.12.2023',
+    sections: [
+      {
+        heading: '1. Quy định chung:',
+        items: [
+          'Website banthuocsi.vn là nền tảng thương mại điện tử B2B cung cấp sản phẩm dược phẩm cho các nhà thuốc, phòng khám và cơ sở y tế.',
+          'Để mua hàng, Quý khách cần đăng ký tài khoản và cung cấp đầy đủ, chính xác thông tin cá nhân và/hoặc thông tin doanh nghiệp.',
+          'BanThuocSi có quyền từ chối phục vụ hoặc khóa tài khoản nếu phát hiện thông tin không chính xác hoặc hành vi gian lận.',
+          'Giá sản phẩm, khuyến mãi và chính sách có thể thay đổi mà không cần báo trước.',
+        ],
+      },
+      {
+        heading: '2. Quy trình đặt hàng:',
+        items: [
+          'Bước 1: Chọn sản phẩm và thêm vào giỏ hàng.',
+          'Bước 2: Kiểm tra giỏ hàng và tiến hành đặt hàng.',
+          'Bước 3: Điền thông tin giao hàng và chọn phương thức thanh toán.',
+          'Bước 4: Xác nhận đơn hàng. BanThuocSi sẽ gửi email/xác nhận qua Zalo về tình trạng đơn hàng.',
+        ],
+      },
+      {
+        heading: '3. Xác nhận đơn hàng:',
+        items: [
+          'Sau khi Quý khách đặt hàng thành công, hệ thống sẽ gửi email xác nhận đơn hàng.',
+          'BanThuocSi có quyền từ chối hoặc hủy đơn hàng trong các trường hợp quy định tại Chính sách hủy đơn hàng.',
+          'Đơn hàng chỉ được coi là hợp lệ sau khi BanThuocSi xác nhận qua điện thoại hoặc tin nhắn.',
+        ],
+      },
+      {
+        heading: '4. Giải quyết tranh chấp:',
+        items: [
+          'Mọi tranh chấp phát sinh trong quá trình giao dịch sẽ được giải quyết trên tinh thần thương lượng, hòa giải.',
+          'Trường hợp không đạt được thỏa thuận, tranh chấp sẽ được giải quyết tại Tòa án Nhân dân có thẩm quyền theo quy định của pháp luật Việt Nam.',
+          'Quý khách có thể gửi khiếu nại qua email ngockimnganpharm@gmail.com hoặc hotline 096.770.5287.',
+        ],
+      },
+    ],
   },
 ];
 

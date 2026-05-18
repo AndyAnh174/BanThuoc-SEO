@@ -17,7 +17,7 @@ import {
 
 export const metadata: Metadata = {
   title: 'Giới thiệu | Bán Thuốc Sỉ - NKN Pharma',
-  description: 'Bán Thuốc Sỉ - Hệ thống nhà thuốc online uy tín hàng đầu Việt Nam. Cam kết 100% sản phẩm chính hãng, giao hàng nhanh, tư vấn 24/7.',
+  description: 'Bán Thuốc Sỉ - Hệ thống nhà thuốc online uy tín. Thông tin doanh nghiệp, vận chuyển, thanh toán và các điều kiện kinh doanh dược phẩm.',
   alternates: { canonical: '/about' },
 };
 
@@ -196,6 +196,172 @@ export default function AboutPage() {
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">Giờ làm việc</h3>
                   <p className="text-gray-600">8:00 - 17:00, T2 - CN</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Shipping & Payment */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            {/* Shipping */}
+            <div className="mb-12">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-blue-600"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"/><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900">
+                  Vận chuyển &amp; Giao nhận
+                </h2>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <MapPin className="w-5 h-5 text-blue-600" />
+                    <h3 className="font-semibold text-gray-900">Phạm vi giao hàng</h3>
+                  </div>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Giao hàng toàn quốc 63 tỉnh thành. Nội thành TP.HCM giao trong ngày với đơn đặt trước 12:00 trưa.
+                  </p>
+                </div>
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Clock className="w-5 h-5 text-blue-600" />
+                    <h3 className="font-semibold text-gray-900">Thời gian giao hàng</h3>
+                  </div>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    TP.HCM: 2-4 giờ. Miền Nam: 1-2 ngày. Miền Trung: 2-3 ngày. Miền Bắc: 3-5 ngày.
+                  </p>
+                </div>
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-green-600"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <h3 className="font-semibold text-gray-900">Phí vận chuyển</h3>
+                  </div>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Miễn phí vận chuyển cho đơn hàng từ 500.000 VNĐ. Đơn dưới 500K tính phí theo đơn vị vận chuyển.
+                  </p>
+                </div>
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <ShieldCheck className="w-5 h-5 text-green-600" />
+                    <h3 className="font-semibold text-gray-900">Kiểm tra hàng</h3>
+                  </div>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Quý khách có quyền kiểm tra hàng trước khi ký nhận. Nếu sản phẩm bị hư hỏng, Quý khách có thể từ chối nhận hàng.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment */}
+            <div>
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-green-600"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900">
+                  Phương thức thanh toán
+                </h2>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-green-600"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                    </div>
+                    <h3 className="font-semibold text-gray-900">Thanh toán khi nhận hàng (COD)</h3>
+                  </div>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Thanh toán bằng tiền mặt khi nhận hàng. Áp dụng cho tất cả đơn hàng trên toàn quốc.
+                  </p>
+                </div>
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-blue-600"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+                    </div>
+                    <h3 className="font-semibold text-gray-900">Chuyển khoản ngân hàng</h3>
+                  </div>
+                  <div className="text-gray-600 text-sm leading-relaxed space-y-1">
+                    <p><span className="text-gray-500">Ngân hàng:</span> <span className="font-medium">Vietcombank - CN Tân Bình</span></p>
+                    <p><span className="text-gray-500">Chủ TK:</span> <span className="font-medium">NGUYEN NGOC KIM NGAN</span></p>
+                    <p><span className="text-gray-500">Số TK:</span> <span className="font-medium">0071000921655</span></p>
+                  </div>
+                </div>
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-pink-100 rounded-xl flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-pink-600"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                    </div>
+                    <h3 className="font-semibold text-gray-900">Ví điện tử MoMo</h3>
+                  </div>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Thanh toán qua ví MoMo, quét mã QR. SĐT: <span className="font-medium">096.770.5287</span> - Chủ TK: NGUYEN NGOC KIM NGAN.
+                  </p>
+                </div>
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-purple-600"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h3 className="font-semibold text-gray-900">Bảo mật thanh toán</h3>
+                  </div>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Mọi giao dịch được mã hóa SSL 256-bit. Chúng tôi không lưu trữ thông tin thẻ hay tài khoản ngân hàng của Quý khách.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Business License */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-amber-600"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900">
+                Thông tin pháp lý
+              </h2>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-6">
+              <div className="bg-amber-50 rounded-2xl p-6 border border-amber-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Award className="w-5 h-5 text-amber-600" />
+                  <h3 className="font-semibold text-gray-900">Giấy phép kinh doanh</h3>
+                </div>
+                <div className="text-gray-700 text-sm space-y-2 leading-relaxed">
+                  <p><span className="text-gray-500">Số GPKD:</span> <span className="font-semibold">0319116538</span></p>
+                  <p><span className="text-gray-500">Ngày cấp:</span> 25/12/2023</p>
+                  <p><span className="text-gray-500">Nơi cấp:</span> Sở Kế hoạch và Đầu tư TP. Hồ Chí Minh</p>
+                  <p><span className="text-gray-500">Loại hình:</span> Công ty TNHH</p>
+                </div>
+              </div>
+              <div className="bg-amber-50 rounded-2xl p-6 border border-amber-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <ShieldCheck className="w-5 h-5 text-amber-600" />
+                  <h3 className="font-semibold text-gray-900">Lĩnh vực kinh doanh có điều kiện</h3>
+                </div>
+                <div className="text-gray-700 text-sm space-y-2 leading-relaxed">
+                  <p>Kinh doanh dược phẩm là ngành nghề kinh doanh có điều kiện theo quy định của Luật Dược số 105/2016/QH13.</p>
+                  <p className="font-medium">Điều kiện kinh doanh:</p>
+                  <ul className="list-disc pl-4 space-y-1">
+                    <li>Giấy chứng nhận đủ điều kiện kinh doanh dược</li>
+                    <li>Người quản lý chuyên môn có bằng dược sĩ</li>
+                    <li>Cơ sở vật chất đạt chuẩn GSP (Good Storage Practice)</li>
+                    <li>Tuân thủ quy định về bảo quản và phân phối thuốc</li>
+                  </ul>
                 </div>
               </div>
             </div>

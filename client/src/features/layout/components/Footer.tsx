@@ -114,8 +114,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="text-slate-400 hover:text-primary transition-colors">
-                  Chính sách bảo mật
+                <Link href="/chinh-sach" className="text-slate-400 hover:text-primary transition-colors">
+                  Chính sách & bảo mật
                 </Link>
               </li>
               <li>
