@@ -56,7 +56,7 @@ export default function BugReportPage() {
                   formData.append('image', file);
                   const token = getAccessToken();
                   const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || ''}/api/admin/bug-reports/upload-image/`,
+                    `${process.env.NEXT_PUBLIC_API_URL || ''}/admin/bug-reports/upload-image/`,
                     { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData }
                   );
                   const data = await res.json();
@@ -118,7 +118,7 @@ export default function BugReportPage() {
       const payload: any = { title: title.trim(), description: JSON.stringify(description) };
       if (pageUrl.trim()) payload.page_url = pageUrl.trim();
 
-      await http.post('/api/admin/bug-reports/submit/', payload, {
+      await http.post('/admin/bug-reports/submit/', payload, {
         headers: { 'Content-Type': 'application/json' },
       });
 
