@@ -15,7 +15,11 @@ class ProductListCreateView(generics.ListCreateAPIView):
     POST: Create new product (Admin)
     """
     permission_classes = [IsAdminUser]
-    queryset = Product.objects.all().order_by('-created_at')
+    queryset = Product.objects.select_related(
+        'category', 'manufacturer'
+    ).prefetch_related(
+        'images'
+    ).order_by('-created_at')
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     

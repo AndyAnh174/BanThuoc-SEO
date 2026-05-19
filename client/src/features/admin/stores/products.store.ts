@@ -202,7 +202,11 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
   },
 
   setFilters: (filters) => {
-    set((state) => ({ ...state, ...filters, currentPage: 1 }));
+    const updates: Record<string, any> = { currentPage: 1 };
+    if (filters.search !== undefined) updates.searchTerm = filters.search;
+    if (filters.category !== undefined) updates.categoryFilter = filters.category;
+    if (filters.status !== undefined) updates.statusFilter = filters.status;
+    set(updates);
     get().fetchProducts({ page: 1 });
   },
 }));

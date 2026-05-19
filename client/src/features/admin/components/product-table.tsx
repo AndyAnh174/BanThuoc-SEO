@@ -39,9 +39,18 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useProductsStore } from '../stores/products.store';
 import { Product } from '../types/product.types';
+import { getCategories } from '@/src/features/products/api/products.api';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Filter, X } from 'lucide-react';
 
 export function ProductTable() {
   const {
@@ -51,6 +60,8 @@ export function ProductTable() {
     currentPage,
     pageSize,
     searchTerm,
+    categoryFilter,
+    statusFilter,
     openEditModal,
     deleteProduct,
     setPage,
@@ -58,6 +69,42 @@ export function ProductTable() {
   } = useProductsStore();
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [categories, setCategories] = useState<{ name: string; slug: string }[]>([]);
+  const [searchInput, setSearchInput] = useState(searchTerm);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    getCategories({ active_only: true }).then((res: any) => {
+      const names: { name: string; slug: string }[] = [];
+      const walk = (cats: any[]) => {
+        cats.forEach((c: any) => {
+          names.push({ name: c.name, slug: c.slug });
+          if (c.children) walk(c.children);
+        });
+      };
+      walk(Array.isArray(res.data) ? res.data : res.data?.results || []);
+      setCategories(names);
+    }).catch(() => {});
+  }, []);
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchInput(value);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setFilters({ search: value || '' });
+    }, 300);
+  }, [setFilters]);
+
+  useEffect(() => {
+    setSearchInput(searchTerm);
+  }, [searchTerm]);
+
+  const hasFilters = !!(searchTerm || categoryFilter || statusFilter);
+
+  const clearAllFilters = () => {
+    setSearchInput('');
+    setFilters({ search: '', category: '', status: '' });
+  };
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -84,17 +131,54 @@ export function ProductTable() {
 
   return (
     <div className="space-y-4">
-      {/* Search Bar */}
-      <div className="flex items-center space-x-2">
+      {/* Search & Filter Bar */}
+      <div className="flex items-center gap-2 flex-wrap">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Tìm theo tên sản phẩm hoặc SKU..."
-            value={searchTerm}
-            onChange={(e) => setFilters({ search: e.target.value })}
+            value={searchInput}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="pl-8"
           />
         </div>
+
+        <Select
+          value={categoryFilter || 'all'}
+          onValueChange={(v) => setFilters({ category: v === 'all' ? '' : v })}
+        >
+          <SelectTrigger className="w-[160px]">
+            <SelectValue placeholder="Danh mục" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tất cả danh mục</SelectItem>
+            {categories.map((c) => (
+              <SelectItem key={c.slug} value={c.slug}>{c.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={statusFilter || 'all'}
+          onValueChange={(v) => setFilters({ status: v === 'all' ? '' : v })}
+        >
+          <SelectTrigger className="w-[140px]">
+            <SelectValue placeholder="Trạng thái" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tất cả trạng thái</SelectItem>
+            <SelectItem value="ACTIVE">Đang bán</SelectItem>
+            <SelectItem value="DRAFT">Nháp</SelectItem>
+            <SelectItem value="INACTIVE">Ngừng bán</SelectItem>
+            <SelectItem value="OUT_OF_STOCK">Hết hàng</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {hasFilters && (
+          <Button variant="ghost" size="sm" onClick={clearAllFilters} className="h-9">
+            <X className="mr-1 h-4 w-4" /> Xóa lọc
+          </Button>
+        )}
       </div>
 
       {/* Table */}

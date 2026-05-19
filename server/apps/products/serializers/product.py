@@ -16,21 +16,24 @@ class ProductAdminListSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
     manufacturer_name = serializers.CharField(source='manufacturer.name', read_only=True)
     primary_image = serializers.SerializerMethodField()
-    images = ProductImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
         fields = [
             'id', 'sku', 'name', 'slug', 'category', 'category_name',
             'manufacturer', 'manufacturer_name',
-            'product_type', 'short_description', 
+            'product_type', 'short_description',
             'price', 'sale_price', 'stock_quantity',
-            'status', 'is_featured', 'primary_image', 'images', 'created_at'
+            'status', 'is_featured', 'primary_image', 'created_at'
         ]
 
     def get_primary_image(self, obj):
-        primary = obj.primary_image
-        return primary.image_url if primary else None
+        # Use prefetched images (Python iteration) instead of .filter() to avoid DB hit
+        images = obj.images.all() if hasattr(obj, '_prefetched_objects_cache') and 'images' in obj._prefetched_objects_cache else obj.images.all()
+        for img in images:
+            if img.is_primary:
+                return img.image_url
+        return images[0].image_url if images else None
 
 
 class ProductAdminSerializer(serializers.ModelSerializer):
