@@ -20,8 +20,8 @@ Internet -> Nginx (222.253.80.30:443) -> K8s Nginx Pod (192.168.1.76:30080) -> S
 ```
 
 ### Server Layout
-- **K8s Server** (222.253.80.30, SSH port 76, password 1742005AA): k3s cluster + Nginx reverse proxy
-- **Jenkins Server** (222.253.80.30, SSH port 515, password 1742005AA): Jenkins CI/CD
+- **K8s Server** (222.253.80.30, SSH port 76, key auth — no password): k3s cluster + Nginx reverse proxy
+- **Jenkins Server** (222.253.80.30, SSH port 515, key auth — no password): Jenkins CI/CD
 - **K8s Node** (192.168.1.76): k3s cluster running all workloads
 
 ### K8s Namespaces
