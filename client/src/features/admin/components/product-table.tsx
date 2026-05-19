@@ -71,7 +71,7 @@ export function ProductTable() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [categories, setCategories] = useState<{ name: string; slug: string }[]>([]);
   const [searchInput, setSearchInput] = useState(searchTerm);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     getCategories({ active_only: true }).then((res: any) => {
@@ -85,11 +85,12 @@ export function ProductTable() {
       walk(Array.isArray(res.data) ? res.data : res.data?.results || []);
       setCategories(names);
     }).catch(() => {});
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, []);
 
   const handleSearchChange = useCallback((value: string) => {
     setSearchInput(value);
-    clearTimeout(debounceRef.current);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       setFilters({ search: value || '' });
     }, 300);
