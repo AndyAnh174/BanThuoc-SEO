@@ -20,7 +20,8 @@ Internet -> Nginx (222.253.80.30:443) -> K8s Nginx Pod (192.168.1.76:30080) -> S
 ```
 
 ### Server Layout
-- **Main Server** (222.253.80.30, SSH port 515, password 1742005AA): Nginx reverse proxy + Jenkins
+- **K8s Server** (222.253.80.30, SSH port 76, password 1742005AA): k3s cluster + Nginx reverse proxy
+- **Jenkins Server** (222.253.80.30, SSH port 515, password 1742005AA): Jenkins CI/CD
 - **K8s Node** (192.168.1.76): k3s cluster running all workloads
 
 ### K8s Namespaces
@@ -127,7 +128,7 @@ When you can't SSH directly, use Jenkins REST API:
 
 ## Credentials
 - **Jenkins**: admin / 1742005Sinhnhat (web: jenkins.andyanh.id.vn)
-- **SSH Server**: root@222.253.80.30:515 / 1742005AA
+- **SSH K8s Server**: root@222.253.80.30:76 / 1742005AA
 - **Grafana**: admin / banthuoc2024 (web: grafana.andyanh.id.vn)
 - **Web Admin**: admin / banthuoc2024 (web: banthuocsi.vn)
 - **DockerHub**: andyanh174

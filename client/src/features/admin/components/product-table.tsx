@@ -204,17 +204,36 @@ export function ProductTable() {
                     />
                 </PaginationItem>
                 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                     <PaginationItem key={page}>
-                        <PaginationLink 
-                             isActive={page === currentPage} 
-                             onClick={() => setPage(page)}
-                             className="cursor-pointer"
+                {(() => {
+                  const pages: (number | 'ellipsis')[] = [];
+                  const maxVisible = 3;
+                  const rangeStart = Math.max(2, currentPage - 1);
+                  const rangeEnd = Math.min(totalPages - 1, currentPage + 1);
+
+                  pages.push(1);
+                  if (rangeStart > 2) pages.push('ellipsis');
+                  for (let p = rangeStart; p <= rangeEnd; p++) pages.push(p);
+                  if (rangeEnd < totalPages - 1) pages.push('ellipsis');
+                  if (totalPages > 1) pages.push(totalPages);
+
+                  return pages.map((page, i) =>
+                    page === 'ellipsis' ? (
+                      <PaginationItem key={`e-${i}`}>
+                        <span className="flex size-9 items-center justify-center text-muted-foreground">...</span>
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          isActive={page === currentPage}
+                          onClick={() => setPage(page)}
+                          className="cursor-pointer"
                         >
-                            {page}
+                          {page}
                         </PaginationLink>
-                     </PaginationItem>
-                ))}
+                      </PaginationItem>
+                    )
+                  );
+                })()}
 
                 <PaginationItem>
                     <PaginationNext 
