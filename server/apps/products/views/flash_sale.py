@@ -38,12 +38,12 @@ class GetCurrentFlashSaleView(APIView):
     )
     def get(self, request):
         now = timezone.now()
-        
-        # Get current active session
-        current_session = FlashSaleSession.objects.filter(
-            status=FlashSaleSession.Status.ACTIVE,
+
+        # Get candidate sessions: active + not cancelled, within time range or upcoming
+        # We check both ACTIVE and SCHEDULED to handle cron not having run yet
+        candidate = FlashSaleSession.objects.filter(
             is_active=True,
-            start_time__lte=now,
+            status__in=[FlashSaleSession.Status.ACTIVE, FlashSaleSession.Status.SCHEDULED],
             end_time__gte=now,
         ).prefetch_related(
             'items',
@@ -51,28 +51,26 @@ class GetCurrentFlashSaleView(APIView):
             'items__product__category',
             'items__product__manufacturer',
             'items__product__images',
-        ).first()
-        
+        ).order_by('start_time').first()
+
+        current_session = None
         upcoming_session = None
-        
-        # If no current session, get upcoming
-        if not current_session:
-            upcoming_session = FlashSaleSession.objects.filter(
-                status=FlashSaleSession.Status.SCHEDULED,
-                is_active=True,
-                start_time__gt=now,
-            ).prefetch_related(
-                'items',
-                'items__product',
-                'items__product__category',
-                'items__product__manufacturer',
-                'items__product__images',
-            ).order_by('start_time').first()
-        
+
+        if candidate:
+            # Auto-fix stale status (SCHEDULED but time says it should be ACTIVE)
+            if candidate.start_time <= now and candidate.status != FlashSaleSession.Status.ACTIVE:
+                candidate.status = FlashSaleSession.Status.ACTIVE
+                candidate.save(update_fields=['status', 'updated_at'])
+
+            if candidate.start_time <= now <= candidate.end_time:
+                current_session = candidate
+            elif candidate.start_time > now:
+                upcoming_session = candidate
+
         # Get featured items from current or upcoming session
         featured_items = []
         active_session = current_session or upcoming_session
-        
+
         if active_session:
             featured_items = active_session.items.filter(
                 is_active=True
@@ -83,7 +81,7 @@ class GetCurrentFlashSaleView(APIView):
             ).prefetch_related(
                 'product__images',
             ).order_by('sort_order', '-sold_quantity')[:8]
-        
+
         # Build response
         response_data = {
             'current_session': current_session,
@@ -91,7 +89,7 @@ class GetCurrentFlashSaleView(APIView):
             'featured_items': featured_items,
             'server_time': now,
         }
-        
+
         serializer = CurrentFlashSaleSerializer(response_data)
         return Response(serializer.data)
 
