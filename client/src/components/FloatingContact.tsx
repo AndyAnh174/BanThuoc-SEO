@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { Phone, X, MessageCircle } from "lucide-react";
 
@@ -8,7 +9,10 @@ const HOTLINE = "0967705287";
 const ZALO_LINK = "https://zalo.me/1852235396176317113";
 
 export default function FloatingContact() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  if (pathname.startsWith("/admin")) return null;
 
   return (
     <div className="fixed bottom-6 right-5 z-50 flex flex-col items-end gap-3">

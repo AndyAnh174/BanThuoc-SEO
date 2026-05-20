@@ -523,12 +523,12 @@ export function ProductForm({ id }: ProductFormProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <FieldLabel required>Giá bán lẻ (VNĐ)</FieldLabel>
-              <Input type="number" step="1000" {...register('price')} placeholder="0" />
+              <Input type="number" step="1" {...register('price')} placeholder="0" />
               <FieldError message={errors.price?.message} />
             </div>
             <div className="space-y-1.5">
               <FieldLabel>Giá khuyến mãi (VNĐ)</FieldLabel>
-              <Input type="number" step="1000" {...register('sale_price')} placeholder="Để trống nếu không có" />
+              <Input type="number" step="1" {...register('sale_price')} placeholder="Để trống nếu không có" />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
