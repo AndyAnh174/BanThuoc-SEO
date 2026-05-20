@@ -188,13 +188,13 @@ export function ProductTable() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[50px]"></TableHead>
               <TableHead className="w-[80px]">Ảnh</TableHead>
               <TableHead>Tên sản phẩm / SKU</TableHead>
               <TableHead>Danh mục / NSX</TableHead>
               <TableHead>Giá bán</TableHead>
               <TableHead>Kho</TableHead>
               <TableHead>Trạng thái</TableHead>
-              <TableHead className="w-[70px] sticky right-0 bg-white z-10"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -209,6 +209,26 @@ export function ProductTable() {
             ) : (
               products.map((product) => (
                 <TableRow key={product.id}>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuLabel>Hành động</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => router.push(`/admin/products/${product.id}/edit`)}>
+                          <Edit className="mr-2 h-4 w-4" /> Chỉnh sửa
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="text-red-600" onClick={() => setDeleteId(product.id)}>
+                          <Trash className="mr-2 h-4 w-4" /> Xóa
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
                   <TableCell>
                     <div className="w-12 h-12 rounded overflow-hidden bg-gray-100 dark:bg-gray-800">
                         {product.primary_image ? (
@@ -246,26 +266,6 @@ export function ProductTable() {
                   </TableCell>
                   <TableCell>
                     {getStatusBadge(product.status)}
-                  </TableCell>
-                  <TableCell className="sticky right-0 bg-white">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => router.push(`/admin/products/${product.id}/edit`)}>
-                          <Edit className="mr-2 h-4 w-4" /> Chỉnh sửa
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600" onClick={() => setDeleteId(product.id)}>
-                          <Trash className="mr-2 h-4 w-4" /> Xóa
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))
