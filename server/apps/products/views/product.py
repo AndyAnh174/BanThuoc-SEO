@@ -1,6 +1,6 @@
 from rest_framework import generics, status
 from rest_framework.permissions import IsAdminUser
-from django_filters.rest_framework import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, CharFilter
 from rest_framework.filters import SearchFilter, OrderingFilter
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -8,6 +8,16 @@ from drf_yasg import openapi
 from products.models import Product
 from products.serializers.product import ProductAdminSerializer, ProductAdminListSerializer
 from core.pagination import StandardResultsSetPagination
+
+
+class ProductAdminFilter(FilterSet):
+    category = CharFilter(field_name='category__slug')
+    manufacturer = CharFilter(field_name='manufacturer__slug')
+
+    class Meta:
+        model = Product
+        fields = ['category', 'manufacturer', 'status', 'is_featured', 'requires_prescription']
+
 
 class ProductListCreateView(generics.ListCreateAPIView):
     """
@@ -22,8 +32,7 @@ class ProductListCreateView(generics.ListCreateAPIView):
     ).order_by('-created_at')
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    
-    filterset_fields = ['category', 'manufacturer', 'status', 'is_featured', 'requires_prescription']
+    filterset_class = ProductAdminFilter
     search_fields = ['name', 'sku']
     ordering_fields = ['created_at', 'price', 'stock_quantity', 'name']
 
