@@ -57,6 +57,13 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(pharmacyJsonLd) }}
       />
+      {/* Preload LCP hero image — browser discovers it immediately instead of after JS hydration */}
+      <link
+        rel="preload"
+        as="image"
+        href="/_next/image?url=%2F3.png&w=828&q=65"
+        fetchPriority="high"
+      />
       {/* Hero Section with banner + store info (server-fetched for LCP) */}
       <h1 className="sr-only">Bán Thuốc Sỉ - Ngọc Kim Ngân Pharma (NKN) - Sàn Dược Phẩm Sỉ B2B Chính Hãng</h1>
       <HeroSectionServer />

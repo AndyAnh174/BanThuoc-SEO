@@ -175,7 +175,6 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://minio.banthuocsi.vn" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://minio.banthuocsi.vn" />
       </head>
       <body
@@ -207,7 +206,7 @@ gtag('config', '${GA_ID}');`}
         <Script
           src="https://analytics25nam.hcmutertic.com/script.js"
           data-website-id="f047dbb5-70dc-43bf-a226-fa0f617f92ca"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
         {children}
         <FloatingContact />
