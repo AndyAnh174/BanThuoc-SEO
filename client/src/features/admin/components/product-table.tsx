@@ -194,7 +194,7 @@ export function ProductTable() {
               <TableHead>Giá bán</TableHead>
               <TableHead>Kho</TableHead>
               <TableHead>Trạng thái</TableHead>
-              <TableHead className="w-[70px]"></TableHead>
+              <TableHead className="w-[70px] sticky right-0 bg-white z-10"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -247,7 +247,7 @@ export function ProductTable() {
                   <TableCell>
                     {getStatusBadge(product.status)}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="sticky right-0 bg-white">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
