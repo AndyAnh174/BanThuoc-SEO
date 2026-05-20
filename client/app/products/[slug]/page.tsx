@@ -96,8 +96,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     return {
       // title sẽ được xử lý qua template "%s | BanThuocSi - NKN Pharma" từ layout
-      title: p.name,
-      description,
+      title: p.meta_title || p.name,
+      description: p.meta_description || description,
       keywords,
       alternates: {
         canonical: canonicalUrl,
@@ -107,8 +107,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         url: canonicalUrl,
         siteName: 'Bán Thuốc Sỉ - NKN Pharma',
         locale: 'vi_VN',
-        title: `${p.name} | Bán Thuốc Sỉ`,
-        description,
+        title: `${p.meta_title || p.name} | Bán Thuốc Sỉ`,
+        description: p.meta_description || description,
         images: imageUrl
           ? [
               {
@@ -122,8 +122,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
       twitter: {
         card: 'summary_large_image',
-        title: `${p.name} | Bán Thuốc Sỉ`,
-        description,
+        title: `${p.meta_title || p.name} | Bán Thuốc Sỉ`,
+        description: p.meta_description || description,
         ...(imageUrl ? { images: [imageUrl] } : {}),
       },
     };

@@ -40,6 +40,7 @@ import {
 } from '@/components/ui/pagination';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useProductsStore } from '../stores/products.store';
 import { Product } from '../types/product.types';
 import { getCategories } from '@/src/features/products/api/products.api';
@@ -53,6 +54,7 @@ import {
 import { Filter, X } from 'lucide-react';
 
 export function ProductTable() {
+  const router = useRouter();
   const {
     products,
     isLoading,
@@ -62,7 +64,6 @@ export function ProductTable() {
     searchTerm,
     categoryFilter,
     statusFilter,
-    openEditModal,
     deleteProduct,
     setPage,
     setFilters
@@ -256,7 +257,7 @@ export function ProductTable() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => openEditModal(product)}>
+                        <DropdownMenuItem onClick={() => router.push(`/admin/products/${product.id}/edit`)}>
                           <Edit className="mr-2 h-4 w-4" /> Chỉnh sửa
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />

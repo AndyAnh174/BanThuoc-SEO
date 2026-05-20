@@ -14,7 +14,6 @@ import type {
 interface ProductsState {
   // Data
   products: Product[];
-  selectedProduct: Product | null;
 
   // Pagination
   totalCount: number;
@@ -32,10 +31,6 @@ interface ProductsState {
   isUpdating: boolean;
   isDeleting: boolean;
 
-  // UI state
-  isModalOpen: boolean;
-  modalMode: 'create' | 'edit';
-
   // Actions
   fetchProducts: (params?: ProductListParams) => Promise<void>;
   createProduct: (data: ProductCreateInput) => Promise<boolean>;
@@ -43,10 +38,6 @@ interface ProductsState {
   deleteProduct: (id: string) => Promise<boolean>;
 
   // UI actions
-  setSelectedProduct: (product: Product | null) => void;
-  openCreateModal: () => void;
-  openEditModal: (product: Product) => void;
-  closeModal: () => void;
   setPage: (page: number) => void;
   setPageSize: (size: number) => void;
   setFilters: (filters: { search?: string; category?: string; status?: string }) => void;
@@ -55,7 +46,6 @@ interface ProductsState {
 export const useProductsStore = create<ProductsState>((set, get) => ({
   // Initial state
   products: [],
-  selectedProduct: null,
   totalCount: 0,
   currentPage: 1,
   pageSize: 10,
@@ -66,8 +56,6 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
   isCreating: false,
   isUpdating: false,
   isDeleting: false,
-  isModalOpen: false,
-  modalMode: 'create',
 
   // Fetch products
   fetchProducts: async (params?: ProductListParams) => {
@@ -104,7 +92,7 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
     try {
       await productsApi.createProduct(data);
       toast.success('Tạo sản phẩm thành công');
-      set({ isCreating: false, isModalOpen: false });
+      set({ isCreating: false });
       get().fetchProducts();
       return true;
     } catch (error: any) {
@@ -131,7 +119,7 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
     try {
       await productsApi.updateProduct(id, data);
       toast.success('Cập nhật sản phẩm thành công');
-      set({ isUpdating: false, isModalOpen: false, selectedProduct: null });
+      set({ isUpdating: false });
       get().fetchProducts();
       return true;
     } catch (error: any) {
@@ -158,7 +146,7 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
     try {
       await productsApi.deleteProduct(id);
       toast.success('Xóa sản phẩm thành công');
-      set({ isDeleting: false, selectedProduct: null });
+      set({ isDeleting: false });
       get().fetchProducts();
       return true;
     } catch (error: any) {
@@ -171,25 +159,6 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
   },
 
   // UI actions
-  setSelectedProduct: (product) => set({ selectedProduct: product }),
-
-  openCreateModal: () => set({
-    isModalOpen: true,
-    modalMode: 'create',
-    selectedProduct: null
-  }),
-
-  openEditModal: (product) => set({
-    isModalOpen: true,
-    modalMode: 'edit',
-    selectedProduct: product
-  }),
-
-  closeModal: () => set({
-    isModalOpen: false,
-    selectedProduct: null
-  }),
-
   setPage: (page) => {
     set({ currentPage: page });
     const { pageSize } = get();

@@ -1,16 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useProductsStore } from '@/src/features/admin/stores/products.store';
 import { ProductTable } from '@/src/features/admin/components/product-table';
-import { ProductModal } from '@/src/features/admin/components/product-modal';
 import { BulkImportDialog } from '@/src/features/admin/components/bulk-import-dialog';
 import { Button } from '@/components/ui/button';
 import { Plus, Upload } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function AdminProductsPage() {
-  const { fetchProducts, openCreateModal, totalCount, isLoading } = useProductsStore();
+  const router = useRouter();
+  const { fetchProducts, totalCount, isLoading } = useProductsStore();
   const [bulkOpen, setBulkOpen] = useState(false);
 
   // Initial fetch
@@ -30,7 +31,7 @@ export default function AdminProductsPage() {
           >
             <Upload className="mr-2 h-4 w-4" /> Nhập Excel/CSV
           </Button>
-          <Button onClick={openCreateModal} className="bg-green-600 hover:bg-green-700">
+          <Button onClick={() => router.push('/admin/products/create')} className="bg-green-600 hover:bg-green-700">
             <Plus className="mr-2 h-4 w-4" /> Thêm sản phẩm
           </Button>
         </div>
@@ -57,7 +58,6 @@ export default function AdminProductsPage() {
         </CardContent>
       </Card>
 
-      <ProductModal />
       <BulkImportDialog
         open={bulkOpen}
         onOpenChange={setBulkOpen}
