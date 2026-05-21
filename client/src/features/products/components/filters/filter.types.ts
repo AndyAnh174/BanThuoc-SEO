@@ -37,5 +37,5 @@ export const defaultFilters: FilterState = {
   priceRange: { min: 0, max: 10000000 },
   requiresPrescription: undefined,
   onSaleOnly: false,
-  inStockOnly: true,
+  inStockOnly: false,
 };

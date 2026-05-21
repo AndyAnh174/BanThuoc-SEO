@@ -127,15 +127,15 @@ class ProductDocument(Document):
             'category',
             'manufacturer',
         ).filter(
-            status='ACTIVE'
+            status__in=['ACTIVE', 'OUT_OF_STOCK']
         )
 
     def get_instances_from_related(self, related_instance):
         """Return products related to the modified instance."""
         if isinstance(related_instance, Category):
-            return related_instance.products.filter(status='ACTIVE')
+            return related_instance.products.filter(status__in=['ACTIVE', 'OUT_OF_STOCK'])
         elif isinstance(related_instance, Manufacturer):
-            return related_instance.products.filter(status='ACTIVE')
+            return related_instance.products.filter(status__in=['ACTIVE', 'OUT_OF_STOCK'])
         return []
 
     def prepare_category(self, instance):

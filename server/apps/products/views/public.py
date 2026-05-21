@@ -142,7 +142,7 @@ class ProductListView(generics.ListAPIView):
         """
         # Base queryset with optimized joins
         queryset = Product.objects.filter(
-            status='ACTIVE'
+            status__in=['ACTIVE', 'OUT_OF_STOCK']
         ).select_related(
             'category',      # ForeignKey - single JOIN
             'manufacturer',  # ForeignKey - single JOIN
@@ -249,7 +249,7 @@ class ProductDetailView(generics.RetrieveAPIView):
         Optimized query with select_related and prefetch_related.
         """
         return Product.objects.filter(
-            status='ACTIVE'
+            status__in=['ACTIVE', 'OUT_OF_STOCK']
         ).select_related(
             'category',
             'manufacturer',
@@ -268,7 +268,7 @@ class FeaturedProductsView(generics.ListAPIView):
 
     def get_queryset(self):
         return Product.objects.filter(
-            status='ACTIVE',
+            status__in=['ACTIVE', 'OUT_OF_STOCK'],
             is_featured=True
         ).select_related(
             'category',
@@ -292,7 +292,7 @@ class NewProductsView(generics.ListAPIView):
         
         thirty_days_ago = timezone.now() - timedelta(days=30)
         return Product.objects.filter(
-            status='ACTIVE',
+            status__in=['ACTIVE', 'OUT_OF_STOCK'],
             created_at__gte=thirty_days_ago
         ).select_related(
             'category',
@@ -313,7 +313,7 @@ class OnSaleProductsView(generics.ListAPIView):
     def get_queryset(self):
         from django.db.models import F
         return Product.objects.filter(
-            status='ACTIVE',
+            status__in=['ACTIVE', 'OUT_OF_STOCK'],
             sale_price__isnull=False,
             sale_price__lt=F('price')
         ).select_related(
@@ -344,7 +344,7 @@ class ProductSearchView(APIView):
             return Response({'results': []})
 
         products = Product.objects.filter(
-            status='ACTIVE'
+            status__in=['ACTIVE', 'OUT_OF_STOCK']
         ).filter(
             Q(name__icontains=query) |
             Q(sku__icontains=query)

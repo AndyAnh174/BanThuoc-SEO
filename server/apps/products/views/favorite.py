@@ -22,7 +22,7 @@ class FavoriteListView(generics.ListAPIView):
         # favorites = Favorite.objects.filter(user=self.request.user).select_related('product')
         # But our serializer expects Product instances.
         
-        return Product.objects.filter(favorited_by__user=self.request.user, status='ACTIVE').order_by('-favorited_by__created_at')
+        return Product.objects.filter(favorited_by__user=self.request.user, status__in=['ACTIVE', 'OUT_OF_STOCK']).order_by('-favorited_by__created_at')
 
 class FavoriteToggleView(APIView):
     """

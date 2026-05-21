@@ -31,7 +31,7 @@ class CategoryTreeSerializer(serializers.ModelSerializer):
         descendants = obj.get_descendants(include_self=True)
         return Product.objects.filter(
             category__in=descendants,
-            status='ACTIVE'
+            status__in=['ACTIVE', 'OUT_OF_STOCK']
         ).count()
 
 
@@ -59,7 +59,7 @@ class ManufacturerSerializer(serializers.ModelSerializer):
         ]
 
     def get_product_count(self, obj):
-        return obj.products.filter(status='ACTIVE').count()
+        return obj.products.filter(status__in=['ACTIVE', 'OUT_OF_STOCK']).count()
 
 
 class ManufacturerSimpleSerializer(serializers.ModelSerializer):
@@ -157,7 +157,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         """Get related products from the same category"""
         related = Product.objects.filter(
             category=obj.category,
-            status='ACTIVE'
+            status__in=['ACTIVE', 'OUT_OF_STOCK']
         ).exclude(id=obj.id).select_related(
             'category', 'manufacturer'
         ).prefetch_related('images')[:4]

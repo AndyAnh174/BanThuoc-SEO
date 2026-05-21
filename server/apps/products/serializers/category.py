@@ -25,7 +25,7 @@ class CategoryListSerializer(serializers.ModelSerializer):
         return obj.get_children().count()
 
     def get_product_count(self, obj):
-        return Product.objects.filter(category=obj, status='ACTIVE').count()
+        return Product.objects.filter(category=obj, status__in=['ACTIVE', 'OUT_OF_STOCK']).count()
 
     def get_parent_name(self, obj):
         return obj.parent.name if obj.parent else None
@@ -76,14 +76,14 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
     def get_product_count(self, obj):
         """Products directly in this category"""
-        return Product.objects.filter(category=obj, status='ACTIVE').count()
+        return Product.objects.filter(category=obj, status__in=['ACTIVE', 'OUT_OF_STOCK']).count()
 
     def get_total_product_count(self, obj):
         """Products in this category and all descendants"""
         descendants = obj.get_descendants(include_self=True)
         return Product.objects.filter(
             category__in=descendants,
-            status='ACTIVE'
+            status__in=['ACTIVE', 'OUT_OF_STOCK']
         ).count()
 
 
@@ -190,5 +190,5 @@ class CategoryTreeSerializer(serializers.ModelSerializer):
         descendants = obj.get_descendants(include_self=True)
         return Product.objects.filter(
             category__in=descendants,
-            status='ACTIVE'
+            status__in=['ACTIVE', 'OUT_OF_STOCK']
         ).count()

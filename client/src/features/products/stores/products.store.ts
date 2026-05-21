@@ -129,7 +129,7 @@ const defaultFilters: ProductFilters = {
   manufacturers: [],
   priceRange: { min: 0, max: 10000000 },
   onSaleOnly: false,
-  inStockOnly: true,
+  inStockOnly: false,
   requiresPrescription: undefined,
 };
 

@@ -91,7 +91,7 @@ def category_post_save(sender, instance, **kwargs):
         # Get all active products in this category
         products = Product.objects.filter(
             category=instance,
-            status='ACTIVE'
+            status__in=['ACTIVE', 'OUT_OF_STOCK']
         ).select_related('category', 'manufacturer').prefetch_related('images')
         
         if products.exists():
@@ -114,7 +114,7 @@ def manufacturer_post_save(sender, instance, **kwargs):
         # Get all active products by this manufacturer
         products = Product.objects.filter(
             manufacturer=instance,
-            status='ACTIVE'
+            status__in=['ACTIVE', 'OUT_OF_STOCK']
         ).select_related('category', 'manufacturer').prefetch_related('images')
         
         if products.exists():

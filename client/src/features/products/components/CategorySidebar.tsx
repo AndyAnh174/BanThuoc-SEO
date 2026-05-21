@@ -140,7 +140,7 @@ export function CategorySidebar({
         <div className="px-5 py-4">
           <OtherFilters
             onSaleOnly={filters.onSaleOnly || false}
-            inStockOnly={filters.inStockOnly || true}
+            inStockOnly={filters.inStockOnly ?? false}
             requiresPrescription={filters.requiresPrescription}
             onSaleOnlyChange={(checked) => updateFilters({ onSaleOnly: checked })}
             onInStockOnlyChange={(checked) => updateFilters({ inStockOnly: checked })}

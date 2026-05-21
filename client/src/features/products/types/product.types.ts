@@ -190,7 +190,7 @@ export const productFiltersSchema = z.object({
   manufacturers: z.array(z.string().uuid()).default([]),
   priceRange: priceRangeSchema,
   onSaleOnly: z.boolean().default(false),
-  inStockOnly: z.boolean().default(true),
+  inStockOnly: z.boolean().default(false),
   requiresPrescription: z.boolean().optional(),
 });
 

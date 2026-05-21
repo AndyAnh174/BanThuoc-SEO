@@ -47,7 +47,7 @@ class Command(BaseCommand):
         
         # Get products to index
         products = Product.objects.filter(
-            status='ACTIVE'
+            status__in=['ACTIVE', 'OUT_OF_STOCK']
         ).select_related(
             'category',
             'manufacturer',

@@ -69,7 +69,7 @@ class ElasticsearchProductSearchView(APIView):
         search = ProductDocument.search()
 
         # Only search active products
-        search = search.filter('term', status='ACTIVE')
+        search = search.filter('terms', status=['ACTIVE', 'OUT_OF_STOCK'])
 
         # Main search query with fuzzy matching
         if query:
@@ -213,7 +213,7 @@ class ElasticsearchSuggestView(APIView):
 
         # Build search with prefix matching
         search = ProductDocument.search()
-        search = search.filter('term', status='ACTIVE')
+        search = search.filter('terms', status=['ACTIVE', 'OUT_OF_STOCK'])
         
         # Use prefix and fuzzy for autocomplete
         search = search.query(
