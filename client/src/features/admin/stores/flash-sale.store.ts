@@ -116,7 +116,9 @@ export const useFlashSaleStore = create<FlashSaleState>((set, get) => ({
              // Check for API errors (status 200 but errors array present)
              if (response.errors && response.errors.length > 0) {
                  const errorMessages = response.errors.map((e: any) => {
-                     const fieldErrors = Object.entries(e.errors || {}).map(([k, v]: any) => `${k}: ${v.join(', ')}`);
+                     if (typeof e.errors === 'string') return e.errors;
+                     const errObj = e.errors || {};
+                     const fieldErrors = Object.entries(errObj).map(([k, v]: any) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`);
                      return fieldErrors.join('; ');
                  }).join(' | ');
                  throw new Error(errorMessages || 'Lỗi không xác định khi thêm sản phẩm');

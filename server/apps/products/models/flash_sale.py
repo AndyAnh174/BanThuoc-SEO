@@ -262,11 +262,11 @@ class FlashSaleItem(models.Model):
         # Set original price from product if not set
         if not self.original_price and self.product:
             self.original_price = self.product.price
-        
-        # Set remaining quantity to total if new
-        if not self.pk and not self.remaining_quantity:
+
+        # Set remaining quantity to total if new (use _state.adding because UUID pk is set before save)
+        if self._state.adding and not self.remaining_quantity:
             self.remaining_quantity = self.total_quantity
-        
+
         super().save(*args, **kwargs)
 
     @property
