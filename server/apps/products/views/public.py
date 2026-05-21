@@ -76,7 +76,7 @@ class CategoryListView(generics.ListAPIView):
         all_cats = Category.objects.filter(is_active=True)
         product_cat_counts = Counter(
             Product.objects.filter(
-                status__in=['ACTIVE', 'OUT_OF_STOCK']
+                status__in=['ACTIVE', 'OUT_OF_STOCK', 'INACTIVE']
             ).values_list('category_id', flat=True)
         )
 
@@ -183,7 +183,7 @@ class ProductListView(generics.ListAPIView):
         """
         # Base queryset with optimized joins
         queryset = Product.objects.filter(
-            status__in=['ACTIVE', 'OUT_OF_STOCK']
+            status__in=['ACTIVE', 'OUT_OF_STOCK', 'INACTIVE']
         ).select_related(
             'category',      # ForeignKey - single JOIN
             'manufacturer',  # ForeignKey - single JOIN
@@ -295,7 +295,7 @@ class ProductDetailView(generics.RetrieveAPIView):
         Optimized query with select_related and prefetch_related.
         """
         qs = Product.objects.filter(
-            status__in=['ACTIVE', 'OUT_OF_STOCK']
+            status__in=['ACTIVE', 'OUT_OF_STOCK', 'INACTIVE']
         ).select_related(
             'category',
             'manufacturer',
@@ -315,7 +315,7 @@ class FeaturedProductsView(generics.ListAPIView):
 
     def get_queryset(self):
         qs = Product.objects.filter(
-            status__in=['ACTIVE', 'OUT_OF_STOCK'],
+            status__in=['ACTIVE', 'OUT_OF_STOCK', 'INACTIVE'],
             is_featured=True
         ).select_related(
             'category',
@@ -340,7 +340,7 @@ class NewProductsView(generics.ListAPIView):
         
         thirty_days_ago = timezone.now() - timedelta(days=30)
         qs = Product.objects.filter(
-            status__in=['ACTIVE', 'OUT_OF_STOCK'],
+            status__in=['ACTIVE', 'OUT_OF_STOCK', 'INACTIVE'],
             created_at__gte=thirty_days_ago
         ).select_related(
             'category',
@@ -361,7 +361,7 @@ class OnSaleProductsView(generics.ListAPIView):
 
     def get_queryset(self):
         qs = Product.objects.filter(
-            status__in=['ACTIVE', 'OUT_OF_STOCK'],
+            status__in=['ACTIVE', 'OUT_OF_STOCK', 'INACTIVE'],
             sale_price__isnull=False,
             sale_price__lt=F('price')
         ).select_related(
@@ -393,7 +393,7 @@ class ProductSearchView(APIView):
             return Response({'results': []})
 
         products = Product.objects.filter(
-            status__in=['ACTIVE', 'OUT_OF_STOCK']
+            status__in=['ACTIVE', 'OUT_OF_STOCK', 'INACTIVE']
         ).filter(
             Q(name__icontains=query) |
             Q(sku__icontains=query)
