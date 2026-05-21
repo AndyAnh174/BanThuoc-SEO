@@ -112,12 +112,22 @@ export const useFlashSaleStore = create<FlashSaleState>((set, get) => ({
     addItems: async (sessionId, items) => {
          set({ isLoading: true });
          try {
-             await flashSaleApi.addItemsToSession(sessionId, items);
-             await get().fetchSessionDetail(sessionId); // Reload items
-             toast.success('Đã thêm sản phẩm vào Flash Sale');
-         } catch (error) {
+             const response = await flashSaleApi.addItemsToSession(sessionId, items);
+             // Check for API errors (status 200 but errors array present)
+             if (response.errors && response.errors.length > 0) {
+                 const errorMessages = response.errors.map((e: any) => {
+                     const fieldErrors = Object.entries(e.errors || {}).map(([k, v]: any) => `${k}: ${v.join(', ')}`);
+                     return fieldErrors.join('; ');
+                 }).join(' | ');
+                 throw new Error(errorMessages || 'Lỗi không xác định khi thêm sản phẩm');
+             }
+             if (response.created && response.created.length > 0) {
+                 await get().fetchSessionDetail(sessionId);
+                 toast.success(`Đã thêm ${response.created.length} sản phẩm vào Flash Sale`);
+             }
+         } catch (error: any) {
              console.error(error);
-             toast.error('Lỗi khi thêm sản phẩm');
+             toast.error(error?.message || 'Lỗi khi thêm sản phẩm');
              throw error;
          } finally {
              set({ isLoading: false });

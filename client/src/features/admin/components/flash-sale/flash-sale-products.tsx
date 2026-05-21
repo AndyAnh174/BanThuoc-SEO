@@ -79,14 +79,12 @@ export const FlashSaleProducts = ({ session }: FlashSaleProductsProps) => {
                 total_quantity: newItemQuantity,
                 max_per_user: newItemMaxPerUser
             }]);
-            
-            toast.success('Đã thêm sản phẩm vào Flash Sale');
-            // Don't close immediately if user wants to add more? 
-            // Better UX: Reset form but keep modal open or close it? 
-            // Let's close for now to see result.
+
             setIsAddOpen(false);
             resetAddForm();
-        } catch (e) {}
+        } catch (e) {
+            // Error toast already shown by store, just keep modal open for retry
+        }
     };
 
     const resetAddForm = () => {

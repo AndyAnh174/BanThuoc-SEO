@@ -6,6 +6,8 @@ class FlashSaleItemAdminSerializer(serializers.ModelSerializer):
     """Admin CRUD for FlashSaleItem"""
     product_details = ProductAdminListSerializer(source='product', read_only=True)
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    original_price = serializers.DecimalField(max_digits=12, decimal_places=0, required=False)
+    remaining_quantity = serializers.IntegerField(required=False)
 
     class Meta:
         model = FlashSaleItem
