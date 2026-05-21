@@ -33,7 +33,7 @@ export function CategorySidebar({
   categories,
   manufacturers,
   initialFilters,
-  maxPrice = 1000000,
+  maxPrice = 10000000,
   onFilterChange,
   onApplyFilters,
   showApplyButton = false,
@@ -42,7 +42,7 @@ export function CategorySidebar({
   const [filters, setFilters] = useState<FilterState>({
     ...defaultFilters,
     ...initialFilters,
-    priceRange: { min: 0, max: maxPrice },
+    priceRange: initialFilters?.priceRange || { min: 0, max: maxPrice },
   });
 
   const updateFilters = (newFilters: Partial<FilterState>) => {

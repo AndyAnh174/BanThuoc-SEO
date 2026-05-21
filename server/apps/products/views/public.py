@@ -128,6 +128,7 @@ class ProductListView(generics.ListAPIView):
             openapi.Parameter('requires_prescription', openapi.IN_QUERY, description="Requires prescription", type=openapi.TYPE_BOOLEAN),
             openapi.Parameter('is_featured', openapi.IN_QUERY, description="Featured products only", type=openapi.TYPE_BOOLEAN),
             openapi.Parameter('on_sale', openapi.IN_QUERY, description="On sale products only", type=openapi.TYPE_BOOLEAN),
+            openapi.Parameter('in_stock', openapi.IN_QUERY, description="In stock products only", type=openapi.TYPE_BOOLEAN),
             openapi.Parameter('search', openapi.IN_QUERY, description="Search term", type=openapi.TYPE_STRING),
             openapi.Parameter('ordering', openapi.IN_QUERY, description="Sort by: price, -price, name, -name, created_at, -created_at", type=openapi.TYPE_STRING),
         ]
@@ -208,6 +209,11 @@ class ProductListView(generics.ListAPIView):
                 sale_price__isnull=False,
                 sale_price__lt=F('price')
             )
+
+        # Filter products in stock
+        in_stock = params.get('in_stock')
+        if in_stock is not None and in_stock.lower() in ('true', '1', 'yes'):
+            queryset = queryset.filter(stock_quantity__gt=0)
 
         # Search by name, SKU, description
         search = params.get('search')

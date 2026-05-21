@@ -48,8 +48,13 @@ export function ProductsClient() {
   const manufacturer = searchParams.get('manufacturer') || '';
   const search = searchParams.get('search') || '';
   const ordering = searchParams.get('ordering') || '-created_at';
+  const maxPriceLimit = 10000000;
+
   const minPrice = searchParams.get('min_price') || '';
   const maxPrice = searchParams.get('max_price') || '';
+  const onSale = searchParams.get('on_sale') || '';
+  const inStock = searchParams.get('in_stock') || '';
+  const requiresPresc = searchParams.get('requires_prescription') || '';
 
   const [searchInput, setSearchInput] = useState(search);
 
@@ -75,6 +80,9 @@ export function ProductsClient() {
         if (manufacturer) params.manufacturer = manufacturer;
         if (minPrice) params.min_price = minPrice;
         if (maxPrice) params.max_price = maxPrice;
+        if (onSale) params.on_sale = onSale;
+        if (inStock) params.in_stock = inStock;
+        if (requiresPresc) params.requires_prescription = requiresPresc;
 
         let response;
         if (search) {
@@ -93,7 +101,7 @@ export function ProductsClient() {
       finally { setLoading(false); }
     };
     fetchProducts();
-  }, [page, category, manufacturer, search, ordering, minPrice, maxPrice]);
+  }, [page, category, manufacturer, search, ordering, minPrice, maxPrice, onSale, inStock, requiresPresc]);
 
   const updateFilters = useCallback((updates: Record<string, string>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -121,23 +129,45 @@ export function ProductsClient() {
     if (manu) activeFilters.push({ key: 'manufacturer', label: manu.name });
   }
   if (search) activeFilters.push({ key: 'search', label: `"${search}"` });
+  if (onSale === 'true') activeFilters.push({ key: 'on_sale', label: 'Đang giảm giá' });
+  if (inStock === 'true') activeFilters.push({ key: 'in_stock', label: 'Còn hàng' });
+  if (requiresPresc === 'true') activeFilters.push({ key: 'requires_prescription', label: 'Cần kê đơn' });
+  if (requiresPresc === 'false') activeFilters.push({ key: 'requires_prescription', label: 'Không cần kê đơn' });
 
   const currentCategoryName = category
     ? categories.find(c => c.slug === category)?.name || 'Sản phẩm'
     : 'Tất cả sản phẩm';
 
+  // Convert URL slugs to IDs for sidebar initial state
+  const categoryId = category ? (categories.find(c => c.slug === category)?.id || '') : '';
+  const manufacturerId = manufacturer ? (manufacturers.find(m => m.slug === manufacturer)?.id || '') : '';
+
   const sidebarFilters = {
-    categories: category ? [category] : [],
-    manufacturers: manufacturer ? [manufacturer] : [],
-    priceRange: { min: minPrice ? Number(minPrice) : 0, max: maxPrice ? Number(maxPrice) : 1000000 },
+    categories: categoryId ? [categoryId] : [],
+    manufacturers: manufacturerId ? [manufacturerId] : [],
+    priceRange: { min: minPrice ? Number(minPrice) : 0, max: maxPrice ? Number(maxPrice) : maxPriceLimit },
+    onSaleOnly: onSale === 'true',
+    inStockOnly: inStock === 'true',
+    requiresPrescription: requiresPresc ? (requiresPresc === 'true') : undefined,
   };
 
   const handleFilterChange = (filters: any) => {
+    // Convert category/manufacturer IDs to slugs for URL
+    const catSlug = filters.categories?.[0]
+      ? (categories.find(c => c.id === filters.categories[0])?.slug || filters.categories[0])
+      : '';
+    const manuSlug = filters.manufacturers?.[0]
+      ? (manufacturers.find(m => m.id === filters.manufacturers[0])?.slug || filters.manufacturers[0])
+      : '';
+
     updateFilters({
-      category: filters.categories[0] || '',
-      manufacturer: filters.manufacturers[0] || '',
-      min_price: filters.priceRange.min?.toString() || '',
-      max_price: filters.priceRange.max?.toString() || '',
+      category: catSlug,
+      manufacturer: manuSlug,
+      min_price: filters.priceRange?.min > 0 ? filters.priceRange.min.toString() : '',
+      max_price: filters.priceRange?.max < maxPriceLimit ? filters.priceRange.max.toString() : '',
+      on_sale: filters.onSaleOnly ? 'true' : '',
+      in_stock: filters.inStockOnly ? 'true' : '',
+      requires_prescription: filters.requiresPrescription !== undefined ? String(filters.requiresPrescription) : '',
     });
   };
 
@@ -166,6 +196,7 @@ export function ProductsClient() {
               categories={categories}
               manufacturers={manufacturers}
               initialFilters={sidebarFilters}
+              maxPrice={maxPriceLimit}
               onFilterChange={handleFilterChange}
             />
           </aside>
@@ -389,6 +420,7 @@ export function ProductsClient() {
                 categories={categories}
                 manufacturers={manufacturers}
                 initialFilters={sidebarFilters}
+                maxPrice={maxPriceLimit}
                 onFilterChange={(filters) => {
                   handleFilterChange(filters);
                   setShowMobileFilters(false);

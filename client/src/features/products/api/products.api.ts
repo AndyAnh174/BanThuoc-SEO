@@ -13,6 +13,9 @@ export interface ProductListParams {
   manufacturer?: string;
   min_price?: number;
   max_price?: number;
+  on_sale?: string | boolean;
+  in_stock?: string | boolean;
+  requires_prescription?: string | boolean;
   status?: string;
   search?: string;
   ordering?: string;
