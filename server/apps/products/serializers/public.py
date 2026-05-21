@@ -27,7 +27,13 @@ class CategoryTreeSerializer(serializers.ModelSerializer):
         return obj.get_full_path()
 
     def get_product_count(self, obj):
-        """Count products in this category and all descendants"""
+        """Count products in this category and all descendants.
+        Uses precomputed counts from context when available (avoids N+1 COUNT queries).
+        """
+        counts = self.context.get('product_counts')
+        if counts is not None:
+            return counts.get(obj.id, 0)
+        # Fallback for views that don't precompute (e.g., CategoryDetailView)
         descendants = obj.get_descendants(include_self=True)
         return Product.objects.filter(
             category__in=descendants,
@@ -76,14 +82,13 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'image_url', 'alt_text', 'is_primary', 'sort_order']
 
 
-from products.models import Category, Manufacturer, Product, ProductImage, Favorite
-
-# ... (Previous code) ...
 
 class ProductListSerializer(serializers.ModelSerializer):
     """
     Serializer for Product list view (lightweight).
     Used for listing products with essential info only.
+    is_liked and likes_count come from queryset annotations (not method fields)
+    to avoid N+1 queries.
     """
     category = CategorySimpleSerializer(read_only=True)
     manufacturer = ManufacturerSimpleSerializer(read_only=True)
@@ -91,8 +96,8 @@ class ProductListSerializer(serializers.ModelSerializer):
     current_price = serializers.DecimalField(max_digits=12, decimal_places=0, read_only=True)
     discount_percentage = serializers.IntegerField(read_only=True)
     is_on_sale = serializers.BooleanField(read_only=True)
-    is_liked = serializers.SerializerMethodField()
-    likes_count = serializers.SerializerMethodField()
+    is_liked = serializers.BooleanField(read_only=True, default=False)
+    likes_count = serializers.IntegerField(read_only=True, default=0)
 
     class Meta:
         model = Product
@@ -106,20 +111,11 @@ class ProductListSerializer(serializers.ModelSerializer):
         ]
 
     def get_primary_image(self, obj):
-        """Get primary image URL"""
+        """Get primary image URL from prefetched images to avoid extra queries"""
         primary = obj.primary_image
         if primary:
             return ProductImageSerializer(primary).data
         return None
-
-    def get_is_liked(self, obj):
-        request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            return Favorite.objects.filter(user=request.user, product=obj).exists()
-        return False
-
-    def get_likes_count(self, obj):
-        return obj.favorited_by.count()
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):

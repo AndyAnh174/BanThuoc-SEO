@@ -7,7 +7,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.pagination import PageNumberPagination
-from django.db.models import Q, F
+from django.db.models import Q, F, Count, Exists, OuterRef, Value
+from django.db.models.fields import BooleanField
+from products.models.favorite import Favorite
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -28,6 +30,24 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 100
 
 
+def annotate_product_queryset(queryset, user=None):
+    """Add likes_count and is_liked annotations to avoid N+1 queries."""
+    queryset = queryset.annotate(
+        likes_count=Count('favorited_by'),
+    )
+    if user and user.is_authenticated:
+        queryset = queryset.annotate(
+            is_liked=Exists(
+                Favorite.objects.filter(user=user, product=OuterRef('pk'))
+            )
+        )
+    else:
+        queryset = queryset.annotate(
+            is_liked=Value(False, output_field=BooleanField())
+        )
+    return queryset
+
+
 # =============================================================================
 # Category Views
 # =============================================================================
@@ -35,7 +55,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 class CategoryListView(generics.ListAPIView):
     """
     List all active root categories with their children (tree structure).
-    
+
     Returns hierarchical category tree for navigation menus.
     """
     permission_classes = [AllowAny]
@@ -47,6 +67,26 @@ class CategoryListView(generics.ListAPIView):
             parent__isnull=True,
             is_active=True
         ).order_by('name')
+
+    def get_serializer_context(self):
+        """Precompute product counts for all categories to avoid N+1 COUNT queries."""
+        from collections import Counter
+        context = super().get_serializer_context()
+
+        all_cats = Category.objects.filter(is_active=True)
+        product_cat_counts = Counter(
+            Product.objects.filter(
+                status__in=['ACTIVE', 'OUT_OF_STOCK']
+            ).values_list('category_id', flat=True)
+        )
+
+        counts = {}
+        for cat in all_cats:
+            desc_ids = cat.get_descendants(include_self=True).values_list('id', flat=True)
+            counts[cat.id] = sum(product_cat_counts.get(did, 0) for did in desc_ids)
+
+        context['product_counts'] = counts
+        return context
 
 
 class CategoryDetailView(generics.RetrieveAPIView):
@@ -233,7 +273,7 @@ class ProductListView(generics.ListAPIView):
         else:
             queryset = queryset.order_by('-created_at')
 
-        return queryset
+        return annotate_product_queryset(queryset, self.request.user)
 
 
 class ProductDetailView(generics.RetrieveAPIView):
@@ -254,7 +294,7 @@ class ProductDetailView(generics.RetrieveAPIView):
         """
         Optimized query with select_related and prefetch_related.
         """
-        return Product.objects.filter(
+        qs = Product.objects.filter(
             status__in=['ACTIVE', 'OUT_OF_STOCK']
         ).select_related(
             'category',
@@ -262,6 +302,7 @@ class ProductDetailView(generics.RetrieveAPIView):
         ).prefetch_related(
             'images',
         )
+        return annotate_product_queryset(qs, self.request.user)
 
 
 class FeaturedProductsView(generics.ListAPIView):
@@ -273,7 +314,7 @@ class FeaturedProductsView(generics.ListAPIView):
     serializer_class = ProductListSerializer
 
     def get_queryset(self):
-        return Product.objects.filter(
+        qs = Product.objects.filter(
             status__in=['ACTIVE', 'OUT_OF_STOCK'],
             is_featured=True
         ).select_related(
@@ -282,6 +323,7 @@ class FeaturedProductsView(generics.ListAPIView):
         ).prefetch_related(
             'images',
         ).order_by('-created_at')[:8]
+        return annotate_product_queryset(qs, self.request.user)
 
 
 class NewProductsView(generics.ListAPIView):
@@ -297,7 +339,7 @@ class NewProductsView(generics.ListAPIView):
         from django.utils import timezone
         
         thirty_days_ago = timezone.now() - timedelta(days=30)
-        return Product.objects.filter(
+        qs = Product.objects.filter(
             status__in=['ACTIVE', 'OUT_OF_STOCK'],
             created_at__gte=thirty_days_ago
         ).select_related(
@@ -306,6 +348,7 @@ class NewProductsView(generics.ListAPIView):
         ).prefetch_related(
             'images',
         ).order_by('-created_at')[:8]
+        return annotate_product_queryset(qs, self.request.user)
 
 
 class OnSaleProductsView(generics.ListAPIView):
@@ -317,8 +360,7 @@ class OnSaleProductsView(generics.ListAPIView):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        from django.db.models import F
-        return Product.objects.filter(
+        qs = Product.objects.filter(
             status__in=['ACTIVE', 'OUT_OF_STOCK'],
             sale_price__isnull=False,
             sale_price__lt=F('price')
@@ -328,6 +370,7 @@ class OnSaleProductsView(generics.ListAPIView):
         ).prefetch_related(
             'images',
         ).order_by('-created_at')
+        return annotate_product_queryset(qs, self.request.user)
 
 
 class ProductSearchView(APIView):
@@ -361,5 +404,6 @@ class ProductSearchView(APIView):
             'images',
         )[:10]
 
+        products = annotate_product_queryset(products, request.user)
         serializer = ProductListSerializer(products, many=True, context={'request': request})
         return Response({'results': serializer.data})

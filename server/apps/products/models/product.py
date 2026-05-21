@@ -141,7 +141,13 @@ class Product(models.Model):
 
     @property
     def primary_image(self):
-        """Get the primary product image"""
+        """Get the primary product image, using prefetched cache when available"""
+        if hasattr(self, '_prefetched_objects_cache') and 'images' in self._prefetched_objects_cache:
+            images = list(self.images.all())
+            for img in images:
+                if img.is_primary:
+                    return img
+            return images[0] if images else None
         return self.images.filter(is_primary=True).first() or self.images.first()
 
 

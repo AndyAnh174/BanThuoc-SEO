@@ -31,6 +31,10 @@ import {
 interface Category { id: string; name: string; slug: string; children?: Category[]; }
 interface Manufacturer { id: string; name: string; slug: string; }
 
+// In-memory cache for filter data (rarely changes, avoid re-fetching on every navigation)
+const filterCache: { categories?: Category[]; manufacturers?: Manufacturer[]; ts?: number } = {};
+const FILTER_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 export function ProductsClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -61,11 +65,26 @@ export function ProductsClient() {
   useEffect(() => {
     const fetchFilters = async () => {
       try {
+        const now = Date.now();
+        if (filterCache.categories && filterCache.manufacturers && filterCache.ts && (now - filterCache.ts) < FILTER_CACHE_TTL) {
+          setCategories(filterCache.categories);
+          setManufacturers(filterCache.manufacturers);
+          return;
+        }
         const [catRes, manuRes] = await Promise.all([getCategories(), getManufacturers()]);
-        if (catRes.data?.results) setCategories(catRes.data.results);
-        else if (Array.isArray(catRes.data)) setCategories(catRes.data);
-        if (manuRes.data?.results) setManufacturers(manuRes.data.results);
-        else if (Array.isArray(manuRes.data)) setManufacturers(manuRes.data);
+        let cats: Category[] | null = null;
+        let manus: Manufacturer[] | null = null;
+        if (catRes.data?.results) cats = catRes.data.results;
+        else if (Array.isArray(catRes.data)) cats = catRes.data;
+        if (manuRes.data?.results) manus = manuRes.data.results;
+        else if (Array.isArray(manuRes.data)) manus = manuRes.data;
+        if (cats) setCategories(cats);
+        if (manus) setManufacturers(manus);
+        if (cats && manus) {
+          filterCache.categories = cats;
+          filterCache.manufacturers = manus;
+          filterCache.ts = now;
+        }
       } catch (error) { console.error('Failed to fetch filters:', error); }
     };
     fetchFilters();
