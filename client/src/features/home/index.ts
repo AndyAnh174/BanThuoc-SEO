@@ -10,4 +10,5 @@ export { CategoryShowcase } from './components/CategoryShowcase';
 export { FeaturedProducts } from './components/FeaturedProducts';
 export { NewProductsSection } from './components/NewProductsSection';
 export { CategoryProductsSection } from './components/CategoryProductsSection';
+export { TrustBadges } from './components/TrustBadges';
 
