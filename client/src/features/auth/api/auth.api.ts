@@ -25,11 +25,8 @@ export const registerUser = async (data: RegisterFormValues) => {
     // Register usually doesn't need auth header, but using http is fine (no token). 
     // However, multipart/form-data needs specific header override or let axios handle it.
     // http instance has default json type. We override here.
-    const response = await http.post('/auth/register', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-    });
+    // Let axios set the correct Content-Type with boundary for multipart
+    const response = await http.post('/auth/register', formData);
 
     return response;
 };
