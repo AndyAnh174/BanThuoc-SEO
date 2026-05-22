@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ArrowRight } from "lucide-react";
+import { Loader2, ArrowRight, Eye, EyeOff, Check, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuthStore } from "../stores/auth.store";
@@ -50,6 +50,8 @@ export function RegisterForm() {
   const [step, setStep] = useState(1);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { register, isLoading } = useAuthStore();
   const router = useRouter();
 
@@ -69,7 +71,18 @@ export function RegisterForm() {
     mode: "onChange",
   });
 
-  const { trigger, handleSubmit, setValue, formState: { errors } } = form;
+  const { trigger, handleSubmit, setValue, watch, formState: { errors } } = form;
+
+  const passwordValue = watch("password") || "";
+  const confirmPasswordValue = watch("confirmPassword") || "";
+
+  const passwordChecks = [
+    { label: "Tối thiểu 8 ký tự", pass: passwordValue.length >= 8 },
+    { label: "Ít nhất 1 chữ hoa", pass: /[A-Z]/.test(passwordValue) },
+    { label: "Ít nhất 1 chữ thường", pass: /[a-z]/.test(passwordValue) },
+    { label: "Ít nhất 1 chữ số", pass: /[0-9]/.test(passwordValue) },
+    { label: "Ít nhất 1 ký tự đặc biệt", pass: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(passwordValue) },
+  ];
 
   const handleNextStep = async () => {
     const fieldsStep1: (keyof RegisterFormValues)[] = [
@@ -240,30 +253,118 @@ export function RegisterForm() {
                     />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormControl>
-                                <FloatingLabelInput field={field} label="Mật khẩu" type="password" />
-                            </FormControl>
-                             <FormMessage className="ml-4" />
-                            </FormItem>
-                        )}
-                        />
-                        <FormField
-                        control={form.control}
-                        name="confirmPassword"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormControl>
-                                <FloatingLabelInput field={field} label="Xác nhận mật khẩu" type="password" />
-                            </FormControl>
-                             <FormMessage className="ml-4" />
-                            </FormItem>
-                        )}
-                        />
+                        <div className="space-y-3">
+                          <FormField
+                          control={form.control}
+                          name="password"
+                          render={({ field }) => (
+                              <FormItem>
+                              <FormControl>
+                                  <div className="relative group">
+                                      <input
+                                          {...field}
+                                          id={`input-${field.name}`}
+                                          type={showPassword ? "text" : "password"}
+                                          placeholder=" "
+                                          className="peer block w-full px-6 pr-12 h-14 rounded-full border border-gray-200 bg-green-50/30 text-base text-gray-900 focus:border-green-600 focus:ring-1 focus:ring-green-600 focus:bg-white transition-all outline-none placeholder-shown:pt-0 pt-0"
+                                      />
+                                      <label
+                                          htmlFor={`input-${field.name}`}
+                                          className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 text-base transition-all duration-300 pointer-events-none
+                                          peer-focus:top-0 peer-focus:translate-y-[-50%] peer-focus:text-xs peer-focus:text-green-700 peer-focus:bg-white peer-focus:px-2 peer-focus:ml-[-8px]
+                                          peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:translate-y-[-50%] peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:text-green-700 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:px-2 peer-not-placeholder-shown:ml-[-8px]"
+                                      >
+                                          Mật khẩu
+                                      </label>
+                                      <button
+                                          type="button"
+                                          onClick={() => setShowPassword(!showPassword)}
+                                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                          tabIndex={-1}
+                                      >
+                                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                      </button>
+                                  </div>
+                              </FormControl>
+                              <FormMessage className="ml-4" />
+                              </FormItem>
+                          )}
+                          />
+                          {/* Password requirements checklist */}
+                          <div className="bg-gray-50 rounded-xl p-3 mx-1 border border-gray-100">
+                              <p className="text-xs font-semibold text-gray-500 mb-2">YÊU CẦU MẬT KHẨU</p>
+                              <div className="space-y-1">
+                                  {passwordChecks.map((check, i) => (
+                                      <div key={i} className="flex items-center gap-2 text-xs">
+                                          {passwordValue.length === 0 ? (
+                                              <div className="w-3.5 h-3.5 rounded-full border border-gray-300 flex-shrink-0" />
+                                          ) : check.pass ? (
+                                              <Check className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
+                                          ) : (
+                                              <X className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
+                                          )}
+                                          <span className={passwordValue.length === 0 ? "text-gray-400" : check.pass ? "text-green-700" : "text-red-500"}>
+                                              {check.label}
+                                          </span>
+                                      </div>
+                                  ))}
+                              </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <FormField
+                          control={form.control}
+                          name="confirmPassword"
+                          render={({ field }) => (
+                              <FormItem>
+                              <FormControl>
+                                  <div className="relative group">
+                                      <input
+                                          {...field}
+                                          id={`input-${field.name}`}
+                                          type={showConfirmPassword ? "text" : "password"}
+                                          placeholder=" "
+                                          className="peer block w-full px-6 pr-12 h-14 rounded-full border border-gray-200 bg-green-50/30 text-base text-gray-900 focus:border-green-600 focus:ring-1 focus:ring-green-600 focus:bg-white transition-all outline-none placeholder-shown:pt-0 pt-0"
+                                      />
+                                      <label
+                                          htmlFor={`input-${field.name}`}
+                                          className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 text-base transition-all duration-300 pointer-events-none
+                                          peer-focus:top-0 peer-focus:translate-y-[-50%] peer-focus:text-xs peer-focus:text-green-700 peer-focus:bg-white peer-focus:px-2 peer-focus:ml-[-8px]
+                                          peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:translate-y-[-50%] peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:text-green-700 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:px-2 peer-not-placeholder-shown:ml-[-8px]"
+                                      >
+                                          Xác nhận mật khẩu
+                                      </label>
+                                      <button
+                                          type="button"
+                                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                          tabIndex={-1}
+                                      >
+                                          {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                      </button>
+                                  </div>
+                              </FormControl>
+                              <FormMessage className="ml-4" />
+                              </FormItem>
+                          )}
+                          />
+                          {/* Password match indicator */}
+                          {confirmPasswordValue.length > 0 && (
+                              <div className={`flex items-center gap-2 px-3 py-2 rounded-xl mx-1 border text-xs font-medium ${
+                                  passwordValue === confirmPasswordValue
+                                      ? "bg-green-50 border-green-200 text-green-700"
+                                      : "bg-red-50 border-red-200 text-red-600"
+                              }`}>
+                                  {passwordValue === confirmPasswordValue ? (
+                                      <Check className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
+                                  ) : (
+                                      <X className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
+                                  )}
+                                  {passwordValue === confirmPasswordValue ? "Mật khẩu khớp" : "Mật khẩu không khớp"}
+                              </div>
+                          )}
+                        </div>
                     </div>
 
                     <div className="pt-8 flex justify-end">
