@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "orders",
     "audit",
     "bugreport",
+    "blog",
 ]
 
 MIDDLEWARE = [
