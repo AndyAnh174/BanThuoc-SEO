@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getBlogPosts, getBlogTags } from '@/src/features/blog/api/blog';
+import { getBlogPosts, getBlogTags, type BlogListResponse } from '@/src/features/blog/api/blog';
 import BlogClientWrapper from './BlogClientWrapper';
 
 export const metadata: Metadata = {
@@ -18,10 +18,17 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function BlogPage() {
-  const [postsData, tags] = await Promise.all([
-    getBlogPosts(1, 12),
-    getBlogTags(),
-  ]);
+  let postsData: BlogListResponse = { count: 0, next: null, previous: null, results: [] };
+  let tags: string[] = [];
+
+  try {
+    [postsData, tags] = await Promise.all([
+      getBlogPosts(1, 12),
+      getBlogTags(),
+    ]);
+  } catch {
+    // Fallback: API not ready yet, show empty blog page
+  }
 
   return <BlogClientWrapper initialPosts={postsData} tags={tags || []} />;
 }
