@@ -1,7 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import BlogEditor from '../BlogEditor';
+import dynamic from 'next/dynamic';
+
+const BlogEditor = dynamic(() => import('../BlogEditor'), { ssr: false });
 
 export default function NewBlogPage() {
   const router = useRouter();
