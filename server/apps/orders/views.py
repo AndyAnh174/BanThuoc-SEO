@@ -16,7 +16,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
 
     def get_permissions(self):
-        if self.action == 'create':
+        if self.action in ('create', 'mark_paid'):
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
 
@@ -96,6 +96,29 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         order.status = new_status
         order.save()
+
+        serializer = self.get_serializer(order)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'], url_path='mark-paid', permission_classes=[permissions.AllowAny])
+    def mark_paid(self, request, pk=None):
+        """
+        Mark order as paid. Called internally by payment gateway callback.
+        POST /api/orders/{id}/mark-paid/
+        Body: {"txn_ref": "VNPay-transaction-reference"}
+        Header: X-Internal-Secret must match INTERNAL_SECRET env var
+        """
+        import os
+        expected_secret = os.environ.get('INTERNAL_SECRET', 'banthuoc-internal-secret')
+        provided_secret = request.headers.get('X-Internal-Secret', '')
+        if not provided_secret or provided_secret != expected_secret:
+            return Response({"error": "Unauthorized"}, status=403)
+
+        order = self.get_object()
+        txn_ref = request.data.get('txn_ref', '')
+        order.payment_status = True
+        order.payment_txn_ref = txn_ref
+        order.save(update_fields=['payment_status', 'payment_txn_ref'])
 
         serializer = self.get_serializer(order)
         return Response(serializer.data)

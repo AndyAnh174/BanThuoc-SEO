@@ -18,6 +18,7 @@ class Order(models.Model):
     class PaymentMethod(models.TextChoices):
         COD = 'COD', _('Cash on Delivery')
         BANKING = 'BANKING', _('Banking Transfer')
+        VNPAY = 'VNPAY', _('VNPay Online Payment')
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
@@ -41,7 +42,8 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     payment_method = models.CharField(max_length=20, choices=PaymentMethod.choices, default=PaymentMethod.COD)
     payment_status = models.BooleanField(default=False)
-    
+    payment_txn_ref = models.CharField(max_length=255, blank=True, help_text=_("VNPay transaction reference"))
+
     note = models.TextField(blank=True, null=True)
     
     total_amount = models.DecimalField(max_digits=12, decimal_places=0)

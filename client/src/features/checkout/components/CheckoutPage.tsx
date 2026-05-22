@@ -132,6 +132,26 @@ export function CheckoutPage() {
         const newOrder = await createOrder(orderData);
         const orderId = newOrder.data?.id;
 
+        // If VNPay, redirect to payment gateway
+        if (data.paymentMethod === 'VNPAY') {
+          const payRes = await fetch('/api/payment/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId,
+              amount: Math.round(Number(newOrder.data?.final_amount || cart.total_price || 0)),
+              orderInfo: `Thanh toan don hang ${orderId}`,
+            }),
+          });
+          const payData = await payRes.json();
+          if (payData.paymentUrl) {
+            useCartStore.getState().clearCart();
+            router.push(payData.paymentUrl);
+            return;
+          }
+          toast.error('Không thể tạo liên kết thanh toán VNPay');
+        }
+
         toast.success("Đặt hàng thành công! Đơn hàng đang được xử lý.");
         setOrderPlaced(true);
         useCartStore.getState().clearCart();

@@ -25,7 +25,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'id', 'user', 'full_name', 'phone_number', 'email',
             'address', 'province', 'district', 'ward',
             'receiver_name', 'receiver_phone', 'shipping_address',
-            'status', 'payment_method', 'payment_status', 'note',
+            'status', 'payment_method', 'payment_status', 'payment_txn_ref', 'note',
             'total_amount', 'shipping_fee', 'discount_amount', 'final_amount',
             'expected_delivery_date', 'tracking_number', 
             'created_at', 'updated_at', 'items', 'items_input', 'voucher_code'

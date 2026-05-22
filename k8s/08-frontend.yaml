@@ -29,6 +29,36 @@ spec:
                 configMapKeyRef:
                   name: banthuoc-config
                   key: INTERNAL_API_URL
+            - name: NEXT_PUBLIC_SITE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: banthuoc-config
+                  key: NEXT_PUBLIC_SITE_URL
+            - name: VNPAY_TMN_CODE
+              valueFrom:
+                secretKeyRef:
+                  name: banthuoc-secrets
+                  key: VNPAY_TMN_CODE
+            - name: VNPAY_HASH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: banthuoc-secrets
+                  key: VNPAY_HASH_SECRET
+            - name: VNPAY_SANDBOX
+              valueFrom:
+                configMapKeyRef:
+                  name: banthuoc-config
+                  key: VNPAY_SANDBOX
+            - name: VNPAY_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: banthuoc-config
+                  key: VNPAY_HOST
+            - name: INTERNAL_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: banthuoc-secrets
+                  key: INTERNAL_SECRET
             - name: NODE_ENV
               value: "production"
 ---

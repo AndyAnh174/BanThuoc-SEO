@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useFormContext } from 'react-hook-form';
-import { Ticket, CreditCard, Banknote, ArrowRight, Loader2 } from 'lucide-react';
+import { Ticket, CreditCard, Banknote, QrCode, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -103,20 +103,25 @@ export function OrderSummary({
                     <span className="text-xs text-primary font-medium bg-white px-2 py-0.5 rounded-full border border-primary/20">Mặc định</span>
                 </label>
                 
-                <label className="flex items-center space-x-2 p-3 rounded-lg border border-gray-100 bg-gray-50 cursor-not-allowed opacity-60">
-                     <div className="flex items-center space-x-3">
-                        <input 
-                            type="radio" 
-                            value="BANKING" 
-                            disabled
-                            className="w-4 h-4"
+                <label className={`flex items-center justify-between space-x-2 p-3 rounded-lg border cursor-pointer transition-all ${paymentMethod === 'VNPAY' ? 'border-primary bg-primary/5' : 'border-gray-200'}`}>
+                    <div className="flex items-center space-x-3">
+                        <input
+                            type="radio"
+                            value="VNPAY"
+                            {...register('paymentMethod')}
+                            className="text-primary w-4 h-4"
                         />
-                        <div className="flex items-center gap-2">
-                            <CreditCard className="w-4 h-4" />
-                            Chuyển khoản ngân hàng
+                        <div className="flex items-center gap-2 font-medium">
+                            <QrCode className="w-4 h-4" />
+                            Thanh toán online (VNPay)
                         </div>
-                     </div>
-                     <span className="text-xs text-gray-400 ml-auto">Sắp ra mắt</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <CreditCard className="w-3.5 h-3.5 text-blue-500" />
+                        <QrCode className="w-3.5 h-3.5 text-green-500" />
+                        <Banknote className="w-3.5 h-3.5 text-orange-500" />
+                        <span className="text-xs text-primary font-medium bg-white px-2 py-0.5 rounded-full border border-primary/20 ml-1">Khuyên dùng</span>
+                    </div>
                 </label>
            </div>
        </div>
