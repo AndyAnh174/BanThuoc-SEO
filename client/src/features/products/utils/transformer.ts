@@ -19,7 +19,17 @@ export const transformProduct = (data: any): Product => {
     updatedAt: data.updated_at ?? data.updatedAt,
     isLiked: data.is_liked ?? data.isLiked ?? false,
     likesCount: data.likes_count ?? data.likesCount ?? 0,
-    // Add other fields if necessary
+    imageUrl: data.image_url ?? data.imageUrl
+      ?? data.primary_image?.image_url ?? data.primary_image?.imageUrl
+      ?? data.images?.[0]?.image_url ?? data.images?.[0]?.imageUrl
+      ?? null,
+    images: (data.images || data.images_data)?.map?.((img: any) => ({
+      id: img.id,
+      imageUrl: img.image_url ?? img.imageUrl,
+      altText: img.alt_text ?? img.altText,
+      isPrimary: img.is_primary ?? img.isPrimary,
+      sortOrder: img.sort_order ?? img.sortOrder ?? 0,
+    })) ?? data.images,
   };
 };
 
