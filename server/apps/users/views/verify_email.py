@@ -77,7 +77,7 @@ def send_verification_email(user, token):
     def _send():
         try:
             # Backend API URL for verification
-            api_url = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+            api_url = getattr(settings, 'NEXT_PUBLIC_FRONTEND_URL', 'https://banthuocsi.vn')
             verify_url = f"{api_url}/api/auth/verify-email/{token}/"
             
             subject = "BanThuoc - Xác thực email của bạn"

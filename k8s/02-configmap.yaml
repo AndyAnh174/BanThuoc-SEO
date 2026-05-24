@@ -24,5 +24,6 @@ data:
   NEXT_PUBLIC_API_URL: "https://banthuocsi.vn/api"
   INTERNAL_API_URL: "http://backend-service:8000/api"
   NEXT_PUBLIC_SITE_URL: "https://banthuocsi.vn"
+  NEXT_PUBLIC_FRONTEND_URL: "https://banthuocsi.vn"
   VNPAY_SANDBOX: "true"
   VNPAY_HOST: "https://sandbox.vnpayment.vn"
