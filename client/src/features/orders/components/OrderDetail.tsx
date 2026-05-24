@@ -162,7 +162,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                 return { label: 'Đã xác nhận', color: 'text-blue-600', bg: 'bg-blue-50', icon: CheckCircle2, step: 2 };
             case 'SHIPPING':
                 return { label: 'Đang giao hàng', color: 'text-purple-600', bg: 'bg-purple-50', icon: Truck, step: 3 };
-            case 'COMPLETED':
+            case 'DELIVERED':
                 return { label: 'Giao thành công', color: 'text-green-600', bg: 'bg-green-50', icon: CheckCircle2, step: 4 };
             case 'CANCELLED':
                 return { label: 'Đã hủy', color: 'text-red-600', bg: 'bg-red-50', icon: XCircle, step: 0 };
@@ -255,7 +255,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                             {cancelling ? 'Đang hủy...' : 'Hủy đơn hàng'}
                         </Button>
                     )}
-                    {order.status === 'COMPLETED' && !returnRequest && (
+                    {order.status === 'DELIVERED' && !returnRequest && (
                         <Button
                             variant="outline"
                             onClick={() => setShowReturnForm(v => !v)}
@@ -282,8 +282,8 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                                     {statusInfo.label}
                                 </p>
                                 <p className="text-sm text-gray-600">
-                                    {order.status === 'COMPLETED' 
-                                        ? 'Cảm ơn bạn đã mua sắm tại BanThuoc!' 
+                                    {order.status === 'DELIVERED'
+                                        ? 'Cảm ơn bạn đã mua sắm tại BanThuoc!'
                                         : 'Đơn hàng đang được xử lý theo quy trình.'}
                                 </p>
                             </div>

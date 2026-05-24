@@ -60,7 +60,7 @@ export function OrderList() {
                 return { label: 'Đã xác nhận', color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-blue-200', icon: CheckCircle2 };
             case 'SHIPPING':
                 return { label: 'Đang giao', color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-200', icon: Truck };
-            case 'COMPLETED':
+            case 'DELIVERED':
                 return { label: 'Hoàn thành', color: 'text-green-700', bg: 'bg-green-50', border: 'border-green-200', icon: CheckCircle2 };
             case 'CANCELLED':
                 return { label: 'Đã hủy', color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-200', icon: XCircle };
