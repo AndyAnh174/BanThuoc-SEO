@@ -443,7 +443,7 @@ export function RegisterForm() {
                         name="licenseFile"
                         render={({ field: { value, onChange, ...field } }) => (
                         <FormItem>
-                             <FormLabel className="ml-1 text-sm font-semibold text-gray-700 block mb-2">Giấy phép kinh doanh</FormLabel>
+                             <FormLabel className="ml-1 text-sm font-semibold text-gray-700 block mb-2">Giấy phép kinh doanh <span className="text-gray-400 font-normal">(không bắt buộc)</span></FormLabel>
                             <FormControl>
                                 <DropzoneUpload 
                                     onFileChange={onFileSelect}

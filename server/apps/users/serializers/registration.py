@@ -19,7 +19,7 @@ class RegisterB2BSerializer(serializers.Serializer):
     # Business Profile fields
     business_name = serializers.CharField(max_length=255)
     license_number = serializers.CharField(max_length=100)
-    license_file = serializers.FileField()
+    license_file = serializers.FileField(required=False)
     address = serializers.CharField()
     tax_id = serializers.CharField(max_length=50)
 
@@ -48,8 +48,8 @@ class RegisterB2BSerializer(serializers.Serializer):
         # Extract data
         password = validated_data.pop('password')
         validated_data.pop('confirm_password')
-        license_file = validated_data.pop('license_file')
-        
+        license_file = validated_data.pop('license_file', None)
+
         # User data
         user_data = {
             'username': validated_data['email'], # Use email as username
@@ -75,11 +75,13 @@ class RegisterB2BSerializer(serializers.Serializer):
             user.set_password(password)
             user.save()
 
-            # 2. Upload License
-            try:
-                license_url = handle_license_upload(license_file)
-            except Exception as e:
-                raise serializers.ValidationError(f"Failed to upload license file: {str(e)}")
+            # 2. Upload License (optional)
+            license_url = ""
+            if license_file:
+                try:
+                    license_url = handle_license_upload(license_file)
+                except Exception as e:
+                    raise serializers.ValidationError(f"Failed to upload license file: {str(e)}")
 
             # 3. Create Business Profile
             BusinessProfile.objects.create(

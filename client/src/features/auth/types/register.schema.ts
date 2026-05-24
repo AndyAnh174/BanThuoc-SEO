@@ -18,7 +18,7 @@ export const registerSchema = z.object({
   taxId: z.string().min(1, "Vui lòng nhập mã số thuế"),
   address: z.string().min(1, "Vui lòng nhập địa chỉ kinh doanh"),
 
-  // File Validation
+  // File Validation (optional)
   licenseFile: z
     .instanceof(File, { message: "Vui lòng tải lên giấy phép kinh doanh" })
     .refine((file) => file.size <= MAX_FILE_SIZE, {
@@ -26,7 +26,8 @@ export const registerSchema = z.object({
     })
     .refine((file) => ACCEPTED_FILE_TYPES.includes(file.type), {
       message: "Chỉ chấp nhận định dạng .jpg, .png hoặc .pdf",
-    }),
+    })
+    .optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Mật khẩu xác nhận không khớp",
   path: ["confirmPassword"],
