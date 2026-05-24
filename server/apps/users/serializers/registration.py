@@ -57,8 +57,9 @@ class RegisterB2BSerializer(serializers.Serializer):
             'full_name': validated_data['full_name'],
             'phone': validated_data['phone'],
             'role': User.Role.CUSTOMER,
-            'status': User.Status.PENDING,
-            'is_active': False
+            'status': User.Status.ACTIVE,
+            'is_active': True,
+            'is_verified': True
         }
 
         # Business Profile data

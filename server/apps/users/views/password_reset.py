@@ -41,7 +41,7 @@ class RequestPasswordResetView(APIView):
 
         # Always return success to prevent email enumeration
         try:
-            user = User.objects.get(email=email, is_active=True)
+            user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response(
                 {"message": "Nếu email tồn tại trong hệ thống, bạn sẽ nhận được link đặt lại mật khẩu."},
