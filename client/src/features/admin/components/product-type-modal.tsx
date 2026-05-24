@@ -120,7 +120,6 @@ export function ProductTypeModal() {
                                         <Input
                                             placeholder="Ví dụ: MEDICINE"
                                             {...field}
-                                            disabled={modalMode === 'edit'} // Code usually shouldn't change
                                         />
                                     </FormControl>
                                     <FormMessage />
