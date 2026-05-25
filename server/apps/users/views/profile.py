@@ -63,7 +63,12 @@ class BusinessProfileUpdateView(APIView):
             if files:
                 data.setlist('license_files', files)
 
-        profile = request.user.business_profile
+        from ..models import BusinessProfile
+        try:
+            profile = request.user.business_profile
+        except BusinessProfile.DoesNotExist:
+            profile = BusinessProfile.objects.create(user=request.user)
+
         serializer = BusinessProfileUpdateSerializer(profile, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
