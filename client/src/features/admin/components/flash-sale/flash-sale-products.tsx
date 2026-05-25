@@ -2,17 +2,20 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useFlashSaleStore } from '../../stores/flash-sale.store';
-import { useProductsStore } from '../../stores/products.store';
 import { FlashSaleSession, FlashSaleItem } from '../../types/flash-sale.types';
+import { getProducts } from '../../api/products.api';
+import type { Product } from '../../types/product.types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Trash2, Plus, Save, Edit, Search, X, Check } from 'lucide-react';
+import { Trash2, Plus, Save, Edit, Search, X, Check, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+
+const PAGE_SIZE = 50;
 
 const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
@@ -24,8 +27,7 @@ interface FlashSaleProductsProps {
 
 export const FlashSaleProducts = ({ session }: FlashSaleProductsProps) => {
     const { currentSession, fetchSessionDetail, addItems, updateItem, deleteItem } = useFlashSaleStore();
-    const { products, fetchProducts } = useProductsStore();
-    
+
     // Add Item State
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -33,50 +35,111 @@ export const FlashSaleProducts = ({ session }: FlashSaleProductsProps) => {
     const [newItemPrice, setNewItemPrice] = useState<number>(0);
     const [newItemQuantity, setNewItemQuantity] = useState<number>(10);
     const [newItemMaxPerUser, setNewItemMaxPerUser] = useState<number>(1);
-    
+
+    // Product picker: local list with infinite scroll
+    const [pickerProducts, setPickerProducts] = useState<Product[]>([]);
+    const [pickerPage, setPickerPage] = useState(1);
+    const [pickerHasMore, setPickerHasMore] = useState(true);
+    const [pickerLoading, setPickerLoading] = useState(false);
+    const [pickerInitialLoading, setPickerInitialLoading] = useState(false);
+    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
     // Editing Item State (Inline)
     const [editingItem, setEditingItem] = useState<string | null>(null);
     const [editValues, setEditValues] = useState<any>({});
-    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         if (session.id) {
             fetchSessionDetail(session.id);
-            fetchProducts({ page_size: 100 });
         }
     }, [session.id]);
 
-    // Debounced server-side search when user types in product picker
+    const items = currentSession?.items || [];
+
+    // Fetch products for picker with pagination
+    const loadProducts = useCallback(async (page: number, search?: string, append = false) => {
+        setPickerLoading(true);
+        try {
+            const params: any = { page, page_size: PAGE_SIZE };
+            if (search) params.search = search;
+            const data = await getProducts(params as any);
+            const results = data.results || [];
+            if (append) {
+                setPickerProducts(prev => [...prev, ...results]);
+            } else {
+                setPickerProducts(results);
+            }
+            setPickerPage(page);
+            // Check if there are more pages
+            const totalLoaded = append ? (page - 1) * PAGE_SIZE + results.length : results.length;
+            setPickerHasMore(totalLoaded < (data.count || 0));
+            setPickerLoading(false);
+            setPickerInitialLoading(false);
+        } catch {
+            setPickerLoading(false);
+            setPickerInitialLoading(false);
+        }
+    }, []);
+
+    // Debounced server-side search
     const handleSearchChange = useCallback((value: string) => {
         setSearchTerm(value);
         if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
         searchTimeoutRef.current = setTimeout(() => {
-            fetchProducts({ search: value || undefined, page_size: 100 });
+            setPickerInitialLoading(true);
+            loadProducts(1, value || undefined, false);
         }, 300);
-    }, [fetchProducts]);
+    }, [loadProducts]);
 
-    // Reload full product list when dialog opens
+    // Load next page (infinite scroll)
+    const loadMore = useCallback(() => {
+        if (pickerLoading || !pickerHasMore) return;
+        loadProducts(pickerPage + 1, searchTerm || undefined, true);
+    }, [pickerLoading, pickerHasMore, pickerPage, searchTerm, loadProducts]);
+
+    // IntersectionObserver for infinite scroll
+    useEffect(() => {
+        if (!isAddOpen) return;
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const sentinel = container.querySelector('[data-scroll-sentinel]');
+        if (!sentinel) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && pickerHasMore && !pickerLoading) {
+                    loadMore();
+                }
+            },
+            { root: container, threshold: 0.1 }
+        );
+        observer.observe(sentinel);
+        return () => observer.disconnect();
+    }, [isAddOpen, pickerHasMore, pickerLoading, loadMore]);
+
+    // Dialog open/close
     const handleDialogOpen = useCallback((open: boolean) => {
         setIsAddOpen(open);
         if (open) {
             setSearchTerm('');
-            fetchProducts({ page_size: 100 });
+            setPickerProducts([]);
+            setPickerPage(1);
+            setPickerHasMore(true);
+            setPickerInitialLoading(true);
+            loadProducts(1, undefined, false);
         } else {
             resetAddForm();
         }
-    }, [fetchProducts]);
+    }, [loadProducts]);
 
-    const items = currentSession?.items || [];
-
-    // Filter products: Exclude added ones AND match search term
+    // Filter out already-added products
     const availableProducts = useMemo(() => {
-        return products.filter(p => !items.find(i => i.product === p.id)).filter(p => 
-            p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-            p.sku.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [products, items, searchTerm]);
+        return pickerProducts.filter(p => !items.find(i => i.product === p.id));
+    }, [pickerProducts, items]);
 
-    const selectedProduct = useMemo(() => products.find(p => p.id === selectedProductId), [products, selectedProductId]);
+    const selectedProduct = useMemo(() => pickerProducts.find(p => p.id === selectedProductId), [pickerProducts, selectedProductId]);
 
     const handleSelectProduct = (product: any) => {
         setSelectedProductId(product.id);
@@ -171,15 +234,19 @@ export const FlashSaleProducts = ({ session }: FlashSaleProductsProps) => {
                                         className="pl-8"
                                     />
                                 </div>
-                                <div className="flex-1 overflow-y-auto border rounded-md mt-2">
-                                    {availableProducts.length === 0 ? (
+                                <div className="flex-1 overflow-y-auto border rounded-md mt-2" ref={scrollContainerRef}>
+                                    {pickerInitialLoading ? (
+                                        <div className="flex items-center justify-center py-12">
+                                            <Loader2 className="h-6 w-6 animate-spin text-green-600" />
+                                        </div>
+                                    ) : availableProducts.length === 0 ? (
                                         <div className="p-4 text-center text-sm text-gray-500">
                                             Không tìm thấy sản phẩm nào
                                         </div>
                                     ) : (
                                         <div className="divide-y">
                                             {availableProducts.map(p => (
-                                                <div 
+                                                <div
                                                     key={p.id}
                                                     onClick={() => handleSelectProduct(p)}
                                                     className={cn(
@@ -194,6 +261,19 @@ export const FlashSaleProducts = ({ session }: FlashSaleProductsProps) => {
                                                     {selectedProductId === p.id && <Check className="h-4 w-4 text-blue-500 flex-shrink-0" />}
                                                 </div>
                                             ))}
+                                            {/* Infinite scroll sentinel */}
+                                            <div data-scroll-sentinel className="h-1" />
+                                            {pickerLoading && (
+                                                <div className="flex items-center justify-center py-3">
+                                                    <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                                                    <span className="ml-2 text-xs text-gray-400">Đang tải thêm...</span>
+                                                </div>
+                                            )}
+                                            {!pickerHasMore && availableProducts.length > 0 && (
+                                                <div className="py-2 text-center text-xs text-gray-400">
+                                                    Đã hiển thị tất cả sản phẩm
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
