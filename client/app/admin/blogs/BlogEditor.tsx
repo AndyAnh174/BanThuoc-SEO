@@ -11,11 +11,35 @@ interface BlogEditorProps {
   onCancel: () => void;
 }
 
-// Editor.js tools to be loaded dynamically
-const EDITOR_JS_TOOLS = {
+// Editor.js tools configuration
+const getImageToolConfig = (token: string) => ({
+  image: {
+    class: require('@editorjs/image'),
+    config: {
+      uploader: {
+        async uploadByFile(file: File) {
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('folder', 'blog');
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/files/upload/`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData,
+          });
+          if (!res.ok) throw new Error('Upload failed');
+          const data = await res.json();
+          return { success: 1, file: { url: data.url } };
+        },
+      },
+    },
+  },
+});
+
+function getEditorTools() {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+  return {
   header: require('@editorjs/header'),
   list: require('@editorjs/list'),
-  image: require('@editorjs/image'),
   quote: require('@editorjs/quote'),
   delimiter: require('@editorjs/delimiter'),
   table: require('@editorjs/table'),
@@ -26,7 +50,9 @@ const EDITOR_JS_TOOLS = {
   checklist: require('@editorjs/checklist'),
   marker: require('@editorjs/marker'),
   inlineCode: require('@editorjs/inline-code'),
-};
+  ...getImageToolConfig(token || ''),
+  };
+}
 
 import edjsHTML from 'editorjs-html';
 
@@ -58,7 +84,7 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
 
     const editor = new EditorJSClass({
       holder: 'editorjs',
-      tools: EDITOR_JS_TOOLS,
+      tools: getEditorTools(),
       placeholder: 'Nhập nội dung bài viết...',
       autofocus: false,
       data: {},
@@ -113,7 +139,7 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
           const EditorJSClass = require('@editorjs/editorjs').default;
           const editor = new EditorJSClass({
             holder: 'editorjs',
-            tools: EDITOR_JS_TOOLS,
+            tools: getEditorTools(),
             placeholder: 'Nhập nội dung bài viết...',
             data: { blocks: contentBlocks, time: Date.now(), version: '2.30.6' },
           });

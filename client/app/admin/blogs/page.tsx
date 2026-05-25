@@ -147,7 +147,7 @@ export default function AdminBlogPage() {
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <Link
-                        href={`/admin/blogs/${post.slug}/edit`}
+                        href={`/admin/blogs/${post.slug}`}
                         className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                       >
                         Sửa
