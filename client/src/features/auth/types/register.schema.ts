@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_FILE_TYPES = ["image/jpeg", "image/png", "application/pdf"];
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB per file
+const MAX_FILES = 5;
 
 export const registerSchema = z.object({
   fullName: z.string().min(1, "Vui lòng nhập họ và tên"),
@@ -18,15 +18,14 @@ export const registerSchema = z.object({
   taxId: z.string().min(1, "Vui lòng nhập mã số thuế"),
   address: z.string().min(1, "Vui lòng nhập địa chỉ kinh doanh"),
 
-  // File Validation (optional)
-  licenseFile: z
-    .instanceof(File, { message: "Vui lòng tải lên giấy phép kinh doanh" })
-    .refine((file) => file.size <= MAX_FILE_SIZE, {
-      message: "Kích thước tệp không được vượt quá 5MB",
-    })
-    .refine((file) => ACCEPTED_FILE_TYPES.includes(file.type), {
-      message: "Chỉ chấp nhận định dạng .jpg, .png hoặc .pdf",
-    })
+  // File Upload (optional, max 5 files, any type)
+  licenseFiles: z
+    .array(z.instanceof(File))
+    .max(MAX_FILES, `Tối đa ${MAX_FILES} file`)
+    .refine(
+      (files) => files.every((f) => f.size <= MAX_FILE_SIZE),
+      { message: `Mỗi file không được vượt quá 10MB` }
+    )
     .optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Mật khẩu xác nhận không khớp",

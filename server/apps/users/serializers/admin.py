@@ -13,28 +13,30 @@ class BusinessProfileSerializer(serializers.ModelSerializer):
         fields = ['business_name', 'license_number', 'license_file_url', 'address', 'tax_id']
 
     def get_license_file_url(self, obj):
-        if not obj.license_file_url:
-            return None
-        
-        # Check if URL is local/direct MinIO URL
-        # We stored it as full URL, e.g., http://localhost:9000/bucket/folder/file.ext
-        # We need to extract the object name: folder/file.ext
+        urls = obj.get_license_files()
+        if not urls:
+            return []
+
+        result = []
         try:
-            # Assuming standard structure: server/bucket/object_key
-            # Split by bucket name
             handler = MinioHandler()
             bucket_name = handler.bucket_name
-            
-            if bucket_name in obj.license_file_url:
-                parts = obj.license_file_url.split(f"/{bucket_name}/")
-                if len(parts) > 1:
-                    object_name = parts[1]
-                    signed_url = handler.get_presigned_url(object_name)
-                    return signed_url if signed_url else obj.license_file_url
-            
-            return obj.license_file_url
+
+            for url in urls:
+                if bucket_name in url:
+                    parts = url.split(f"/{bucket_name}/")
+                    if len(parts) > 1:
+                        object_name = parts[1]
+                        signed_url = handler.get_presigned_url(object_name)
+                        result.append(signed_url if signed_url else url)
+                    else:
+                        result.append(url)
+                else:
+                    result.append(url)
         except Exception:
-            return obj.license_file_url
+            return urls
+
+        return result
 
 from products.models import Favorite
 from products.serializers.public import ProductListSerializer

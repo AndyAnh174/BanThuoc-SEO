@@ -42,9 +42,22 @@ class BusinessProfile(models.Model):
     )
     business_name = models.CharField(max_length=255)
     license_number = models.CharField(max_length=100)
-    license_file_url = models.CharField(max_length=500, help_text=_("Path/URL to license file in storage"))
+    license_file_url = models.TextField(help_text=_("JSON array of URLs to license files in storage"))
     address = models.TextField()
     tax_id = models.CharField(max_length=50)
+
+    def get_license_files(self):
+        """Return list of license file URLs (handles both legacy string and JSON array)."""
+        if not self.license_file_url:
+            return []
+        try:
+            import json
+            urls = json.loads(self.license_file_url)
+            if isinstance(urls, list):
+                return urls
+        except (json.JSONDecodeError, TypeError):
+            pass
+        return [self.license_file_url]
 
     def __str__(self):
         return f"{self.business_name} ({self.user.username})"

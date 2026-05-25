@@ -227,9 +227,12 @@ export function UserDetailView({ user, onApprove, onReject }: UserDetailViewProp
                                 <CardTitle className="text-base font-bold text-gray-800">Tài liệu đã tải lên</CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6">
-                                {user.business_profile?.license_file_url ? (
+                                {(() => {
+                                    const urls = user.business_profile?.license_file_url;
+                                    return urls && urls.length > 0 ? (
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        <div className="border border-gra-200 rounded-xl p-4 flex flex-col gap-4 hover:shadow-md transition-shadow bg-white group relative">
+                                        {urls.map((url, idx) => (
+                                        <div key={idx} className="border border-gray-200 rounded-xl p-4 flex flex-col gap-4 hover:shadow-md transition-shadow bg-white group relative">
                                             <div className="flex items-start justify-between">
                                                 <div className="p-3 bg-red-50 text-red-600 rounded-lg group-hover:bg-red-100 transition-colors">
                                                     <FileText className="w-6 h-6" />
@@ -237,13 +240,13 @@ export function UserDetailView({ user, onApprove, onReject }: UserDetailViewProp
                                                 <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-none">Đã xác minh</Badge>
                                             </div>
                                             <div>
-                                                <p className="font-bold text-gray-900">Giấy phép kinh doanh</p>
+                                                <p className="font-bold text-gray-900">Giấy phép kinh doanh {urls.length > 1 ? `#${idx + 1}` : ''}</p>
                                                 <p className="text-xs text-gray-500 mt-1">Tải lên ngày {new Date(user.date_joined).toLocaleDateString('vi-VN')}</p>
                                             </div>
                                             <div className="mt-auto pt-2">
-                                                 <a 
-                                                    href={user.business_profile.license_file_url} 
-                                                    target="_blank" 
+                                                 <a
+                                                    href={url}
+                                                    target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="flex items-center justify-center w-full py-2 border rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors gap-2"
                                                 >
@@ -251,15 +254,17 @@ export function UserDetailView({ user, onApprove, onReject }: UserDetailViewProp
                                                 </a>
                                             </div>
                                         </div>
+                                        ))}
                                     </div>
-                                ) : (
+                                    ) : (
                                     <div className="py-12 text-center text-gray-400 flex flex-col items-center gap-2">
                                         <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-2">
                                             <FileText className="w-8 h-8 text-gray-300" />
                                         </div>
                                         <p>Chưa có tài liệu nào được tải lên.</p>
                                     </div>
-                                )}
+                                    );
+                                })()}
                             </CardContent>
                         </Card>
                     </div>

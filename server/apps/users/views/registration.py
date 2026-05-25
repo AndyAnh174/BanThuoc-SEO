@@ -10,17 +10,22 @@ logger = logging.getLogger(__name__)
 
 
 class RegisterB2BView(generics.CreateAPIView):
-    # This view handles Business-to-Business Registration
     serializer_class = RegisterB2BSerializer
     permission_classes = [AllowAny]
     parser_classes = [JSONParser, MultiPartParser, FormParser]
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        # Handle multipart: multiple license_files
+        data = request.data.copy()
+        if hasattr(request, 'FILES') and request.FILES:
+            files = request.FILES.getlist('license_files')
+            if files:
+                data.setlist('license_files', files)
+
+        serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        # Send verification email to the user
         try:
             token_obj = create_verification_token(user)
             send_verification_email(user, token_obj.token)

@@ -15,7 +15,7 @@ export interface BusinessProfile {
     id: number;
     business_name: string;
     license_number: string;
-    license_file_url: string | null;
+    license_file_url: string[];
     address: string;
     tax_id: string;
 }

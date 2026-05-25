@@ -7,11 +7,15 @@ User = get_user_model()
 
 class BusinessProfileSerializer(serializers.ModelSerializer):
     """Serializer for business profile."""
-    
+    license_file_url = serializers.SerializerMethodField()
+
     class Meta:
         model = BusinessProfile
         fields = ['business_name', 'license_number', 'license_file_url', 'address', 'tax_id']
         read_only_fields = fields
+
+    def get_license_file_url(self, obj):
+        return obj.get_license_files()
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

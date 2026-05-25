@@ -327,20 +327,26 @@ export function ProfileForm() {
                                             <FileText className="w-4 h-4" />
                                             Giấy phép kinh doanh
                                         </Label>
-                                        <div className="p-3 bg-gray-50 rounded-md">
-                                            {profile.business_profile.license_file_url ? (
-                                                <a 
-                                                    href={profile.business_profile.license_file_url} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center gap-2 text-green-600 hover:text-green-700 hover:underline"
-                                                >
-                                                    <ExternalLink className="w-4 h-4" />
-                                                    Xem giấy phép
-                                                </a>
-                                            ) : (
-                                                <span className="text-gray-400">Chưa có file</span>
-                                            )}
+                                        <div className="p-3 bg-gray-50 rounded-md space-y-2">
+                                            {(() => {
+                                                const urls = profile.business_profile?.license_file_url;
+                                                return urls && urls.length > 0 ? (
+                                                    urls.map((url, idx) => (
+                                                    <a
+                                                        key={idx}
+                                                        href={url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center gap-2 text-green-600 hover:text-green-700 hover:underline"
+                                                    >
+                                                        <ExternalLink className="w-4 h-4" />
+                                                        Xem giấy phép {urls.length > 1 ? `#${idx + 1}` : ''}
+                                                    </a>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-gray-400">Chưa có file</span>
+                                                );
+                                            })()}
                                         </div>
                                     </div>
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ArrowRight, Eye, EyeOff, Check, X } from "lucide-react";
+import { Loader2, ArrowRight, Eye, EyeOff, Check, X, FileText } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuthStore } from "../stores/auth.store";
@@ -20,8 +20,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { registerSchema, type RegisterFormValues } from "../types/register.schema";
-import { DropzoneUpload } from "@/components/ui/dropzone-upload";
 import { SuccessModal } from "@/components/ui/success-modal";
+
+const MAX_FILES = 5;
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
 
 // Custom Floating Label Input Component
 const FloatingLabelInput = ({ field, label, type = "text" }: any) => {
@@ -48,7 +55,6 @@ const FloatingLabelInput = ({ field, label, type = "text" }: any) => {
 
 export function RegisterForm() {
   const [step, setStep] = useState(1);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -99,25 +105,20 @@ export function RegisterForm() {
     setStep(1);
   };
 
-  const onFileSelect = (file: File | null) => {
-    if (file) {
-      setValue("licenseFile", file, { shouldValidate: true });
-      
-      // Fake progress animation for UX
-      setUploadProgress(0);
-      const interval = setInterval(() => {
-        setUploadProgress((prev) => {
-            if (prev >= 100) {
-                clearInterval(interval);
-                return 100;
-            }
-            return prev + 10;
-        });
-      }, 100);
-    } else {
-        setValue("licenseFile", undefined as any);
-        setUploadProgress(0);
-    }
+  const licenseFiles = watch("licenseFiles") || [];
+
+  const handleFilesAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newFiles = Array.from(e.target.files || []);
+    if (newFiles.length === 0) return;
+    const current = licenseFiles;
+    const merged = [...current, ...newFiles].slice(0, MAX_FILES);
+    setValue("licenseFiles", merged, { shouldValidate: true });
+    e.target.value = '';
+  };
+
+  const handleFileRemove = (index: number) => {
+    const updated = licenseFiles.filter((_, i) => i !== index);
+    setValue("licenseFiles", updated, { shouldValidate: true });
   };
 
   const onSubmit = async (data: RegisterFormValues) => {
@@ -438,23 +439,47 @@ export function RegisterForm() {
                         )}
                     />
 
-                    <FormField
-                        control={form.control}
-                        name="licenseFile"
-                        render={({ field: { value, onChange, ...field } }) => (
-                        <FormItem>
-                             <FormLabel className="ml-1 text-sm font-semibold text-gray-700 block mb-2">Giấy phép kinh doanh <span className="text-gray-400 font-normal">(không bắt buộc)</span></FormLabel>
-                            <FormControl>
-                                <DropzoneUpload 
-                                    onFileChange={onFileSelect}
-                                    value={value as File}
-                                    progress={uploadProgress}
-                                />
-                            </FormControl>
-                             <FormMessage className="ml-4" />
-                        </FormItem>
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <label className="text-sm font-semibold text-gray-700">
+                                Giấy phép kinh doanh <span className="text-gray-400 font-normal">(không bắt buộc, tối đa {MAX_FILES} file)</span>
+                            </label>
+                            {licenseFiles.length < MAX_FILES && (
+                                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 cursor-pointer transition-colors">
+                                    <FileText className="w-3.5 h-3.5" />
+                                    Thêm file
+                                    <input
+                                        type="file"
+                                        multiple
+                                        className="hidden"
+                                        onChange={handleFilesAdd}
+                                        accept="*/*"
+                                    />
+                                </label>
+                            )}
+                        </div>
+                        {licenseFiles.length > 0 && (
+                            <div className="space-y-2">
+                                {licenseFiles.map((file, idx) => (
+                                    <div key={idx} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-50 border border-gray-100">
+                                        <FileText className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                        <span className="text-sm text-gray-700 truncate flex-1">{file.name}</span>
+                                        <span className="text-xs text-gray-400 flex-shrink-0">{formatFileSize(file.size)}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleFileRemove(idx)}
+                                            className="flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         )}
-                    />
+                        {errors.licenseFiles && (
+                            <p className="text-sm font-medium text-destructive ml-4">{errors.licenseFiles.message}</p>
+                        )}
+                    </div>
 
                     <div className="pt-8 flex justify-between items-center">
                         <Button type="button" variant="ghost" onClick={handlePrevStep} disabled={isLoading} className="text-gray-500 hover:text-green-700 hover:bg-green-50 rounded-full px-6 h-12 text-base font-medium">

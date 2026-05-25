@@ -18,8 +18,10 @@ export const registerUser = async (data: RegisterFormValues) => {
     formData.append('tax_id', data.taxId);
     formData.append('address', data.address);
     
-    if (data.licenseFile) {
-        formData.append('license_file', data.licenseFile);
+    if (data.licenseFiles && data.licenseFiles.length > 0) {
+        data.licenseFiles.forEach((file) => {
+            formData.append('license_files', file);
+        });
     }
 
     // Register usually doesn't need auth header, but using http is fine (no token). 
