@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { User, Mail, Phone, Loader2, ArrowLeft, Building2, FileText, MapPin, Receipt, CheckCircle2, XCircle, ExternalLink, Lock } from "lucide-react";
+import { User, Mail, Phone, Loader2, ArrowLeft, Building2, FileText, MapPin, Receipt, CheckCircle2, XCircle, ExternalLink, Lock, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,8 +11,17 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { AvatarUpload } from "./AvatarUpload";
-import { getProfile, updateProfile, changePassword, getPointHistory } from "../api/profile.api";
+import { getProfile, updateProfile, changePassword, getPointHistory, updateBusinessProfile } from "../api/profile.api";
 import { UserProfile } from "../types/profile.types";
+
+const MAX_FILES = 5;
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
 
 export function ProfileForm() {
     const router = useRouter();
@@ -30,6 +39,15 @@ export function ProfileForm() {
     const [isChangingPassword, setIsChangingPassword] = useState(false);
     const [phone, setPhone] = useState("");
 
+    // Business profile state
+    const [businessName, setBusinessName] = useState("");
+    const [licenseNumber, setLicenseNumber] = useState("");
+    const [taxId, setTaxId] = useState("");
+    const [address, setAddress] = useState("");
+    const [licenseFiles, setLicenseFiles] = useState<File[]>([]);
+    const [existingLicenseUrls, setExistingLicenseUrls] = useState<string[]>([]);
+    const [isSavingBusiness, setIsSavingBusiness] = useState(false);
+
     useEffect(() => {
         loadProfile();
     }, []);
@@ -40,7 +58,15 @@ export function ProfileForm() {
             setProfile(data);
             setFullName(data.full_name || "");
             setPhone(data.phone || "");
-            
+
+            if (data.business_profile) {
+                setBusinessName(data.business_profile.business_name || "");
+                setLicenseNumber(data.business_profile.license_number || "");
+                setTaxId(data.business_profile.tax_id || "");
+                setAddress(data.business_profile.address || "");
+                setExistingLicenseUrls(data.business_profile.license_file_url || []);
+            }
+
             // Save to localStorage for header to use
             if (typeof window !== 'undefined') {
                 localStorage.setItem('userInfo', JSON.stringify({
@@ -86,6 +112,50 @@ export function ProfileForm() {
             toast.error(message);
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    const handleFilesAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newFiles = Array.from(e.target.files || []);
+        if (newFiles.length === 0) return;
+        const oversized = newFiles.find(f => f.size > MAX_FILE_SIZE);
+        if (oversized) {
+            toast.error(`File "${oversized.name}" vượt quá 10MB`);
+            e.target.value = '';
+            return;
+        }
+        const merged = [...licenseFiles, ...newFiles].slice(0, MAX_FILES);
+        setLicenseFiles(merged);
+        e.target.value = '';
+    };
+
+    const handleFileRemove = (index: number) => {
+        setLicenseFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleBusinessSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSavingBusiness(true);
+        try {
+            const formData = new FormData();
+            formData.append('business_name', businessName);
+            formData.append('license_number', licenseNumber);
+            formData.append('tax_id', taxId);
+            formData.append('address', address);
+            licenseFiles.forEach((f) => formData.append('license_files', f));
+
+            const updatedProfile = await updateBusinessProfile(formData);
+            setProfile(updatedProfile);
+            if (updatedProfile.business_profile) {
+                setExistingLicenseUrls(updatedProfile.business_profile.license_file_url || []);
+            }
+            setLicenseFiles([]);
+            toast.success("Cập nhật thông tin doanh nghiệp thành công");
+        } catch (error: any) {
+            const message = error.response?.data?.detail || Object.values(error.response?.data || {}).flat().join(', ') || "Không thể cập nhật";
+            toast.error(message);
+        } finally {
+            setIsSavingBusiness(false);
         }
     };
 
@@ -275,95 +345,139 @@ export function ProfileForm() {
                 <TabsContent value="business">
                     <Card className="shadow-lg">
                         <CardContent className="pt-6">
-                            {profile.business_profile ? (
-                                <div className="space-y-6">
-                                    {/* Business Name */}
-                                    <div className="space-y-2">
-                                        <Label className="flex items-center gap-2 text-gray-600">
-                                            <Building2 className="w-4 h-4" />
-                                            Tên doanh nghiệp
-                                        </Label>
-                                        <div className="p-3 bg-gray-50 rounded-md font-medium">
-                                            {profile.business_profile.business_name}
-                                        </div>
-                                    </div>
+                            <form onSubmit={handleBusinessSubmit} className="space-y-6">
+                                {/* Business Name */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="businessName" className="flex items-center gap-2 text-gray-600">
+                                        <Building2 className="w-4 h-4" />
+                                        Tên doanh nghiệp
+                                    </Label>
+                                    <Input
+                                        id="businessName"
+                                        value={businessName}
+                                        onChange={(e) => setBusinessName(e.target.value)}
+                                        placeholder="Nhập tên doanh nghiệp"
+                                    />
+                                </div>
 
-                                    {/* License Number */}
-                                    <div className="space-y-2">
+                                {/* License Number */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="licenseNumber" className="flex items-center gap-2 text-gray-600">
+                                        <FileText className="w-4 h-4" />
+                                        Số giấy phép kinh doanh
+                                    </Label>
+                                    <Input
+                                        id="licenseNumber"
+                                        value={licenseNumber}
+                                        onChange={(e) => setLicenseNumber(e.target.value)}
+                                        placeholder="Nhập số giấy phép"
+                                    />
+                                </div>
+
+                                {/* Tax ID */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="taxId" className="flex items-center gap-2 text-gray-600">
+                                        <Receipt className="w-4 h-4" />
+                                        Mã số thuế
+                                    </Label>
+                                    <Input
+                                        id="taxId"
+                                        value={taxId}
+                                        onChange={(e) => setTaxId(e.target.value)}
+                                        placeholder="Nhập mã số thuế"
+                                    />
+                                </div>
+
+                                {/* Address */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="address" className="flex items-center gap-2 text-gray-600">
+                                        <MapPin className="w-4 h-4" />
+                                        Địa chỉ
+                                    </Label>
+                                    <Input
+                                        id="address"
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
+                                        placeholder="Nhập địa chỉ kinh doanh"
+                                    />
+                                </div>
+
+                                {/* License Files — existing */}
+                                <div className="space-y-2">
+                                    <Label className="flex items-center gap-2 text-gray-600">
+                                        <FileText className="w-4 h-4" />
+                                        Giấy phép đã tải lên
+                                    </Label>
+                                    <div className="p-3 bg-gray-50 rounded-md space-y-2">
+                                        {existingLicenseUrls.length > 0 ? (
+                                            existingLicenseUrls.map((url, idx) => (
+                                                <a
+                                                    key={idx}
+                                                    href={url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-2 text-green-600 hover:text-green-700 hover:underline"
+                                                >
+                                                    <ExternalLink className="w-4 h-4" />
+                                                    Xem giấy phép {existingLicenseUrls.length > 1 ? `#${idx + 1}` : ''}
+                                                </a>
+                                            ))
+                                        ) : (
+                                            <span className="text-gray-400">Chưa có file</span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* License Files — upload new */}
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
                                         <Label className="flex items-center gap-2 text-gray-600">
                                             <FileText className="w-4 h-4" />
-                                            Số giấy phép kinh doanh
+                                            Tải lên giấy phép mới
                                         </Label>
-                                        <div className="p-3 bg-gray-50 rounded-md font-medium">
-                                            {profile.business_profile.license_number}
-                                        </div>
+                                        {licenseFiles.length < MAX_FILES && (
+                                            <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 cursor-pointer transition-colors">
+                                                <Plus className="w-3.5 h-3.5" />
+                                                Thêm file
+                                                <input
+                                                    type="file"
+                                                    multiple
+                                                    className="hidden"
+                                                    onChange={handleFilesAdd}
+                                                    accept="*/*"
+                                                />
+                                            </label>
+                                        )}
                                     </div>
-
-                                    {/* Tax ID */}
-                                    <div className="space-y-2">
-                                        <Label className="flex items-center gap-2 text-gray-600">
-                                            <Receipt className="w-4 h-4" />
-                                            Mã số thuế
-                                        </Label>
-                                        <div className="p-3 bg-gray-50 rounded-md font-medium">
-                                            {profile.business_profile.tax_id}
-                                        </div>
-                                    </div>
-
-                                    {/* Address */}
-                                    <div className="space-y-2">
-                                        <Label className="flex items-center gap-2 text-gray-600">
-                                            <MapPin className="w-4 h-4" />
-                                            Địa chỉ
-                                        </Label>
-                                        <div className="p-3 bg-gray-50 rounded-md">
-                                            {profile.business_profile.address}
-                                        </div>
-                                    </div>
-
-                                    {/* License File */}
-                                    <div className="space-y-2">
-                                        <Label className="flex items-center gap-2 text-gray-600">
-                                            <FileText className="w-4 h-4" />
-                                            Giấy phép kinh doanh
-                                        </Label>
-                                        <div className="p-3 bg-gray-50 rounded-md space-y-2">
-                                            {(() => {
-                                                const urls = profile.business_profile?.license_file_url;
-                                                return urls && urls.length > 0 ? (
-                                                    urls.map((url, idx) => (
-                                                    <a
-                                                        key={idx}
-                                                        href={url}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center gap-2 text-green-600 hover:text-green-700 hover:underline"
+                                    {licenseFiles.length > 0 && (
+                                        <div className="space-y-2">
+                                            {licenseFiles.map((file, idx) => (
+                                                <div key={idx} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-50 border border-gray-100">
+                                                    <FileText className="w-4 h-4 text-green-600 shrink-0" />
+                                                    <span className="text-sm text-gray-700 truncate flex-1">{file.name}</span>
+                                                    <span className="text-xs text-gray-400 shrink-0">{formatFileSize(file.size)}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleFileRemove(idx)}
+                                                        className="shrink-0 p-1 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                                                     >
-                                                        <ExternalLink className="w-4 h-4" />
-                                                        Xem giấy phép {urls.length > 1 ? `#${idx + 1}` : ''}
-                                                    </a>
-                                                    ))
-                                                ) : (
-                                                    <span className="text-gray-400">Chưa có file</span>
-                                                );
-                                            })()}
+                                                        <X className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
+                                            ))}
                                         </div>
-                                    </div>
+                                    )}
+                                </div>
 
-                                    {/* Note */}
-                                    <p className="text-sm text-gray-500 bg-yellow-50 p-3 rounded-md">
-                                        💡 Để cập nhật thông tin doanh nghiệp, vui lòng liên hệ quản trị viên.
-                                    </p>
-                                </div>
-                            ) : (
-                                <div className="text-center py-12">
-                                    <Building2 className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                                    <p className="text-gray-500 text-lg mb-2">Chưa có thông tin doanh nghiệp</p>
-                                    <p className="text-gray-400 text-sm">
-                                        Thông tin này chỉ áp dụng cho tài khoản B2B
-                                    </p>
-                                </div>
-                            )}
+                                <Button
+                                    type="submit"
+                                    className="w-full bg-green-600 hover:bg-green-700"
+                                    disabled={isSavingBusiness}
+                                >
+                                    {isSavingBusiness && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                                    Cập nhật thông tin doanh nghiệp
+                                </Button>
+                            </form>
                         </CardContent>
                     </Card>
                 </TabsContent>

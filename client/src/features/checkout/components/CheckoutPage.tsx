@@ -111,16 +111,20 @@ export function CheckoutPage() {
     const wardName = (locationData.commune as any[]).find(w => w.idCommune === wardId)?.name || wardId;
 
     try {
+        const cartTotal = cart.items.reduce((total, item) => total + (item.product.sale_price ?? item.product.price) * item.quantity, 0);
+        const shippingFee = cartTotal >= 1000000 ? 0 : 30000;
+
         const orderData = {
             // Map 'shipping_address' to 'address' as required by backend
-            address: data.deliveryMethod === 'pickup' 
-                ? 'Nhận tại cửa hàng' 
+            address: data.deliveryMethod === 'pickup'
+                ? 'Nhận tại cửa hàng'
                 : `${data.streetAddress}, ${wardName}, ${provinceName}`,
             province: provinceName,
             ward: wardName,
             full_name: data.fullName,
             phone_number: data.phoneNumber,
             payment_method: data.paymentMethod, // Ensure this matches backend choices or map it
+            shipping_fee: data.deliveryMethod === 'pickup' ? 0 : shippingFee,
             items_input: cart.items.map(item => ({
                 product: item.product.id,
                 quantity: item.quantity,

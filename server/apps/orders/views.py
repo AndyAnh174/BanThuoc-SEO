@@ -171,7 +171,8 @@ class OrderInvoiceView(APIView):
                  from core.utils.number_reader import currency_to_vietnamese
                  
             amount_in_words = currency_to_vietnamese(order.final_amount)
-            
+            vat_amount = order.total_amount * 8 // 100  # 8% VAT
+
             # Prepare Logo (Base64 Embed)
             import base64
             logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', '2.png')
@@ -205,13 +206,14 @@ class OrderInvoiceView(APIView):
             template_path = 'invoice.html'
             context = {
                 'order': order,
-                'items': formatted_items, 
+                'items': formatted_items,
                 'formatted_total': fmt(order.total_amount),
                 'formatted_shipping': fmt(order.shipping_fee),
+                'formatted_vat': fmt(vat_amount),
                 'formatted_discount': fmt(order.discount_amount),
                 'formatted_final': fmt(order.final_amount),
                 'amount_in_words': amount_in_words,
-                'logo_url': logo_url, 
+                'logo_url': logo_url,
             }
             
             template = get_template(template_path)

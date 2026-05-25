@@ -164,7 +164,7 @@ export default function AboutPage() {
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">Địa chỉ</h3>
                   <p className="text-gray-600">
-                    117/127C/27 Phan Huy Ích, Phường Tân Sơn, TP. Hồ Chí Minh
+                    118/127C/27 Phan Huy Ích, Phường Tân Sơn, TP. Hồ Chí Minh
                   </p>
                 </div>
               </div>

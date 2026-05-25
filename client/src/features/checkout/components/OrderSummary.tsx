@@ -34,12 +34,13 @@ export function OrderSummary({
   const { cart } = useCartStore();
   const paymentMethod = watch('paymentMethod');
   const totalPrice = cart?.total_price || 0;
-  
+
   // Calculate final price with discount
   const discountAmount = appliedVoucher ? appliedVoucher.discount : 0;
   // If cart total is different from reduced total (calculated by items), use that
   const cartTotal = cart!.items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
-  const finalPrice = Math.max(0, Number(totalPrice) - discountAmount);
+  const shippingFee = cartTotal >= 1000000 ? 0 : 30000;
+  const finalPrice = Math.max(0, Number(totalPrice) - discountAmount + shippingFee);
 
   return (
     <div className="space-y-6">
@@ -165,7 +166,13 @@ export function OrderSummary({
 
                <div className="flex justify-between text-sm">
                    <span className="text-gray-600">Phí vận chuyển</span>
-                   <span className="font-medium text-green-600">Miễn phí</span>
+                   <span className="font-medium">
+                       {shippingFee === 0 ? (
+                           <span className="text-green-600">Miễn phí</span>
+                       ) : (
+                           formatCurrency(shippingFee)
+                       )}
+                   </span>
                </div>
                <Separator />
                <div className="flex justify-between items-end">

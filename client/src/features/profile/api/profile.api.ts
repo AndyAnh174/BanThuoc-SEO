@@ -42,6 +42,13 @@ export const changePassword = async (data: ChangePasswordData): Promise<{ messag
     return response.data;
 };
 
+export const updateBusinessProfile = async (data: FormData): Promise<UserProfile> => {
+    const response = await http.patch<UserProfile>('/me/business-profile/', data, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+};
+
 export const getPointHistory = async (): Promise<RewardPointLog[]> => {
     const response = await http.get<RewardPointLog[]>('/me/points/');
     return response.data;

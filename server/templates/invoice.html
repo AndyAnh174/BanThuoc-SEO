@@ -263,7 +263,7 @@
                 <div class="company-info">
                     <div class="company-name">CÔNG TY TNHH DƯỢC PHẨM NGỌC KIM NGÂN</div>
                     <div class="company-detail">Mã số thuế: <strong>0319116538</strong></div>
-                    <div class="company-detail">Địa chỉ: 117/127C/27 Phan Huy Ích, KP5, Phường Tân Sơn, TP Hồ Chí Minh, Việt Nam.</div>
+                    <div class="company-detail">Địa chỉ: 118/127C/27 Phan Huy Ích, KP5, Phường Tân Sơn, TP Hồ Chí Minh, Việt Nam.</div>
                     <div class="company-detail">Số điện thoại: 096.770.5287 - Email: ngockimnganpharm@gmail.com</div>
                     <div class="company-detail">Số tài khoản: 119116368 tại Ngân hàng TMCP Quân Đội (MBBank)</div>
                 </div>
@@ -345,9 +345,21 @@
             </table>
 
             <div class="totals-section">
+                {% if order.shipping_fee > 0 %}
                 <div class="total-row">
-                     <div class="total-label">Tiền thuế GTGT (tạm tính):</div>
-                     <div class="total-value">0</div>
+                     <div class="total-label">Phí vận chuyển:</div>
+                     <div class="total-value">{{ formatted_shipping }} đ</div>
+                </div>
+                {% endif %}
+                {% if order.discount_amount > 0 %}
+                <div class="total-row">
+                     <div class="total-label">Giảm giá:</div>
+                     <div class="total-value">-{{ formatted_discount }} đ</div>
+                </div>
+                {% endif %}
+                <div class="total-row">
+                     <div class="total-label">Tiền thuế GTGT (8%):</div>
+                     <div class="total-value">{{ formatted_vat }} đ</div>
                 </div>
                 <div class="total-row">
                      <div class="total-label">Tổng cộng tiền thanh toán:</div>

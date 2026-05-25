@@ -133,7 +133,7 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 shrink-0 text-primary mt-0.5" />
                 <span>
-                  117/127C/27 Phan Huy Ích, Phường Tân Sơn, Tp. Hồ Chí Minh
+                  118/127C/27 Phan Huy Ích, Phường Tân Sơn, Tp. Hồ Chí Minh
                 </span>
               </li>
               <li className="flex items-center gap-3">

@@ -2,7 +2,7 @@ from django.urls import path
 from .views import RegisterB2BView, AdminUserListView, AdminUserStatusUpdateView, AdminUserDetailView
 from .views.admin import AdminUserCreateView, AdminUserUpdateView, AdminUserDeleteView
 from .views.file_upload import FileUploadView, FileDeleteView
-from .views.profile import UserProfileView, UserProfileUpdateView, UserAvatarUploadView, ChangePasswordView
+from .views.profile import UserProfileView, UserProfileUpdateView, UserAvatarUploadView, ChangePasswordView, BusinessProfileUpdateView
 from .views.loyalty import UserPointLogListView
 from .views.verify_email import VerifyEmailView
 from .views.password_reset import RequestPasswordResetView, ConfirmPasswordResetView
@@ -21,6 +21,7 @@ urlpatterns = [
     # User Profile (current user)
     path('me/', UserProfileView.as_view(), name='user-profile'),
     path('me/update/', UserProfileUpdateView.as_view(), name='user-profile-update'),
+    path('me/business-profile/', BusinessProfileUpdateView.as_view(), name='user-business-profile-update'),
     path('me/avatar/', UserAvatarUploadView.as_view(), name='user-avatar-upload'),
     path('me/change-password/', ChangePasswordView.as_view(), name='user-change-password'),
     path('me/points/', UserPointLogListView.as_view(), name='user-point-history'),

@@ -1,6 +1,7 @@
 """
 User Profile API Views
 """
+import logging
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,10 +9,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth import get_user_model
 
-from ..serializers.profile import UserProfileSerializer, UserProfileUpdateSerializer
+from ..serializers.profile import UserProfileSerializer, UserProfileUpdateSerializer, BusinessProfileUpdateSerializer
 from ..utils.file_upload import MinioHandler
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 class UserProfileView(generics.RetrieveAPIView):
@@ -44,6 +46,29 @@ class UserProfileUpdateView(generics.UpdateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response(UserProfileSerializer(user).data)
+
+
+class BusinessProfileUpdateView(APIView):
+    """
+    Update business profile for current user.
+    PATCH /api/me/business-profile/
+    """
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def patch(self, request):
+        data = request.data.copy()
+        if hasattr(request, 'FILES') and request.FILES:
+            files = request.FILES.getlist('license_files')
+            if files:
+                data.setlist('license_files', files)
+
+        profile = request.user.business_profile
+        serializer = BusinessProfileUpdateSerializer(profile, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(UserProfileSerializer(request.user).data)
 
 
 class UserAvatarUploadView(APIView):
