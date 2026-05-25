@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
-import Image from 'next/image';
+import { MainLayout } from '@/src/features/layout';
 import { getBlogPosts, getBlogTags, type BlogListResponse } from '@/src/features/blog/api/blog';
 import BlogClientWrapper from './BlogClientWrapper';
 
@@ -30,5 +29,9 @@ export default async function BlogPage() {
     // Fallback: API not ready yet, show empty blog page
   }
 
-  return <BlogClientWrapper initialPosts={postsData} tags={tags || []} />;
+  return (
+    <MainLayout fullWidth>
+      <BlogClientWrapper initialPosts={postsData} tags={tags || []} />
+    </MainLayout>
+  );
 }

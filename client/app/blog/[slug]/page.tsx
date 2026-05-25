@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getBlogPost, getLatestPosts, BlogPostDetail } from '@/src/features/blog/api/blog';
+import { MainLayout } from '@/src/features/layout';
+import { BlogSeoPreview } from '@/src/features/blog/components/BlogSeoPreview';
 import type { Props as PageProps } from './types';
 
 export async function generateMetadata(
@@ -64,6 +66,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
   const latestPosts = await getLatestPosts(4).catch(() => []);
 
   return (
+    <MainLayout fullWidth>
     <div className="min-h-screen bg-gray-50">
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-4">
@@ -78,8 +81,15 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
       <article className="container mx-auto px-4 pb-16">
         <div className="max-w-4xl mx-auto">
+          {/* SEO Preview — visible to help check SEO */}
+          <BlogSeoPreview
+            title={post.seo_title || post.title}
+            slug={slug}
+            description={post.seo_description || post.excerpt}
+          />
+
           {/* Header */}
-          <header className="mb-8">
+          <header className="mb-8 mt-6">
             <div className="flex flex-wrap gap-2 mb-4">
               {post.tags?.map((tag: string) => (
                 <Link
@@ -206,5 +216,6 @@ export default async function BlogDetailPage({ params }: PageProps) {
         </section>
       )}
     </div>
+    </MainLayout>
   );
 }

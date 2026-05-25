@@ -90,6 +90,38 @@ async function fetchAllManufacturers(): Promise<{ slug: string; updated_at: stri
   }));
 }
 
+async function fetchAllBlogPosts(): Promise<{ slug: string; updated_at: string; cover_image?: string }[]> {
+  const results: { slug: string; updated_at: string; cover_image?: string }[] = [];
+  let nextPath: string | null = '/blog/?page_size=100';
+  let safety = 0;
+
+  while (nextPath && safety < 50) {
+    safety += 1;
+    const data = await fetchJson(nextPath);
+    if (!data) break;
+    const items = data.results || [];
+    results.push(
+      ...items.map((p: any) => ({
+        slug: p.slug,
+        updated_at: p.updated_at || p.published_at || '',
+        cover_image: p.cover_image,
+      }))
+    );
+    if (data.next) {
+      try {
+        const u = new URL(data.next);
+        nextPath = u.pathname.replace(/^\/api/, '') + u.search;
+      } catch {
+        nextPath = null;
+      }
+    } else {
+      nextPath = null;
+    }
+  }
+  console.log(`[sitemap] fetched ${results.length} blog posts`);
+  return results;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
@@ -97,6 +129,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: BASE_URL, lastModified: now, changeFrequency: 'daily', priority: 1.0 },
     { url: `${BASE_URL}/products`, lastModified: now, changeFrequency: 'daily', priority: 0.9 },
     { url: `${BASE_URL}/flash-sale`, lastModified: now, changeFrequency: 'hourly', priority: 0.8 },
+    { url: `${BASE_URL}/blog`, lastModified: now, changeFrequency: 'daily', priority: 0.8 },
     { url: `${BASE_URL}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${BASE_URL}/chinh-sach`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${BASE_URL}/returns`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
@@ -135,5 +168,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     }));
 
-  return [...staticPages, ...productPages, ...categoryPages, ...manufacturerPages];
+  const blogPosts = await fetchAllBlogPosts();
+  const blogPages: MetadataRoute.Sitemap = blogPosts
+    .filter((b) => !!b.slug)
+    .map((b) => ({
+      url: `${BASE_URL}/blog/${b.slug}`,
+      lastModified: b.updated_at ? new Date(b.updated_at) : now,
+      changeFrequency: 'weekly',
+      priority: 0.7,
+      ...(b.cover_image ? { images: [b.cover_image] } : {}),
+    }));
+
+  return [...staticPages, ...productPages, ...categoryPages, ...manufacturerPages, ...blogPages];
 }

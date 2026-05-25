@@ -402,6 +402,12 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                             Flash Sale
                         </Link>
                          <Link
+                            href="/blog"
+                            className="h-10 px-5 inline-flex items-center font-medium text-sm text-gray-600 hover:text-primary hover:bg-gray-50 rounded-full transition-all"
+                        >
+                            Tin tức
+                        </Link>
+                         <Link
                             href="/about"
                             className="h-10 px-5 inline-flex items-center font-medium text-sm text-gray-600 hover:text-primary hover:bg-gray-50 rounded-full transition-all"
                         >
@@ -453,6 +459,15 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   ⚡ Flash Sale
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/blog"
+                  className="block py-3 px-2 font-medium text-gray-700 hover:text-primary"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Blog
                 </Link>
               </li>
               <li>
