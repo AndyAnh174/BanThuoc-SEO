@@ -20,6 +20,8 @@ import {
     BarChart3,
     Boxes,
     Megaphone,
+    Newspaper,
+    FileText,
     Cog,
     Star,
     RotateCcw,
@@ -71,6 +73,14 @@ const sidebarSections: SidebarSection[] = [
         items: [
             { label: "Flash Sale", href: "/admin/flash-sales", icon: Zap },
             { label: "Banner", href: "/admin/banners", icon: Image },
+        ]
+    },
+    {
+        title: "Nội dung",
+        icon: Newspaper,
+        defaultOpen: true,
+        items: [
+            { label: "Tin tức", href: "/admin/blogs", icon: FileText },
         ]
     },
     {
