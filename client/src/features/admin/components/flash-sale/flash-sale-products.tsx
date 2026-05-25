@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useFlashSaleStore } from '../../stores/flash-sale.store';
 import { useProductsStore } from '../../stores/products.store';
 import { FlashSaleSession, FlashSaleItem } from '../../types/flash-sale.types';
@@ -37,13 +37,34 @@ export const FlashSaleProducts = ({ session }: FlashSaleProductsProps) => {
     // Editing Item State (Inline)
     const [editingItem, setEditingItem] = useState<string | null>(null);
     const [editValues, setEditValues] = useState<any>({});
+    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         if (session.id) {
             fetchSessionDetail(session.id);
-            fetchProducts();
+            fetchProducts({ page_size: 100 });
         }
     }, [session.id]);
+
+    // Debounced server-side search when user types in product picker
+    const handleSearchChange = useCallback((value: string) => {
+        setSearchTerm(value);
+        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+        searchTimeoutRef.current = setTimeout(() => {
+            fetchProducts({ search: value || undefined, page_size: 100 });
+        }, 300);
+    }, [fetchProducts]);
+
+    // Reload full product list when dialog opens
+    const handleDialogOpen = useCallback((open: boolean) => {
+        setIsAddOpen(open);
+        if (open) {
+            setSearchTerm('');
+            fetchProducts({ page_size: 100 });
+        } else {
+            resetAddForm();
+        }
+    }, [fetchProducts]);
 
     const items = currentSession?.items || [];
 
@@ -123,10 +144,7 @@ export const FlashSaleProducts = ({ session }: FlashSaleProductsProps) => {
                     <h3 className="text-lg font-bold text-gray-900">Danh sách sản phẩm</h3>
                     <p className="text-sm text-gray-500">Quản lý các sản phẩm trong đợt Sale này</p>
                 </div>
-                <Dialog open={isAddOpen} onOpenChange={(open) => {
-                    setIsAddOpen(open);
-                    if (!open) resetAddForm();
-                }}>
+                <Dialog open={isAddOpen} onOpenChange={handleDialogOpen}>
                     <DialogTrigger asChild>
                         <Button className="bg-green-600 hover:bg-green-700">
                             <Plus className="mr-2 h-4 w-4" /> Thêm sản phẩm
@@ -149,7 +167,7 @@ export const FlashSaleProducts = ({ session }: FlashSaleProductsProps) => {
                                     <Input 
                                         placeholder="Tên hoặc SKU..." 
                                         value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        onChange={(e) => handleSearchChange(e.target.value)}
                                         className="pl-8"
                                     />
                                 </div>
