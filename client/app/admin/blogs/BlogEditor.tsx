@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import dynamic from 'next/dynamic';
 import type EditorJS from '@editorjs/editorjs';
 import type { OutputData } from '@editorjs/editorjs';
 
@@ -73,45 +72,21 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(!!editSlug);
+  const [formReady, setFormReady] = useState(!editSlug); // true when DOM is ready for editor
   const editorRef = useRef<EditorJS | null>(null);
   const isEditorReady = useRef(false);
+  const pendingBlocksRef = useRef<{ blocks: any[]; time: number; version: string } | null>(null);
 
-  // Initialize editor
-  const initEditor = useCallback(() => {
-    if (typeof window === 'undefined') return;
-
-    const EditorJSClass = require('@editorjs/editorjs').default;
-
-    const editor = new EditorJSClass({
-      holder: 'editorjs',
-      tools: getEditorTools(),
-      placeholder: 'Nhập nội dung bài viết...',
-      autofocus: false,
-      data: {},
-      onChange: async () => {
-        // Auto-save state handling
-      },
-    });
-
-    editor.isReady.then(() => {
-      isEditorReady.current = true;
-    }).catch((err: Error) => {
-      console.error('Editor init failed', err);
-    });
-
-    editorRef.current = editor;
-  }, []);
-
+  // Step 1: Load existing post data (edit mode only)
   useEffect(() => {
-    if (!editSlug) {
-      initEditor();
-      return;
-    }
+    if (!editSlug) return;
 
-    // Load existing post
     const loadPost = async () => {
       const token = localStorage.getItem('accessToken');
-      if (!token) return;
+      if (!token) {
+        setLoading(false);
+        return;
+      }
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/blog/${editSlug}/`,
@@ -128,35 +103,69 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
         setSeoDescription(data.seo_description || '');
         setStatus(data.status || 'DRAFT');
 
-        // Parse HTML content back to Editor.js blocks
-        // Simple approach: wrap in paragraph block if plain text
+        // Store blocks for later editor init (after DOM renders)
         const contentBlocks = data.content
           ? [{ type: 'paragraph', data: { text: data.content } }]
           : [];
-
-        // Initialize editor with existing data
-        if (typeof window !== 'undefined') {
-          const EditorJSClass = require('@editorjs/editorjs').default;
-          const editor = new EditorJSClass({
-            holder: 'editorjs',
-            tools: getEditorTools(),
-            placeholder: 'Nhập nội dung bài viết...',
-            data: { blocks: contentBlocks, time: Date.now(), version: '2.30.6' },
-          });
-          editor.isReady.then(() => {
-            isEditorReady.current = true;
-          });
-          editorRef.current = editor;
-        }
+        pendingBlocksRef.current = { blocks: contentBlocks, time: Date.now(), version: '2.30.6' };
       } catch (e) {
         setError('Không thể tải bài viết');
       } finally {
         setLoading(false);
+        setFormReady(true);
       }
     };
 
     loadPost();
-  }, [editSlug, initEditor]);
+  }, [editSlug]);
+
+  // Step 2: Initialize Editor.js AFTER the DOM has rendered the editorjs div
+  useEffect(() => {
+    if (!formReady) return;
+    if (typeof window === 'undefined') return;
+    if (editorRef.current) return; // already initialized
+
+    // Small delay to ensure DOM is painted
+    const timer = setTimeout(() => {
+      const holder = document.getElementById('editorjs');
+      if (!holder) return;
+
+      try {
+        const EditorJSClass = require('@editorjs/editorjs').default;
+        const editorData = pendingBlocksRef.current || { blocks: [], time: Date.now(), version: '2.30.6' };
+
+        const editor = new EditorJSClass({
+          holder: 'editorjs',
+          tools: getEditorTools(),
+          placeholder: 'Nhập nội dung bài viết...',
+          autofocus: false,
+          data: editorData,
+        });
+
+        editor.isReady.then(() => {
+          isEditorReady.current = true;
+        }).catch((err: Error) => {
+          console.error('Editor init failed', err);
+        });
+
+        editorRef.current = editor;
+      } catch (e) {
+        console.error('Editor creation failed', e);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [formReady]);
+
+  // Cleanup editor on unmount
+  useEffect(() => {
+    return () => {
+      if (editorRef.current) {
+        try { editorRef.current.destroy(); } catch {}
+        editorRef.current = null;
+      }
+    };
+  }, []);
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

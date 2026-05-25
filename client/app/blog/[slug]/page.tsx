@@ -14,7 +14,8 @@ export async function generateMetadata(
   const { slug } = await params;
   try {
     const post = await getBlogPost(slug);
-    const ogImageUrl = `https://banthuocsi.vn/api/blog/og-image/${slug}/`;
+    const ogImageUrl = post.cover_image
+      || `https://banthuocsi.vn/api/blog/og-image/${slug}/`;
 
     return {
       title: post.seo_title || post.title,
