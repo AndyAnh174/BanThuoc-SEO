@@ -1,16 +1,25 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type EditorJS from '@editorjs/editorjs';
 import type { OutputData } from '@editorjs/editorjs';
+import edjsHTML from 'editorjs-html';
+import { ImageIcon, Loader2, Eye, Search, Tag, X, Clock, Globe, Save, Send, ArrowLeft, AlertTriangle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-interface BlogEditorProps {
-  editSlug?: string;
-  onSaved: (slug: string) => void;
-  onCancel: () => void;
+const edjsParser = edjsHTML();
+
+function convertToHTML(blocks: OutputData): string {
+  return edjsParser.parse(blocks).join('');
 }
 
-// Editor.js tools configuration
+function estimateReadingTime(html: string): number {
+  const text = html.replace(/<[^>]+>/g, '');
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(words / 200)); // 200 words per minute
+}
+
+// ─── Editor.js tools ───────────────────────────────────────────
 const getImageToolConfig = (token: string) => ({
   image: {
     class: require('@editorjs/image'),
@@ -37,56 +46,102 @@ const getImageToolConfig = (token: string) => ({
 function getEditorTools() {
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
   return {
-  header: require('@editorjs/header'),
-  list: require('@editorjs/list'),
-  quote: require('@editorjs/quote'),
-  delimiter: require('@editorjs/delimiter'),
-  table: require('@editorjs/table'),
-  code: require('@editorjs/code'),
-  raw: require('@editorjs/raw'),
-  embed: require('@editorjs/embed'),
-  warning: require('@editorjs/warning'),
-  checklist: require('@editorjs/checklist'),
-  marker: require('@editorjs/marker'),
-  inlineCode: require('@editorjs/inline-code'),
-  ...getImageToolConfig(token || ''),
+    header: require('@editorjs/header'),
+    list: require('@editorjs/list'),
+    quote: require('@editorjs/quote'),
+    delimiter: require('@editorjs/delimiter'),
+    table: require('@editorjs/table'),
+    code: require('@editorjs/code'),
+    raw: require('@editorjs/raw'),
+    embed: require('@editorjs/embed'),
+    warning: require('@editorjs/warning'),
+    checklist: require('@editorjs/checklist'),
+    marker: require('@editorjs/marker'),
+    inlineCode: require('@editorjs/inline-code'),
+    ...getImageToolConfig(token || ''),
   };
 }
 
-import edjsHTML from 'editorjs-html';
-
-const edjsParser = edjsHTML();
-
-function convertToHTML(blocks: OutputData): string {
-  return edjsParser.parse(blocks).join('');
+// ─── Props ──────────────────────────────────────────────────────
+interface BlogEditorProps {
+  editSlug?: string;
+  onSaved: (slug: string) => void;
+  onCancel: () => void;
 }
 
+// ─── Tag Input Component ────────────────────────────────────────
+function TagInput({ value, onChange }: { value: string[]; onChange: (tags: string[]) => void }) {
+  const [input, setInput] = useState('');
+
+  const addTag = (tag: string) => {
+    const trimmed = tag.trim();
+    if (trimmed && !value.includes(trimmed)) {
+      onChange([...value, trimmed]);
+    }
+    setInput('');
+  };
+
+  const removeTag = (tag: string) => {
+    onChange(value.filter(t => t !== tag));
+  };
+
+  return (
+    <div className="flex flex-wrap gap-1.5 items-center p-2 min-h-[42px] border border-gray-200 rounded-lg bg-white focus-within:border-green-400 focus-within:ring-1 focus-within:ring-green-100 transition-all">
+      {value.map(tag => (
+        <span key={tag} className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-700 text-xs rounded-full border border-green-200">
+          {tag}
+          <button onClick={() => removeTag(tag)} className="hover:text-red-500">
+            <X className="h-3 w-3" />
+          </button>
+        </span>
+      ))}
+      <input
+        type="text"
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag(input); }
+          if (e.key === 'Backspace' && !input && value.length > 0) { removeTag(value[value.length - 1]); }
+        }}
+        onBlur={() => { if (input.trim()) addTag(input); }}
+        placeholder={value.length === 0 ? 'Thêm tag...' : ''}
+        className="flex-1 min-w-[120px] outline-none text-sm bg-transparent"
+      />
+    </div>
+  );
+}
+
+// ─── Main Component ─────────────────────────────────────────────
 export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorProps) {
+  // Form state
   const [title, setTitle] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [coverImage, setCoverImage] = useState('');
-  const [tags, setTags] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
   const [seoTitle, setSeoTitle] = useState('');
   const [seoDescription, setSeoDescription] = useState('');
   const [status, setStatus] = useState('DRAFT');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(!!editSlug);
-  const [formReady, setFormReady] = useState(!editSlug); // true when DOM is ready for editor
+  const [formReady, setFormReady] = useState(!editSlug);
+  const [showPreview, setShowPreview] = useState(false);
+
+  // Live preview HTML
+  const [liveContent, setLiveContent] = useState('');
+
   const editorRef = useRef<EditorJS | null>(null);
   const isEditorReady = useRef(false);
   const pendingBlocksRef = useRef<{ blocks: any[]; time: number; version: string } | null>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const previewTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Step 1: Load existing post data (edit mode only)
+  // ─── Load existing post ───────────────────────────────────────
   useEffect(() => {
     if (!editSlug) return;
-
     const loadPost = async () => {
       const token = localStorage.getItem('accessToken');
-      if (!token) {
-        setLoading(false);
-        return;
-      }
+      if (!token) { setLoading(false); return; }
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/blog/${editSlug}/`,
@@ -98,34 +153,32 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
         setTitle(data.title || '');
         setExcerpt(data.excerpt || '');
         setCoverImage(data.cover_image || '');
-        setTags((data.tags || []).join(', '));
+        setTags(data.tags || []);
         setSeoTitle(data.seo_title || '');
         setSeoDescription(data.seo_description || '');
         setStatus(data.status || 'DRAFT');
+        setLiveContent(data.content || '');
 
-        // Store blocks for later editor init (after DOM renders)
         const contentBlocks = data.content
           ? [{ type: 'paragraph', data: { text: data.content } }]
           : [];
         pendingBlocksRef.current = { blocks: contentBlocks, time: Date.now(), version: '2.30.6' };
-      } catch (e) {
+      } catch {
         setError('Không thể tải bài viết');
       } finally {
         setLoading(false);
         setFormReady(true);
       }
     };
-
     loadPost();
   }, [editSlug]);
 
-  // Step 2: Initialize Editor.js AFTER the DOM has rendered the editorjs div
+  // ─── Init Editor.js ───────────────────────────────────────────
   useEffect(() => {
     if (!formReady) return;
     if (typeof window === 'undefined') return;
-    if (editorRef.current) return; // already initialized
+    if (editorRef.current) return;
 
-    // Small delay to ensure DOM is painted
     const timer = setTimeout(() => {
       const holder = document.getElementById('editorjs');
       if (!holder) return;
@@ -137,9 +190,21 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
         const editor = new EditorJSClass({
           holder: 'editorjs',
           tools: getEditorTools(),
-          placeholder: 'Nhập nội dung bài viết...',
+          placeholder: 'Bắt đầu viết nội dung...',
           autofocus: false,
           data: editorData,
+          onChange: () => {
+            // Debounced live preview update
+            if (previewTimerRef.current) clearTimeout(previewTimerRef.current);
+            previewTimerRef.current = setTimeout(async () => {
+              if (editorRef.current && isEditorReady.current) {
+                try {
+                  const saved = await editorRef.current.save();
+                  setLiveContent(convertToHTML(saved));
+                } catch {}
+              }
+            }, 500);
+          },
         });
 
         editor.isReady.then(() => {
@@ -157,9 +222,10 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
     return () => clearTimeout(timer);
   }, [formReady]);
 
-  // Cleanup editor on unmount
+  // ─── Cleanup ──────────────────────────────────────────────────
   useEffect(() => {
     return () => {
+      if (previewTimerRef.current) clearTimeout(previewTimerRef.current);
       if (editorRef.current) {
         try { editorRef.current.destroy(); } catch {}
         editorRef.current = null;
@@ -167,6 +233,7 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
     };
   }, []);
 
+  // ─── Handlers ─────────────────────────────────────────────────
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -184,27 +251,20 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
       if (!res.ok) throw new Error('Upload failed');
       const data = await res.json();
       setCoverImage(data.url);
-    } catch (e) {
-      alert('Upload ảnh bìa thất bại');
+    } catch {
+      setError('Upload ảnh bìa thất bại');
     }
   };
 
   const handleSave = async (publishNow = false) => {
     const token = localStorage.getItem('accessToken');
-    if (!token) {
-      setError('Bạn cần đăng nhập lại');
-      return;
-    }
-    if (!title.trim()) {
-      setError('Vui lòng nhập tiêu đề');
-      return;
-    }
+    if (!token) { setError('Bạn cần đăng nhập lại'); return; }
+    if (!title.trim()) { setError('Vui lòng nhập tiêu đề'); return; }
 
     setSaving(true);
     setError('');
 
     try {
-      // Get Editor.js data
       let content = '';
       if (editorRef.current && isEditorReady.current) {
         const saved = await editorRef.current.save();
@@ -216,7 +276,7 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
         content,
         excerpt: excerpt.trim(),
         cover_image: coverImage,
-        tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+        tags,
         status: publishNow ? 'PUBLISHED' : status,
         seo_title: seoTitle.trim() || undefined,
         seo_description: seoDescription.trim() || undefined,
@@ -227,19 +287,13 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
       if (editSlug) {
         res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog/${editSlug}/`, {
           method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
           body: JSON.stringify(payload),
         });
       } else {
         res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog/`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
           body: JSON.stringify(payload),
         });
       }
@@ -258,132 +312,306 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
     }
   };
 
+  // ─── Computed values ──────────────────────────────────────────
+  const readingTime = useMemo(() => estimateReadingTime(liveContent), [liveContent]);
+  const wordCount = useMemo(() => {
+    const text = liveContent.replace(/<[^>]+>/g, '');
+    return text.trim().split(/\s+/).filter(Boolean).length;
+  }, [liveContent]);
+
+  const displaySeoTitle = seoTitle || title;
+  const displaySeoDesc = seoDescription || excerpt;
+
+  // ─── Loading ──────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin h-8 w-8 border-4 border-green-600 border-t-transparent rounded-full" />
+      <div className="flex items-center justify-center h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
       </div>
     );
   }
 
-  return (
-    <div className="max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
-          {editSlug ? 'Chỉnh sửa bài viết' : 'Viết bài mới'}
-        </h1>
-        <div className="flex gap-3">
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium"
-          >
-            Hủy
-          </button>
-          <button
-            onClick={() => handleSave(false)}
-            disabled={saving}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium disabled:opacity-50"
-          >
-            {saving ? 'Đang lưu...' : 'Lưu nháp'}
-          </button>
-          <button
-            onClick={() => handleSave(true)}
-            disabled={saving}
-            className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium disabled:opacity-50"
-          >
-            {saving ? 'Đang lưu...' : 'Đăng bài'}
-          </button>
-        </div>
-      </div>
+  // ─── Publishing Sidebar ───────────────────────────────────────
+  const sidebar = (
+    <div className="space-y-5">
+      {/* Publish Card */}
+      <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+        <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <Globe className="h-4 w-4 text-green-600" />
+          Đăng bài
+        </h3>
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg border border-red-200 text-sm">
-          {error}
-        </div>
-      )}
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs font-medium text-gray-500 block mb-1">Trạng thái</label>
+            <select
+              value={status}
+              onChange={e => setStatus(e.target.value)}
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white focus:border-green-400 focus:ring-1 focus:ring-green-100 outline-none"
+            >
+              <option value="DRAFT">Nháp</option>
+              <option value="PUBLISHED">Công khai</option>
+              <option value="ARCHIVED">Lưu trữ</option>
+            </select>
+          </div>
 
-      {/* Title */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-4 space-y-4">
-        <input
-          type="text"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-          placeholder="Tiêu đề bài viết..."
-          className="w-full text-2xl font-bold text-gray-900 border-none outline-none placeholder:text-gray-300"
-        />
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <Clock className="h-3.5 w-3.5" />
+            <span>{readingTime} phút đọc</span>
+            <span className="text-gray-300">|</span>
+            <span>{wordCount} từ</span>
+          </div>
 
-        <textarea
-          value={excerpt}
-          onChange={e => setExcerpt(e.target.value)}
-          placeholder="Mô tả ngắn (hiển thị trên card và SEO)..."
-          rows={2}
-          className="w-full text-gray-600 border-none outline-none resize-none placeholder:text-gray-300 text-sm"
-        />
-
-        {/* Cover image */}
-        <div>
-          <label className="text-sm text-gray-500 mb-1 block">Ảnh bìa</label>
-          <div className="flex items-center gap-4">
-            {coverImage && (
-              <img src={coverImage} alt="Cover" className="w-24 h-16 rounded-lg object-cover" />
-            )}
-            <input
-              type="text"
-              value={coverImage}
-              onChange={e => setCoverImage(e.target.value)}
-              placeholder="URL ảnh bìa..."
-              className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-green-400"
-            />
-            <label className="px-3 py-2 bg-gray-100 text-sm rounded-lg cursor-pointer hover:bg-gray-200">
-              Upload
-              <input type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" />
-            </label>
+          <div className="space-y-2 pt-2">
+            <button
+              onClick={() => handleSave(true)}
+              disabled={saving}
+              className="w-full px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
+            >
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              {saving ? 'Đang lưu...' : 'Đăng bài'}
+            </button>
+            <button
+              onClick={() => handleSave(false)}
+              disabled={saving}
+              className="w-full px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 font-medium disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
+            >
+              <Save className="h-4 w-4" />
+              Lưu nháp
+            </button>
           </div>
         </div>
-
-        {/* Tags */}
-        <input
-          type="text"
-          value={tags}
-          onChange={e => setTags(e.target.value)}
-          placeholder="Tags (phân cách bằng dấu phẩy): dược phẩm, sức khỏe..."
-          className="w-full text-sm text-gray-600 border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-green-400"
-        />
       </div>
 
-      {/* Editor.js */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-4 min-h-[400px]">
-        <div id="editorjs" className="prose prose-lg max-w-none" />
-      </div>
+      {/* SEO Preview Card */}
+      <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+        <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2 text-sm">
+          <Search className="h-4 w-4 text-blue-600" />
+          Google SERP Preview
+        </h3>
 
-      {/* SEO Section */}
-      <details className="bg-white rounded-xl border border-gray-200 p-6 mb-4 group">
-        <summary className="cursor-pointer font-medium text-gray-700">SEO Settings</summary>
-        <div className="mt-4 space-y-3">
+        <div className="space-y-3">
           <div>
-            <label className="text-sm text-gray-500 block mb-1">SEO Title (max 60 ký tự)</label>
+            <label className="text-xs font-medium text-gray-500 block mb-1">
+              SEO Title
+              <span className={cn("ml-1", displaySeoTitle.length > 60 ? "text-red-500" : "text-gray-400")}>
+                ({displaySeoTitle.length}/60)
+              </span>
+            </label>
             <input
               type="text"
               value={seoTitle}
               onChange={e => setSeoTitle(e.target.value)}
               placeholder={title || 'SEO title...'}
-              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-green-400"
-              maxLength={60}
+              maxLength={70}
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400"
             />
           </div>
           <div>
-            <label className="text-sm text-gray-500 block mb-1">Meta Description (max 160 ký tự)</label>
+            <label className="text-xs font-medium text-gray-500 block mb-1">
+              Meta Description
+              <span className={cn("ml-1", displaySeoDesc.length > 160 ? "text-red-500" : "text-gray-400")}>
+                ({displaySeoDesc.length}/160)
+              </span>
+            </label>
             <textarea
               value={seoDescription}
               onChange={e => setSeoDescription(e.target.value)}
               placeholder={excerpt || 'Meta description...'}
               rows={2}
-              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-green-400 resize-none"
-              maxLength={160}
+              maxLength={180}
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 resize-none"
             />
           </div>
+
+          {/* SERP Mockup */}
+          <div className="border border-gray-200 rounded-lg p-3 bg-gray-50 text-xs">
+            <div className="text-blue-700 text-base leading-tight truncate font-medium font-sans">
+              {displaySeoTitle || 'Tiêu đề bài viết'}
+            </div>
+            <div className="text-green-700 text-xs leading-normal">
+              banthuocsi.vn › blog › {editSlug || 'tieu-de'}
+            </div>
+            <div className="text-gray-600 leading-normal mt-0.5 line-clamp-2">
+              {displaySeoDesc || 'Mô tả bài viết sẽ hiển thị ở đây...'}
+            </div>
+          </div>
         </div>
-      </details>
+      </div>
+    </div>
+  );
+
+  // ─── Main Render ──────────────────────────────────────────────
+  return (
+    <div className="h-[calc(100vh-120px)] flex flex-col">
+      {/* Top Bar */}
+      <div className="flex items-center justify-between mb-4 shrink-0">
+        <button
+          onClick={onCancel}
+          className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors text-sm"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Quay lại danh sách
+        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowPreview(!showPreview)}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-colors border",
+              showPreview
+                ? "bg-blue-50 text-blue-700 border-blue-200"
+                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+            )}
+          >
+            <Eye className="h-4 w-4" />
+            Xem trước
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="mb-3 p-3 bg-red-50 text-red-700 rounded-lg border border-red-200 text-sm flex items-center gap-2 shrink-0">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          {error}
+        </div>
+      )}
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex gap-6 min-h-0">
+        {/* Left: Editor */}
+        <div className="flex-1 min-w-0 overflow-y-auto pr-2 space-y-5">
+          {/* Title */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+            <input
+              type="text"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              placeholder="Tiêu đề bài viết..."
+              className="w-full text-2xl font-bold text-gray-900 border-none outline-none placeholder:text-gray-300"
+            />
+
+            <textarea
+              value={excerpt}
+              onChange={e => setExcerpt(e.target.value)}
+              placeholder="Mô tả ngắn — hiển thị trên thẻ blog và kết quả tìm kiếm..."
+              rows={2}
+              className="w-full text-gray-500 border-none outline-none resize-none placeholder:text-gray-300 text-sm mt-2"
+            />
+
+            {/* Cover Image */}
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <label className="text-xs font-medium text-gray-500 mb-2 block">Ảnh bìa</label>
+              {coverImage ? (
+                <div className="relative group rounded-lg overflow-hidden bg-gray-100 w-full aspect-[21/9] max-h-[220px]">
+                  <img src={coverImage} alt="Cover" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                      <button
+                        onClick={() => coverInputRef.current?.click()}
+                        className="px-3 py-1.5 bg-white text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-100"
+                      >
+                        Đổi ảnh
+                      </button>
+                      <button
+                        onClick={() => setCoverImage('')}
+                        className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-medium hover:bg-red-600"
+                      >
+                        Xóa
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => coverInputRef.current?.click()}
+                  className="w-full aspect-[21/9] max-h-[220px] border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-green-300 hover:text-green-600 hover:bg-green-50/50 transition-all"
+                >
+                  <ImageIcon className="h-10 w-10" />
+                  <span className="text-sm font-medium">Thêm ảnh bìa</span>
+                  <span className="text-xs">Kéo thả hoặc nhấn để upload</span>
+                </button>
+              )}
+              <input
+                ref={coverInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleCoverUpload}
+                className="hidden"
+              />
+              {coverImage && (
+                <input
+                  type="text"
+                  value={coverImage}
+                  onChange={e => setCoverImage(e.target.value)}
+                  placeholder="Hoặc dán URL ảnh..."
+                  className="w-full text-xs text-gray-400 border border-gray-100 rounded-lg px-3 py-1.5 mt-2 outline-none focus:border-green-300"
+                />
+              )}
+            </div>
+
+            {/* Tags */}
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <label className="text-xs font-medium text-gray-500 mb-1.5 flex items-center gap-1">
+                <Tag className="h-3 w-3" /> Tags
+              </label>
+              <TagInput value={tags} onChange={setTags} />
+            </div>
+          </div>
+
+          {/* Editor.js */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-5 py-2.5 border-b border-gray-100 bg-gray-50/50 rounded-t-xl flex items-center gap-3 text-xs text-gray-400">
+              <span className="flex items-center gap-1"><span className="font-bold text-gray-500">B</span> Bold</span>
+              <span className="text-gray-300">|</span>
+              <span className="flex items-center gap-1"><span className="font-bold text-gray-500 italic">I</span> Italic</span>
+              <span className="text-gray-300">|</span>
+              <span className="flex items-center gap-1"><span className="font-bold text-gray-500">H</span> Heading</span>
+              <span className="text-gray-300">|</span>
+              <span>Nhấn Tab để mở menu khối</span>
+            </div>
+            <div id="editorjs" className="prose prose-lg max-w-none p-5 min-h-[400px]" />
+          </div>
+
+          <div className="h-4" />
+        </div>
+
+        {/* Right: Sidebar */}
+        <div className="w-[340px] shrink-0 space-y-5 overflow-y-auto hidden lg:block">
+          {sidebar}
+
+          {/* Live Preview */}
+          {showPreview && liveContent && (
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="px-4 py-2.5 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2 text-sm text-gray-600">
+                <Eye className="h-4 w-4" />
+                Xem trước bài viết
+              </div>
+              <div
+                className="p-4 prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-img:rounded-lg prose-img:w-full"
+                dangerouslySetInnerHTML={{ __html: liveContent }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile-only bottom bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex gap-2 z-50 shadow-lg">
+        <button
+          onClick={() => handleSave(false)}
+          disabled={saving}
+          className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-700 rounded-lg font-medium disabled:opacity-50"
+        >
+          Lưu nháp
+        </button>
+        <button
+          onClick={() => handleSave(true)}
+          disabled={saving}
+          className="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg font-semibold disabled:opacity-50"
+        >
+          {saving ? 'Đang lưu...' : 'Đăng bài'}
+        </button>
+      </div>
     </div>
   );
 }
