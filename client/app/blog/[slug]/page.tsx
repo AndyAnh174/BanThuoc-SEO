@@ -14,7 +14,7 @@ export async function generateMetadata(
   const { slug } = await params;
   try {
     const post = await getBlogPost(slug);
-    const ogImageUrl = post.cover_image
+    const ogImageUrl = post.og_image_url || post.cover_image
       || `https://banthuocsi.vn/api/blog/og-image/${slug}/`;
 
     return {
@@ -95,8 +95,8 @@ function buildBlogPostingJsonLd(post: BlogPostDetail) {
     },
   };
 
-  if (post.cover_image || post.og_image_url) {
-    jsonLd.image = post.cover_image || post.og_image_url;
+  if (post.og_image_url || post.cover_image) {
+    jsonLd.image = post.og_image_url || post.cover_image;
   }
 
   if (post.tags && post.tags.length > 0) {
