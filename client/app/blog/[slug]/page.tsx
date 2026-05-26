@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getBlogPost, getLatestPosts, BlogPostDetail } from '@/src/features/blog/api/blog';
 import { MainLayout } from '@/src/features/layout';
+import { BlogViewTracker } from '@/src/features/blog/components/BlogViewTracker';
 import type { Props as PageProps } from './types';
 
 export async function generateMetadata(
@@ -34,6 +35,7 @@ export async function generateMetadata(
             alt: post.title,
           },
         ],
+        url: `https://banthuocsi.vn/blog/${slug}`,
         siteName: 'BanThuocSi',
       },
       twitter: {
@@ -53,6 +55,73 @@ export async function generateMetadata(
 
 export const revalidate = 300;
 
+// ─── Structured Data ────────────────────────────────────────────
+const SITE_URL = 'https://banthuocsi.vn';
+const PUBLISHER_NAME = 'BanThuocSi - Ngọc Kim Ngân Pharma';
+const PUBLISHER_LOGO = `${SITE_URL}/2.png`;
+
+function buildBlogPostingJsonLd(post: BlogPostDetail) {
+  const jsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}/blog/${post.slug}`,
+    },
+    headline: post.seo_title || post.title,
+    description: post.seo_description || post.excerpt?.slice(0, 160) || '',
+    url: `${SITE_URL}/blog/${post.slug}`,
+    datePublished: post.published_at || post.created_at,
+    dateModified: post.updated_at || post.published_at || post.created_at,
+    inLanguage: 'vi',
+    timeRequired: `PT${post.reading_time_minutes}M`,
+    author: {
+      '@type': 'Person',
+      name: post.author_name,
+      url: SITE_URL,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: PUBLISHER_NAME,
+      logo: {
+        '@type': 'ImageObject',
+        url: PUBLISHER_LOGO,
+      },
+    },
+    interactionStatistic: {
+      '@type': 'InteractionCounter',
+      interactionType: 'https://schema.org/ViewAction',
+      userInteractionCount: post.view_count,
+    },
+  };
+
+  if (post.cover_image || post.og_image_url) {
+    jsonLd.image = post.cover_image || post.og_image_url;
+  }
+
+  if (post.tags && post.tags.length > 0) {
+    jsonLd.keywords = post.tags.join(', ');
+    jsonLd.about = post.tags.map((tag: string) => ({
+      '@type': 'Thing',
+      name: tag,
+    }));
+  }
+
+  return jsonLd;
+}
+
+function buildBlogBreadcrumbJsonLd(post: BlogPostDetail) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: SITE_URL },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE_URL}/blog` },
+      { '@type': 'ListItem', position: 3, name: post.seo_title || post.title, item: `${SITE_URL}/blog/${post.slug}` },
+    ],
+  };
+}
+
 export default async function BlogDetailPage({ params }: PageProps) {
   const { slug } = await params;
   let post: BlogPostDetail;
@@ -67,6 +136,15 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
   return (
     <MainLayout fullWidth>
+    <BlogViewTracker slug={slug} />
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBlogPostingJsonLd(post)) }}
+    />
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBlogBreadcrumbJsonLd(post)) }}
+    />
     <div className="min-h-screen bg-gray-50">
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-4">

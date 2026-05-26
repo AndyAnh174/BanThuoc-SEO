@@ -60,15 +60,33 @@ class BlogPostViewSet(viewsets.ModelViewSet):
             return qs.filter(status=BlogPost.Status.PUBLISHED)
         return qs
 
-    def retrieve(self, request, *args, **kwargs):
-        """Increment view count on detail view."""
+    @action(detail=True, methods=['post'], url_path='view', permission_classes=[AllowAny])
+    def record_view(self, request, slug=None):
+        """Record a page view from a real browser visit (client-side POST only).
+        Deduplicates by client IP within 30-minute window using Redis cache."""
+        from django.core.cache import cache
+        from audit.middleware import get_client_ip
+
         instance = self.get_object()
-        # Manual increment to avoid write lock on every page load
+        client_ip = get_client_ip(request)
+
+        if not client_ip:
+            BlogPost.objects.filter(pk=instance.pk).update(
+                view_count=models.F('view_count') + 1
+            )
+            instance.refresh_from_db()
+            return Response({'view_count': instance.view_count, 'deduplicated': False})
+
+        cache_key = f'blog_view:{client_ip}:{instance.pk}'
+        if cache.get(cache_key):
+            return Response({'view_count': instance.view_count, 'deduplicated': True})
+
+        cache.set(cache_key, '1', timeout=1800)
         BlogPost.objects.filter(pk=instance.pk).update(
             view_count=models.F('view_count') + 1
         )
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        instance.refresh_from_db()
+        return Response({'view_count': instance.view_count, 'deduplicated': False})
 
     @action(detail=False, methods=['get'], url_path='tags')
     def tags(self, request):
