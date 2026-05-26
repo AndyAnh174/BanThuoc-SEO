@@ -21,6 +21,10 @@ class BlogPost(models.Model):
     content = models.TextField(
         help_text="HTML content from Editor.js"
     )
+    content_json = models.JSONField(
+        default=dict, blank=True,
+        help_text="Raw Editor.js JSON blocks for editing"
+    )
     cover_image = models.URLField(
         max_length=500, blank=True,
         help_text="Main cover image URL (MinIO). Used for cards and OG image."

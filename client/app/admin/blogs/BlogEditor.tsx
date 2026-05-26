@@ -159,10 +159,11 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
         setStatus(data.status || 'DRAFT');
         setLiveContent(data.content || '');
 
-        const contentBlocks = data.content
-          ? [{ type: 'paragraph', data: { text: data.content } }]
-          : [];
-        pendingBlocksRef.current = { blocks: contentBlocks, time: Date.now(), version: '2.30.6' };
+        // Load raw Editor.js blocks if available (content_json), otherwise start fresh
+        const hasBlockData = data.content_json?.blocks?.length > 0;
+        pendingBlocksRef.current = hasBlockData
+          ? { blocks: data.content_json.blocks, time: Date.now(), version: '2.30.6' }
+          : { blocks: [], time: Date.now(), version: '2.30.6' };
       } catch {
         setError('Không thể tải bài viết');
       } finally {
@@ -266,14 +267,17 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
 
     try {
       let content = '';
+      let contentJson = {};
       if (editorRef.current && isEditorReady.current) {
         const saved = await editorRef.current.save();
         content = convertToHTML(saved);
+        contentJson = saved; // raw Editor.js blocks for future editing
       }
 
       const payload = {
         title: title.trim(),
         content,
+        content_json: contentJson,
         excerpt: excerpt.trim(),
         cover_image: coverImage,
         tags,
