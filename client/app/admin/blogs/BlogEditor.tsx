@@ -126,6 +126,7 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
   const [loading, setLoading] = useState(!!editSlug);
   const [formReady, setFormReady] = useState(!editSlug);
   const [showPreview, setShowPreview] = useState(false);
+  const [isLegacyPost, setIsLegacyPost] = useState(false); // old post without content_json
 
   // Live preview HTML
   const [liveContent, setLiveContent] = useState('');
@@ -135,6 +136,7 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
   const pendingBlocksRef = useRef<{ blocks: any[]; time: number; version: string } | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const previewTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const legacyContentRef = useRef(''); // preserve legacy HTML content
 
   // ─── Load existing post ───────────────────────────────────────
   useEffect(() => {
@@ -161,6 +163,11 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
 
         // Load raw Editor.js blocks if available (content_json), otherwise start fresh
         const hasBlockData = data.content_json?.blocks?.length > 0;
+        if (!hasBlockData && data.content) {
+          // Legacy post: has HTML content but no Editor.js blocks
+          setIsLegacyPost(true);
+          legacyContentRef.current = data.content;
+        }
         pendingBlocksRef.current = hasBlockData
           ? { blocks: data.content_json.blocks, time: Date.now(), version: '2.30.6' }
           : { blocks: [], time: Date.now(), version: '2.30.6' };
@@ -272,6 +279,11 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
         const saved = await editorRef.current.save();
         content = convertToHTML(saved);
         contentJson = saved; // raw Editor.js blocks for future editing
+      }
+
+      // Preserve legacy content if editor is empty (old post without content_json)
+      if (!content && legacyContentRef.current) {
+        content = legacyContentRef.current;
       }
 
       const payload = {
@@ -561,6 +573,20 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
               <TagInput value={tags} onChange={setTags} />
             </div>
           </div>
+
+          {/* Legacy post warning */}
+          {isLegacyPost && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-amber-800 text-sm">Bài viết được tạo từ phiên bản cũ</p>
+                <p className="text-amber-600 text-sm mt-0.5">
+                  Nội dung cũ vẫn hiển thị bên dưới (chế độ xem trước), nhưng cần được nhập lại trong trình soạn thảo mới để có thể chỉnh sửa.
+                  Khi lưu mà chưa nhập nội dung mới, nội dung cũ sẽ được giữ nguyên.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Editor.js */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
