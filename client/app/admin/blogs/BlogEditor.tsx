@@ -256,11 +256,14 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData,
       });
-      if (!res.ok) throw new Error('Upload failed');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Upload failed (${res.status})`);
+      }
       const data = await res.json();
       setCoverImage(data.url);
-    } catch {
-      setError('Upload ảnh bìa thất bại');
+    } catch (e: any) {
+      setError(e.message || 'Upload ảnh bìa thất bại');
     }
   };
 

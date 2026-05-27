@@ -116,7 +116,10 @@ export async function adminUploadImage(token: string, file: File): Promise<strin
     },
     body: formData,
   });
-  if (!res.ok) throw new Error('Upload failed');
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || `Upload failed (${res.status})`);
+  }
   const data = await res.json();
   return data.url;
 }

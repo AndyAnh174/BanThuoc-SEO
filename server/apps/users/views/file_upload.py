@@ -75,8 +75,10 @@ class FileUploadView(APIView):
 
         # Validate file type for images
         allowed_types = [
-            'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-            'application/pdf',  # Also allow PDFs for documents
+            'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+            'image/avif', 'image/heic', 'image/heif', 'image/svg+xml',
+            'image/bmp', 'image/tiff',
+            'application/pdf',
         ]
         if file.content_type not in allowed_types:
             return Response(
