@@ -25,7 +25,7 @@ export function BannerRow() {
   useEffect(() => {
     async function fetchBanners() {
       try {
-        const res = await fetch(`${API_URL}/banners/visible/`);
+        const res = await fetch(`${API_URL}/banners/row/`);
         if (res.ok) {
           const data = await res.json();
           setBanners(Array.isArray(data) ? data : []);

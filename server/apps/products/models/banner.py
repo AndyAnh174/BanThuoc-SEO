@@ -8,9 +8,18 @@ from django.utils import timezone
 
 class Banner(models.Model):
     """Banner model for homepage carousel/slider"""
+
+    class Position(models.TextChoices):
+        HERO = 'HERO', 'Hero Banner'
+        ROW = 'ROW', 'Banner Row'
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255, verbose_name="Tiêu đề")
     subtitle = models.CharField(max_length=500, blank=True, verbose_name="Phụ đề")
+    display_position = models.CharField(
+        max_length=10, choices=Position.choices, default=Position.HERO,
+        verbose_name="Vị trí hiển thị"
+    )
     
     # Image
     image_url = models.URLField(max_length=500, blank=True, verbose_name="URL hình ảnh")
@@ -60,13 +69,16 @@ class Banner(models.Model):
         return True
     
     @classmethod
-    def get_visible_banners(cls):
-        """Get all currently visible banners"""
+    def get_visible_banners(cls, position=None):
+        """Get all currently visible banners, optionally filtered by position"""
         now = timezone.now()
-        return cls.objects.filter(
+        qs = cls.objects.filter(
             is_active=True
         ).filter(
             models.Q(start_date__isnull=True) | models.Q(start_date__lte=now)
         ).filter(
             models.Q(end_date__isnull=True) | models.Q(end_date__gte=now)
-        ).order_by('sort_order', '-created_at')
+        )
+        if position:
+            qs = qs.filter(display_position=position)
+        return qs.order_by('sort_order', '-created_at')

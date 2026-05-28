@@ -19,7 +19,7 @@ class BannerViewSet(viewsets.ModelViewSet):
     serializer_class = BannerSerializer
     
     def get_permissions(self):
-        if self.action in ['list', 'retrieve', 'visible']:
+        if self.action in ['list', 'retrieve', 'visible', 'row']:
             return [AllowAny()]
         return [IsAuthenticated()]
     
@@ -40,8 +40,15 @@ class BannerViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'], permission_classes=[AllowAny])
     def visible(self, request):
-        """Get all currently visible banners for public display"""
-        banners = Banner.get_visible_banners()
+        """Get all currently visible HERO banners for public display"""
+        banners = Banner.get_visible_banners(position=Banner.Position.HERO)
+        serializer = BannerSerializer(banners, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
+    def row(self, request):
+        """Get all currently visible ROW banners for banner row display"""
+        banners = Banner.get_visible_banners(position=Banner.Position.ROW)
         serializer = BannerSerializer(banners, many=True)
         return Response(serializer.data)
     

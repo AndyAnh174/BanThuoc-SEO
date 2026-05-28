@@ -15,6 +15,7 @@ class BannerSerializer(serializers.ModelSerializer):
             'id', 'title', 'subtitle',
             'image_url', 'link_url', 'link_text',
             'background_color', 'text_color',
+            'display_position',
             'sort_order', 'is_active', 'is_visible',
             'start_date', 'end_date',
             'created_at', 'updated_at',
