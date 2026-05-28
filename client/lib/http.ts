@@ -38,10 +38,14 @@ function addRefreshSubscriber(cb: (token: string) => void) {
 }
 
 function clearAuthAndRedirect() {
+    // Check if user was logged in BEFORE clearing tokens
+    const wasLoggedIn = !!(localStorage.getItem('accessToken') || localStorage.getItem('refreshToken'));
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
-    if (!window.location.pathname.startsWith('/auth')) {
+    // Only redirect users who were actually logged in (expired session)
+    // Guest users on public pages should not be redirected to login
+    if (wasLoggedIn && !window.location.pathname.startsWith('/auth')) {
         window.location.href = '/auth/login';
     }
 }
