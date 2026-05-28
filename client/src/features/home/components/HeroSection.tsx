@@ -101,7 +101,7 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
     <section className="py-6">
       <div className="grid lg:grid-cols-3 gap-4">
         {/* Left: Main Banner Carousel */}
-        <div className="lg:col-span-2 relative rounded-2xl overflow-hidden min-h-[300px] lg:min-h-[350px]">
+        <div className="lg:col-span-2 relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[380px] lg:min-h-[400px]">
           {loading ? (
             <Skeleton className="absolute inset-0" />
           ) : (
