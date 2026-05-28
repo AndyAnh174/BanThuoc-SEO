@@ -3,6 +3,7 @@
  */
 
 export { HeroBanner } from './components/HeroBanner';
+export { BannerRow } from './components/BannerRow';
 export { HeroSection } from './components/HeroSection';
 export { HeroSectionServer } from './components/HeroSectionServer';
 export { FlashSaleSection } from './components/FlashSaleSection';
