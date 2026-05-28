@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { MainLayout } from '@/src/features/layout';
-import { HeroSectionServer, TrustBadges, CategoryShowcase, FeaturedProducts, NewProductsSection, FlashSaleSection, CategoryProductsSection } from '@/src/features/home';
+import { HeroSectionServer, TrustBadges, FeaturedProducts, NewProductsSection, FlashSaleSection, CategoryProductsSection } from '@/src/features/home';
 
 export const metadata: Metadata = {
   title: 'Bán Thuốc Sỉ - Ngọc Kim Ngân Pharma (NKN) | BanThuocSi.vn',
@@ -70,9 +70,6 @@ export default function Home() {
 
       {/* Trust Badges - Lý do chọn BanThuoc */}
       <TrustBadges />
-
-      {/* Product Categories */}
-      <CategoryShowcase />
 
       {/* Flash Sale - placed right after categories */}
       <FlashSaleSection />
