@@ -100,9 +100,10 @@ async function deleteBanner(token: string, id: string): Promise<void> {
 
 interface BannerManagerProps {
   token: string;
+  position?: 'HERO' | 'ROW';
 }
 
-export function BannerManager({ token }: BannerManagerProps) {
+export function BannerManager({ token, position }: BannerManagerProps) {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -132,14 +133,17 @@ export function BannerManager({ token }: BannerManagerProps) {
     try {
       setLoading(true);
       const data = await fetchBanners(token);
-      // Handle standardized DRF pagination { count, next, previous, results: [] }
+      let results: Banner[] = [];
       if (data && Array.isArray(data.results)) {
-        setBanners(data.results);
+        results = data.results;
       } else if (Array.isArray(data)) {
-        setBanners(data);
-      } else {
-        setBanners([]);
+        results = data;
       }
+      // Filter by position if specified
+      if (position) {
+        results = results.filter((b: any) => b.display_position === position);
+      }
+      setBanners(results);
     } catch (error) {
       console.error('Error loading banners:', error);
     } finally {
@@ -186,11 +190,15 @@ export function BannerManager({ token }: BannerManagerProps) {
       setSaving(true);
 
       // Convert local datetime input back to UTC ISO string for API
-      const payload = {
+      const payload: any = {
         ...formData,
         start_date: formData.start_date ? new Date(formData.start_date).toISOString() : null,
         end_date: formData.end_date ? new Date(formData.end_date).toISOString() : null,
       };
+      // Auto-set display_position if specified
+      if (position && !editingBanner) {
+        payload.display_position = position;
+      }
 
       if (editingBanner) {
         await updateBanner(token, editingBanner.id, payload);
@@ -240,8 +248,8 @@ export function BannerManager({ token }: BannerManagerProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Quản lý Banner</h2>
-          <p className="text-gray-500">Quản lý các banner hiển thị trên trang chủ</p>
+          <h2 className="text-2xl font-bold">{position === 'ROW' ? 'Banner Mini' : 'Quản lý Banner'}</h2>
+          <p className="text-gray-500">{position === 'ROW' ? 'Banner phụ hiển thị dưới hero trang chủ' : 'Quản lý các banner hiển thị trên trang chủ'}</p>
         </div>
         <Button onClick={openCreateModal}>
           <Plus className="w-4 h-4 mr-2" />

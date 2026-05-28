@@ -22,6 +22,7 @@ import {
     Megaphone,
     Newspaper,
     FileText,
+    Layout,
     Cog,
     Star,
     RotateCcw,
@@ -73,6 +74,7 @@ const sidebarSections: SidebarSection[] = [
         items: [
             { label: "Flash Sale", href: "/admin/flash-sales", icon: Zap },
             { label: "Banner", href: "/admin/banners", icon: Image },
+            { label: "Banner Mini", href: "/admin/banner-mini", icon: Layout },
         ]
     },
     {
