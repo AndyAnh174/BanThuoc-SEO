@@ -161,7 +161,7 @@ export function RegisterForm() {
 
             <div className="relative z-10 mb-8 lg:mb-0">
                 <div className="flex items-center gap-2 mb-8">
-                    <Image src="/2.png" alt="BanThuoc Logo" width={80} height={80} className="rounded-xl" />
+                    <Image src="/logo-rm-phong.png" alt="BanThuoc Logo" width={80} height={80} className="rounded-xl" />
                 </div>
                 <h2 className="text-3xl lg:text-4xl font-bold leading-tight mb-4">Chào mừng đến với hệ thống!</h2>
                 <p className="text-green-50 text-base lg:text-lg opacity-90">Chúng tôi kết nối các nhà thuốc và doanh nghiệp dược phẩm hàng đầu.</p>

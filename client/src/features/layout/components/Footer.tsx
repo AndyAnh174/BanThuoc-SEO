@@ -17,7 +17,7 @@ export function Footer() {
             <div className="flex items-center gap-2 mb-4">
               <div className="relative w-16 h-16 flex items-center justify-center overflow-hidden">
                 <Image 
-                  src="/2.png" 
+                  src="/logo-rm-phong.png" 
                   alt="BanThuoc Logo" 
                   fill
                   className="object-contain"

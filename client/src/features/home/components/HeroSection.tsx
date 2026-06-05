@@ -77,7 +77,7 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
       try {
         const response = await getCategories({ active_only: true });
         const cats = response.data?.results || (Array.isArray(response.data) ? response.data : []);
-        setCategories(cats.slice(0, 10));
+        setCategories(cats.slice(0, 8));
       } catch {} finally { setCatLoading(false); }
     })();
   }, []);

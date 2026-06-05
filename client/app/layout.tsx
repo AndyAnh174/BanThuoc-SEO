@@ -23,7 +23,7 @@ const organizationJsonLd = {
     "Công ty Dược phẩm Ngọc Kim Ngân",
   ],
   url: SITE_URL,
-  logo: `${SITE_URL}/2.png`,
+  logo: `${SITE_URL}/logo-rm-phong.png`,
   description:
     "BanThuocSi.vn - Sàn dược phẩm sỉ B2B của Công ty Dược phẩm Ngọc Kim Ngân (NKN Pharma). Cung cấp thuốc sỉ chính hãng cho nhà thuốc, phòng khám toàn quốc.",
   contactPoint: {
@@ -116,9 +116,9 @@ export const metadata: Metadata = {
     },
   }),
   icons: {
-    icon: [{ url: "/2.png", type: "image/png" }],
-    shortcut: "/2.png",
-    apple: "/2.png",
+    icon: [{ url: "/logo-rm-phong.png", type: "image/png" }],
+    shortcut: "/logo-rm-phong.png",
+    apple: "/logo-rm-phong.png",
   },
   openGraph: {
     type: "website",

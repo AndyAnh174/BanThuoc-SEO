@@ -58,7 +58,7 @@ export const revalidate = 300;
 // ─── Structured Data ────────────────────────────────────────────
 const SITE_URL = 'https://banthuocsi.vn';
 const PUBLISHER_NAME = 'BanThuocSi - Ngọc Kim Ngân Pharma';
-const PUBLISHER_LOGO = `${SITE_URL}/2.png`;
+const PUBLISHER_LOGO = `${SITE_URL}/logo-rm-phong.png`;
 
 function buildBlogPostingJsonLd(post: BlogPostDetail) {
   const jsonLd: Record<string, unknown> = {

@@ -150,7 +150,7 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
             <Link href="/" className="flex items-center gap-2 shrink-0 group">
               <div className="relative w-12 h-12 md:w-14 md:h-14 shrink-0 transition-transform duration-300 group-hover:scale-105">
                 <Image
-                  src="/2.png"
+                  src="/logo-rm-phong.png"
                   alt="BanThuoc Logo"
                   fill
                   sizes="56px"

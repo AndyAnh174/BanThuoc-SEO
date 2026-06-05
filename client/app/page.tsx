@@ -44,8 +44,8 @@ const pharmacyJsonLd = {
   description:
     'Sàn dược phẩm sỉ B2B của Công ty Dược phẩm Ngọc Kim Ngân (NKN Pharma) - bán thuốc sỉ chính hãng cho nhà thuốc, phòng khám toàn quốc.',
   url: 'https://banthuocsi.vn',
-  logo: 'https://banthuocsi.vn/2.png',
-  image: 'https://banthuocsi.vn/2.png',
+  logo: 'https://banthuocsi.vn/logo-rm-phong.png',
+  image: 'https://banthuocsi.vn/logo-rm-phong.png',
   priceRange: '$$',
   areaServed: 'VN',
 };

@@ -95,7 +95,7 @@ export function LoginForm() {
 
                 <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-8">
-                        <Image src="/2.png" alt="BanThuoc Logo" width={80} height={80} className="rounded-xl" />
+                        <Image src="/logo-rm-phong.png" alt="BanThuoc Logo" width={80} height={80} className="rounded-xl" />
                     </div>
                     <h2 className="text-3xl font-bold leading-tight mb-4">Chào mừng trở lại!</h2>
                     <p className="text-green-50 text-base opacity-90">Đăng nhập để tiếp tục quản lý và kết nối.</p>
