@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { MainLayout } from '@/src/features/layout';
-import { HeroSectionServer, BannerRow, BestSellers, PromoBanners, SocialProof, TrustBadges, CategoryShowcase, FeaturedProducts, NewProductsSection, FlashSaleSection, CategoryProductsSection } from '@/src/features/home';
+import { HeroSectionServer, BannerRow, BestSellers, PromoBanners, TrustBadges, CategoryShowcase, FeaturedProducts, NewProductsSection, FlashSaleSection, CategoryProductsSection } from '@/src/features/home';
 
 export const metadata: Metadata = {
   title: 'Bán Thuốc Sỉ - Ngọc Kim Ngân Pharma (NKN) | BanThuocSi.vn',
@@ -121,7 +121,6 @@ export default function Home() {
         </div>
       </div>
 
-      <SocialProof />
     </MainLayout>
   );
 }
