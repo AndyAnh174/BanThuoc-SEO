@@ -92,13 +92,6 @@ export function ProductCard({
           className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-all ${isLikedState ? 'bg-red-50 text-red-500' : 'bg-white/90 text-gray-400 opacity-0 group-hover:opacity-100'}`}>
           <Heart className={`w-4 h-4 ${isLikedState ? 'fill-current' : ''}`} /></button>
 
-        {/* Hover add-to-cart */}
-        {!outOfStock && quantityInCart === 0 && (
-          <div className="absolute inset-x-0 bottom-0 p-2 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 duration-200">
-            <button onClick={handleAdd} className="w-full py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5">
-              <ShoppingCart className="w-3.5 h-3.5" />Thêm vào giỏ</button>
-          </div>)}
-
         {outOfStock && <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
           <span className="bg-white/90 text-gray-800 text-sm font-semibold px-4 py-1.5 rounded-full">Hết hàng</span></div>}
       </Link>
@@ -130,13 +123,23 @@ export function ProductCard({
         {manufacturer && <div className="mt-auto pt-1 border-t border-gray-50 flex items-center gap-1"><Pill className="w-3 h-3 text-gray-300"/><p className="text-[11px] text-gray-400 truncate">{manufacturer.name}</p></div>}
       </div>
 
-      {/* Qty controls */}
-      {quantityInCart > 0 && (
-        <div className="border-t border-gray-100 grid grid-cols-[32px_1fr_32px] h-8">
-          <button onClick={(e)=>handleQty(e,quantityInCart-1)} className="flex items-center justify-center text-gray-400 border-r border-gray-100">–</button>
-          <span className="flex items-center justify-center text-sm font-semibold text-green-700">{quantityInCart}</span>
-          <button onClick={(e)=>handleQty(e,quantityInCart+1)} className="flex items-center justify-center text-green-600 border-l border-gray-100">+</button>
-        </div>)}
+      {/* Always-visible quantity selector */}
+      <div className="border-t border-gray-100 grid grid-cols-[36px_1fr_36px] h-10">
+        <button onClick={(e)=>handleQty(e,quantityInCart-1)}
+          disabled={quantityInCart===0||outOfStock}
+          className="flex items-center justify-center text-gray-500 hover:bg-gray-50 border-r border-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-lg font-medium">–</button>
+        {quantityInCart > 0 ? (
+          <span className="flex items-center justify-center text-sm font-bold text-green-700">{quantityInCart}</span>
+        ) : (
+          <button onClick={handleAdd} disabled={outOfStock}
+            className="flex items-center justify-center gap-1 text-xs font-semibold text-green-700 hover:bg-green-50 disabled:text-gray-300 disabled:cursor-not-allowed">
+            <ShoppingCart className="w-3.5 h-3.5" />Thêm
+          </button>
+        )}
+        <button onClick={(e)=>quantityInCart===0?handleAdd(e):handleQty(e,quantityInCart+1)}
+          disabled={outOfStock}
+          className="flex items-center justify-center text-green-600 hover:bg-green-50 border-l border-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-lg font-medium">+</button>
+      </div>
     </div>
   );
 }
