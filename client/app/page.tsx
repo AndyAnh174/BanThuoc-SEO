@@ -52,42 +52,66 @@ const pharmacyJsonLd = {
 
 export default function Home() {
   return (
-    <MainLayout>
+    <MainLayout fullWidth>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(pharmacyJsonLd) }}
       />
-      {/* Preload LCP hero image — browser discovers it immediately instead of after JS hydration */}
       <link
         rel="preload"
         as="image"
         href="/_next/image?url=%2F3.png&w=828&q=65"
         fetchPriority="high"
       />
-      {/* Hero Section with banner + store info (server-fetched for LCP) */}
       <h1 className="sr-only">Bán Thuốc Sỉ - Ngọc Kim Ngân Pharma (NKN) - Sàn Dược Phẩm Sỉ B2B Chính Hãng</h1>
-      <HeroSectionServer />
 
-      {/* Banner Row - Secondary banners */}
-      <BannerRow />
+      {/* Hero + Banner Row — full width */}
+      <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
+        <HeroSectionServer />
+        <BannerRow />
+      </div>
 
-      {/* Trust Badges - Lý do chọn BanThuoc */}
-      <TrustBadges />
+      {/* Trust Badges — green tint background */}
+      <div className="bg-gradient-to-r from-green-50 via-white to-green-50 py-2">
+        <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
+          <TrustBadges />
+        </div>
+      </div>
 
-      {/* Product Categories */}
-      <CategoryShowcase />
+      {/* Categories — white background */}
+      <div className="bg-white">
+        <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
+          <CategoryShowcase />
+        </div>
+      </div>
 
-      {/* Flash Sale - placed right after categories */}
-      <FlashSaleSection />
+      {/* Flash Sale — gradient background */}
+      <div className="bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
+          <FlashSaleSection />
+        </div>
+      </div>
 
-      {/* Featured Products */}
-      <FeaturedProducts />
+      {/* Featured Products — white background */}
+      <div className="bg-white">
+        <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
+          <FeaturedProducts />
+        </div>
+      </div>
 
-      {/* New Products (added within 30 days) */}
-      <NewProductsSection />
+      {/* New Products — gray tint background */}
+      <div className="bg-gradient-to-b from-gray-50 to-green-50/50">
+        <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
+          <NewProductsSection />
+        </div>
+      </div>
 
-      {/* Products by root category - dynamic, tu dong them khi co danh muc moi */}
-      <CategoryProductsSection />
+      {/* Category Products — white background */}
+      <div className="bg-white">
+        <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
+          <CategoryProductsSection />
+        </div>
+      </div>
 
     </MainLayout>
   );
