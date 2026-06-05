@@ -57,12 +57,6 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(pharmacyJsonLd) }}
       />
-      <link
-        rel="preload"
-        as="image"
-        href="/_next/image?url=%2F3.png&w=828&q=65"
-        fetchPriority="high"
-      />
       <h1 className="sr-only">Bán Thuốc Sỉ - Ngọc Kim Ngân Pharma (NKN) - Sàn Dược Phẩm Sỉ B2B Chính Hãng</h1>
 
       {/* Hero + Banner Row — full width */}
