@@ -61,7 +61,7 @@ export function BannerRow() {
             key={banner.id}
             href={banner.link_url || '#'}
             className="relative rounded-2xl overflow-hidden h-40 sm:h-48 shadow-sm hover:shadow-md transition-shadow"
-            style={{ backgroundColor: banner.background_color || '#f0fdf4' }}
+            style={{ backgroundColor: banner.background_color || 'transparent' }}
           >
             {banner.image_url && (
               <Image

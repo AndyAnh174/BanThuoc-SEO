@@ -65,8 +65,8 @@ export default function Home() {
         <BannerRow />
       </div>
 
-      {/* Trust Badges — green tint background */}
-      <div className="bg-gradient-to-r from-teal-50 via-white to-teal-50 py-2">
+      {/* Trust Badges */}
+      <div className="bg-white py-2">
         <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
           <TrustBadges />
         </div>
