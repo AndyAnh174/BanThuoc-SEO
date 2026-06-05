@@ -29,7 +29,7 @@ const defaultBanner: Banner = {
   subtitle: 'Hơn 10.000+ sản phẩm dược phẩm chính hãng, giao hàng nhanh toàn quốc. Đội ngũ dược sĩ tư vấn 24/7.',
   image_url: '',
   link_url: '/products', link_text: 'Mua ngay',
-  background_color: '#f0fdf4', text_color: '#0f766e',
+  background_color: 'transparent', text_color: '#0f766e',
 };
 
 const categoryIcons: Record<string, React.ReactNode> = {
@@ -151,7 +151,7 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
         </aside>
 
         {/* ── Right: Banner Carousel ── */}
-        <div className="flex-1 relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] bg-gradient-to-br from-teal-50 via-white to-teal-50 shadow-sm border border-gray-100">
+        <div className="flex-1 relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] bg-transparent shadow-sm border border-gray-100">
           <Link href={currentBanner.link_url || '#'} className="absolute inset-0 block">
             {currentBanner.image_url && (
               <Image src={currentBanner.image_url} alt={currentBanner.title} fill
