@@ -69,30 +69,10 @@ export function BannerRow() {
                 alt={banner.title}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
+                className="object-contain"
+                quality={90}
               />
             )}
-            <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-8">
-              <h3
-                className="text-lg sm:text-xl font-bold mb-1 drop-shadow-sm"
-                style={{ color: banner.text_color || '#ffffff' }}
-              >
-                {banner.title}
-              </h3>
-              {banner.subtitle && (
-                <p
-                  className="text-sm opacity-90 drop-shadow-sm line-clamp-2"
-                  style={{ color: banner.text_color || '#ffffff' }}
-                >
-                  {banner.subtitle}
-                </p>
-              )}
-              {banner.link_text && (
-                <span className="inline-block mt-3 px-4 py-1.5 bg-white/90 text-gray-900 rounded-full text-xs font-semibold group-hover:bg-white transition-colors w-fit">
-                  {banner.link_text}
-                </span>
-              )}
-            </div>
           </Link>
         ))}
       </div>
