@@ -2,121 +2,70 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductCard } from '@/src/features/products';
 import { getFeaturedProducts } from '@/src/features/products';
 import { mapApiProducts, MappedProduct } from '@/src/lib/api-mapper';
-import { ArrowRight, Star } from 'lucide-react';
-
+import { ArrowRight, Sparkles } from 'lucide-react';
 
 export function FeaturedProducts() {
   const [products, setProducts] = useState<MappedProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    (async () => {
       try {
         const response = await getFeaturedProducts();
-        let rawProducts = [];
-        if (response.data?.results) {
-          rawProducts = response.data.results.slice(0, 8);
-        } else if (Array.isArray(response.data)) {
-          rawProducts = response.data.slice(0, 8);
-        }
-        // Map API products to frontend format
-        setProducts(mapApiProducts(rawProducts));
-      } catch (error) {
-        console.error('Failed to fetch featured products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
+        let raw: any[] = [];
+        if (response.data?.results) raw = response.data.results.slice(0, 8);
+        else if (Array.isArray(response.data)) raw = response.data.slice(0, 8);
+        setProducts(mapApiProducts(raw));
+      } catch (error) { console.error('Failed to fetch featured products:', error); }
+      finally { setLoading(false); }
+    })();
   }, []);
 
   if (loading) {
     return (
-      <section className="py-12">
-        <div>
-          <div className="flex items-center justify-between mb-8">
-            <Skeleton className="h-10 w-48" />
-            <Skeleton className="h-10 w-32" />
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, i) => (
-              <Skeleton key={i} className="h-80 rounded-lg" />
-            ))}
-          </div>
+      <section className="py-8">
+        <Skeleton className="h-10 w-56 mb-6" />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-80 rounded-xl" />)}
         </div>
       </section>
     );
   }
 
-  if (products.length === 0) {
-    return null;
-  }
+  if (!products.length) return null;
 
   return (
     <section className="py-8">
-      <div>
-        {/* Section Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          {/* Colored Header - Solid green */}
-          <div className="bg-teal-600 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {/* Simple pill/capsule icon */}
-                {/* Custom Icon */}
-                <div className="relative w-8 h-8">
-                  <Image 
-                    src="/noi-bat.svg" 
-                    alt="Icon Nổi bật" 
-                    fill
-                    className="object-contain brightness-0 invert"
-                  />
-                </div>
-                <h2 className="text-xl md:text-2xl font-bold text-white">
-                  Sản Phẩm Nổi Bật
-                </h2>
-              </div>
-              <Button variant="secondary" size="sm" className="bg-white hover:bg-gray-50 text-teal-700 border-0 font-semibold shadow-sm" asChild>
-                <Link href="/products?featured=true">
-                  Xem tất cả
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
-              </Button>
-            </div>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-green-700" />
           </div>
-
-          {/* Products grid */}
-          <div className="p-4 sm:p-6">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  slug={product.slug}
-                  price={product.price}
-                  salePrice={product.salePrice}
-                  imageUrl={product.imageUrl || undefined}
-                  category={product.category || undefined}
-                  manufacturer={product.manufacturer || undefined}
-                  unit={product.unit}
-                  stockQuantity={product.stockQuantity}
-                  isFeatured={product.isFeatured}
-                  rating={product.rating}
-                  reviewCount={product.reviewCount}
-                  short_description={product.short_description}
-                  quantity_per_unit={product.quantity_per_unit}
-                />
-              ))}
-            </div>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900">Sản Phẩm Nổi Bật</h2>
+            <p className="text-sm text-gray-400">Được ưa chuộng nhất tuần này</p>
           </div>
         </div>
+        <Button variant="outline" size="sm" asChild
+          className="rounded-full border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300 font-semibold">
+          <Link href="/products?featured=true">Xem tất cả <ArrowRight className="w-4 h-4 ml-1.5" /></Link>
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {products.map(product => (
+          <ProductCard key={product.id} id={product.id} name={product.name} slug={product.slug}
+            price={product.price} salePrice={product.salePrice} imageUrl={product.imageUrl || undefined}
+            category={product.category || undefined} manufacturer={product.manufacturer || undefined}
+            unit={product.unit} stockQuantity={product.stockQuantity} isFeatured={product.isFeatured}
+            rating={product.rating} reviewCount={product.reviewCount}
+            short_description={product.short_description} quantity_per_unit={product.quantity_per_unit} />
+        ))}
       </div>
     </section>
   );

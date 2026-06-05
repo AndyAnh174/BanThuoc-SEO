@@ -3,231 +3,235 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Shield, 
-  Truck, 
-  Clock, 
-  GraduationCap,
-  Gift,
-  FileText,
-  ChevronRight,
-  ChevronLeft
+import { getCategories } from '@/src/features/products';
+import {
+  Shield, Truck, Clock, Gift, ChevronRight, ChevronLeft,
+  Pill, Apple, Heart, Stethoscope, Sparkles, Baby, Brain, Ear, Bone, Activity, Droplet,
+  Leaf, Zap
 } from 'lucide-react';
 
 interface Banner {
-  id: string;
-  title: string;
-  subtitle: string;
-  image_url: string;
-  link_url: string;
-  link_text: string;
-  background_color: string;
-  text_color: string;
+  id: string; title: string; subtitle: string; image_url: string;
+  link_url: string; link_text: string; background_color: string; text_color: string;
+}
+
+interface Category {
+  id: string; name: string; slug: string; description?: string;
+  productCount?: number; product_count?: number; icon?: string;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
-// Default banner when no banners exist
 const defaultBanner: Banner = {
   id: 'default',
   title: 'Sức khỏe là vàng,\nChăm sóc tận tâm',
   subtitle: 'Hơn 10.000+ sản phẩm dược phẩm chính hãng, giao hàng nhanh toàn quốc. Đội ngũ dược sĩ tư vấn 24/7.',
   image_url: '/3.png',
-  link_url: '/products',
-  link_text: 'Mua ngay',
-  background_color: '#ffffff', // Changed to white to match image background if needed, or keep green if transparent
-  text_color: '#000000',
+  link_url: '/products', link_text: 'Mua ngay',
+  background_color: '#f0fdf4', text_color: '#065f46',
 };
 
-interface HeroSectionProps {
-  initialBanners?: Banner[];
-}
+const categoryIcons: Record<string, React.ReactNode> = {
+  'thuoc-ke-don': <Pill className="w-5 h-5" />,
+  'thuoc-khong-ke-don': <Pill className="w-5 h-5" />,
+  'thuc-pham-chuc-nang': <Apple className="w-5 h-5" />,
+  'duoc-my-pham': <Sparkles className="w-5 h-5" />,
+  'thiet-bi-y-te': <Stethoscope className="w-5 h-5" />,
+  'cham-soc-ca-nhan': <Heart className="w-5 h-5" />,
+  'san-pham-me-be': <Baby className="w-5 h-5" />,
+  'vitamin': <Apple className="w-5 h-5" />,
+  'tim-mach': <Activity className="w-5 h-5" />,
+  'nao-than-kinh': <Brain className="w-5 h-5" />,
+  'tai-mui-hong': <Ear className="w-5 h-5" />,
+  'co-xuong-khop': <Bone className="w-5 h-5" />,
+  'mau-huyet-hoc': <Droplet className="w-5 h-5" />,
+  'khang-vi-sinh-vat': <Shield className="w-5 h-5" />,
+};
+
+interface HeroSectionProps { initialBanners?: Banner[]; }
 
 export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
-  const [banners, setBanners] = useState<Banner[]>(
-    initialBanners && initialBanners.length > 0 ? initialBanners : []
-  );
+  const [banners, setBanners] = useState<Banner[]>(initialBanners?.length ? initialBanners : []);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [loading, setLoading] = useState(
-    !(initialBanners && initialBanners.length > 0)
-  );
+  const [bannerLoading, setBannerLoading] = useState(!(initialBanners?.length));
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [catLoading, setCatLoading] = useState(true);
 
-  // Fetch banners only if not pre-loaded from server
+  // Fetch banners
   useEffect(() => {
-    if (initialBanners && initialBanners.length > 0) return;
-    async function fetchBanners() {
+    if (initialBanners?.length) return;
+    (async () => {
       try {
         const res = await fetch(`${API_URL}/banners/visible/`);
-        if (res.ok) {
-          const data = await res.json();
-          setBanners(data.length > 0 ? data : [defaultBanner]);
-        } else {
-          setBanners([defaultBanner]);
-        }
-      } catch (error) {
-        console.error('Failed to fetch banners:', error);
-        setBanners([defaultBanner]);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchBanners();
+        const data = await res.json();
+        setBanners(data?.length ? data : [defaultBanner]);
+      } catch { setBanners([defaultBanner]); }
+      finally { setBannerLoading(false); }
+    })();
   }, [initialBanners]);
 
-  // Auto-rotate banners
+  // Fetch categories
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await getCategories({ active_only: true });
+        const cats = response.data?.results || (Array.isArray(response.data) ? response.data : []);
+        setCategories(cats.slice(0, 10));
+      } catch {} finally { setCatLoading(false); }
+    })();
+  }, []);
+
+  // Auto-rotate
   useEffect(() => {
     if (banners.length <= 1) return;
-    
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % banners.length);
-    }, 5000);
-    
+    const interval = setInterval(() => setCurrentIndex(p => (p + 1) % banners.length), 5000);
     return () => clearInterval(interval);
   }, [banners.length]);
 
-  const goToPrev = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + banners.length) % banners.length);
-  }, [banners.length]);
-
-  const goToNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % banners.length);
-  }, [banners.length]);
-
+  const goToPrev = useCallback(() => setCurrentIndex(p => (p - 1 + banners.length) % banners.length), [banners.length]);
+  const goToNext = useCallback(() => setCurrentIndex(p => (p + 1) % banners.length), [banners.length]);
   const currentBanner = banners[currentIndex] || defaultBanner;
+
+  if (bannerLoading) {
+    return (
+      <section className="py-6">
+        <div className="flex gap-4">
+          <Skeleton className="hidden lg:block w-[280px] h-[420px] rounded-2xl shrink-0" />
+          <Skeleton className="flex-1 h-[420px] rounded-2xl" />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-6">
-      <div className="grid lg:grid-cols-3 gap-4">
-        {/* Left: Main Banner Carousel */}
-        <div className="lg:col-span-2 relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[380px] lg:min-h-[400px]">
-          {loading ? (
-            <Skeleton className="absolute inset-0" />
-          ) : (
-            <>
-              {/* Banner Content */}
-                <Link href={currentBanner.link_url || '#'} className="absolute inset-0 block">
-                  <div 
-                    className="absolute inset-0 transition-colors duration-500"
-                    style={{ backgroundColor: currentBanner.background_color }}
-                  >
-                    {/* Background Image */}
-                    {currentBanner.image_url && (
-                      <Image
-                        src={currentBanner.image_url}
-                        alt={currentBanner.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 900px"
-                        className="object-cover"
-                        priority
-                        fetchPriority="high"
-                        quality={65}
-                      />
-                    )}
+      <div className="flex gap-4">
+        {/* ── Left: Category Sidebar (desktop) ── */}
+        <aside className="hidden lg:flex flex-col w-[280px] shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden h-fit">
+          <div className="px-5 py-4 border-b border-gray-50 bg-gradient-to-r from-green-50 to-emerald-50">
+            <div className="flex items-center gap-2">
+              <Leaf className="w-5 h-5 text-green-600" />
+              <h3 className="font-bold text-gray-900">Danh mục sản phẩm</h3>
+            </div>
+          </div>
+          <nav className="flex-1">
+            {catLoading ? (
+              <div className="p-4 space-y-3">{[...Array(8)].map((_, i) => <Skeleton key={i} className="h-14 w-full rounded-lg" />)}</div>
+            ) : (
+              <ul className="py-1">
+                {categories.map(cat => {
+                  const icon = categoryIcons[cat.slug] || <Pill className="w-5 h-5" />;
+                  const count = cat.productCount ?? cat.product_count;
+                  return (
+                    <li key={cat.id}>
+                      <Link href={`/products?category=${cat.slug}`}
+                        className="flex items-center gap-3 px-5 py-3 hover:bg-green-50/60 transition-colors group/item">
+                        <span className="w-9 h-9 bg-green-50 rounded-lg flex items-center justify-center text-green-600 shrink-0 group-hover/item:bg-green-100 transition-colors">
+                          {icon}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-900 truncate">{cat.name}</p>
+                          <p className="text-xs text-gray-400 truncate">{count ? `${count} sản phẩm` : cat.description || ''}</p>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover/item:text-green-600 group-hover/item:translate-x-0.5 transition-all shrink-0" />
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </nav>
+          <div className="px-4 py-3 border-t border-gray-50 bg-gray-50/50">
+            <Link href="/products"
+              className="flex items-center justify-center gap-2 w-full py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold text-sm transition-colors shadow-sm">
+              Xem tất cả danh mục <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </aside>
+
+        {/* ── Right: Banner Carousel ── */}
+        <div className="flex-1 relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] bg-gradient-to-br from-green-50 via-white to-emerald-50 shadow-sm border border-gray-100">
+          <Link href={currentBanner.link_url || '#'} className="absolute inset-0 block">
+            <div className="absolute inset-0 transition-colors duration-500 bg-gradient-to-r from-green-50/90 via-white/80 to-transparent z-10" />
+            {currentBanner.image_url && (
+              <Image src={currentBanner.image_url} alt={currentBanner.title} fill
+                sizes="(max-width: 768px) 100vw, 75vw" className="object-cover object-right"
+                priority fetchPriority="high" quality={65} />
+            )}
+
+            {/* Overlay content */}
+            <div className="absolute inset-0 z-20 flex flex-col justify-center px-8 lg:px-12 max-w-[55%]">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-green-700 uppercase mb-3 bg-green-100 px-3 py-1.5 rounded-full self-start">
+                <Zap className="w-3.5 h-3.5 fill-green-600 text-green-600" />
+                Dược phẩm B2B
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold leading-tight mb-4 text-gray-900">
+                {currentBanner.title.split('\n').map((line, i) => (
+                  <React.Fragment key={i}>{line}{i < currentBanner.title.split('\n').length - 1 && <br />}</React.Fragment>
+                ))}
+              </h2>
+              <p className="text-sm sm:text-base text-gray-500 mb-6 line-clamp-2">{currentBanner.subtitle}</p>
+              <span className="inline-flex items-center gap-2 w-fit px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold text-base rounded-xl shadow-lg shadow-green-600/25 transition-all hover:shadow-green-600/40 hover:-translate-y-0.5">
+                {currentBanner.link_text || 'Mua ngay'}
+                <ChevronRight className="w-5 h-5" />
+              </span>
+
+              {/* Trust badges inside banner */}
+              <div className="flex flex-wrap gap-5 mt-8">
+                {[
+                  { icon: <Shield className="w-4 h-4" />, text: '100% Chính hãng' },
+                  { icon: <Truck className="w-4 h-4" />, text: 'Giao hàng toàn quốc' },
+                  { icon: <Clock className="w-4 h-4" />, text: 'Hỗ trợ 24/7' },
+                ].map((badge, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <span className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                      {badge.icon}
+                    </span>
+                    <span className="text-xs font-semibold text-gray-700 whitespace-nowrap">{badge.text}</span>
                   </div>
-                </Link>
+                ))}
+              </div>
+            </div>
+          </Link>
 
-              {/* Navigation Arrows */}
-              {banners.length > 1 && (
-                <>
-                  <button
-                    onClick={goToPrev}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white hover:bg-white/90 rounded-full flex items-center justify-center transition-all shadow-md active:scale-95 group"
-                    aria-label="Previous banner"
-                  >
-                    <ChevronLeft className="w-6 h-6 text-green-700 transition-transform group-hover:-translate-x-0.5" />
-                  </button>
-                  <button
-                    onClick={goToNext}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white hover:bg-white/90 rounded-full flex items-center justify-center transition-all shadow-md active:scale-95 group"
-                    aria-label="Next banner"
-                  >
-                    <ChevronRight className="w-6 h-6 text-green-700 transition-transform group-hover:translate-x-0.5" />
-                  </button>
-                </>
-              )}
+          {/* Nav arrows */}
+          {banners.length > 1 && (<>
+            <button onClick={goToPrev}
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all active:scale-95 group backdrop-blur-sm">
+              <ChevronLeft className="w-5 h-5 text-gray-700 transition-transform group-hover:-translate-x-0.5" /></button>
+            <button onClick={goToNext}
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all active:scale-95 group backdrop-blur-sm">
+              <ChevronRight className="w-5 h-5 text-gray-700 transition-transform group-hover:translate-x-0.5" /></button>
+          </>)}
 
-              {/* Dots */}
-              {banners.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                  {banners.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentIndex(idx)}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        idx === currentIndex 
-                          ? 'bg-white w-6' 
-                          : 'bg-white/50 hover:bg-white/70'
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
-            </>
+          {/* Dots */}
+          {banners.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+              {banners.map((_, idx) => (
+                <button key={idx} onClick={() => setCurrentIndex(idx)}
+                  className={`transition-all rounded-full ${idx === currentIndex ? 'bg-green-600 w-6 h-2' : 'bg-gray-300 hover:bg-gray-400 w-2 h-2'}`} />
+              ))}
+            </div>
           )}
-        </div>
-
-        {/* Right: Info Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 h-full">
-          {/* Card 1 */}
-          <div className="bg-white rounded-2xl p-5 border border-green-50 shadow-sm hover:shadow-md transition-all duration-300 group">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
-                <Shield className="w-6 h-6 text-green-600" />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900 mb-1">100% Chính hãng</h3>
-                <p className="text-xs text-gray-500 leading-relaxed">Cam kết sản phẩm nguồn gốc rõ ràng, đầy đủ hóa đơn</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2 */}
-          <div className="bg-white rounded-2xl p-5 border border-orange-50 shadow-sm hover:shadow-md transition-all duration-300 group">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
-                <Truck className="w-6 h-6 text-orange-600" />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900 mb-1">Giao siêu tốc 2H</h3>
-                <p className="text-xs text-gray-500 leading-relaxed">Nhận hàng ngay trong ngày với đơn nội thành HCM</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 3 */}
-          <div className="bg-white rounded-2xl p-5 border border-blue-50 shadow-sm hover:shadow-md transition-all duration-300 group">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
-                <Clock className="w-6 h-6 text-blue-600" />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900 mb-1">Tư vấn 24/7</h3>
-                <p className="text-xs text-gray-500 leading-relaxed">Chat trực tiếp với Dược sĩ chuyên môn cao</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 4 - Highlight */}
-          <div className="bg-linear-to-br from-emerald-500 to-green-600 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full translate-x-1/3 -translate-y-1/3 group-hover:scale-110 transition-transform duration-500" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -translate-x-1/3 translate-y-1/3 group-hover:scale-110 transition-transform duration-500" />
-            
-            <div className="relative flex items-center justify-between h-full">
-              <div>
-                 <div className="text-3xl font-extrabold mb-1 tracking-tight">10K+</div>
-                 <p className="text-sm text-green-50 font-medium">Sản phẩm đa dạng</p>
-              </div>
-              <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                 <Gift className="w-5 h-5 text-white" />
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
-
+      {/* ── Mobile Category Pills ── */}
+      <div className="lg:hidden mt-4 flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+        {catLoading ? [...Array(5)].map((_, i) => <Skeleton key={i} className="h-10 w-28 rounded-full shrink-0" />) :
+          categories.slice(0, 8).map(cat => (
+            <Link key={cat.id} href={`/products?category=${cat.slug}`}
+              className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-700 hover:border-green-300 hover:text-green-700 hover:bg-green-50 shrink-0 transition-colors">
+              <span className="text-green-600">{categoryIcons[cat.slug] || <Pill className="w-3.5 h-3.5" />}</span>
+              {cat.name}
+            </Link>
+          ))}
+        <Link href="/products"
+          className="flex items-center gap-1 px-3 py-2 bg-green-600 text-white rounded-full text-xs font-semibold shrink-0 hover:bg-green-700 transition-colors">
+          Tất cả <ChevronRight className="w-3.5 h-3.5" />
+        </Link>
+      </div>
     </section>
   );
 }
