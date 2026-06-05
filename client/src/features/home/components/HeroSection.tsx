@@ -153,7 +153,7 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
         {/* ── Right: Banner Carousel ── */}
         <div className="flex-1 relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] bg-gradient-to-br from-green-50 via-white to-emerald-50 shadow-sm border border-gray-100">
           <Link href={currentBanner.link_url || '#'} className="absolute inset-0 block">
-            <div className="absolute inset-0 transition-colors duration-500 bg-gradient-to-r from-green-50/90 via-white/80 to-transparent z-10" />
+            <div className="absolute inset-0 transition-colors duration-500 bg-gradient-to-r from-black/30 via-black/10 to-transparent z-10" />
             {currentBanner.image_url && (
               <Image src={currentBanner.image_url} alt={currentBanner.title} fill
                 sizes="(max-width: 768px) 100vw, 75vw" className="object-cover object-right"
@@ -162,16 +162,16 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
 
             {/* Overlay content */}
             <div className="absolute inset-0 z-20 flex flex-col justify-center px-8 lg:px-12 max-w-[55%]">
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-green-700 uppercase mb-3 bg-green-100 px-3 py-1.5 rounded-full self-start">
-                <Zap className="w-3.5 h-3.5 fill-green-600 text-green-600" />
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-green-200 uppercase mb-3 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full self-start">
+                <Zap className="w-3.5 h-3.5 fill-green-300 text-green-300" />
                 Dược phẩm B2B
               </span>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold leading-tight mb-4 text-gray-900">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold leading-tight mb-4 text-white drop-shadow-md">
                 {currentBanner.title.split('\n').map((line, i) => (
                   <React.Fragment key={i}>{line}{i < currentBanner.title.split('\n').length - 1 && <br />}</React.Fragment>
                 ))}
               </h2>
-              <p className="text-sm sm:text-base text-gray-500 mb-6 line-clamp-2">{currentBanner.subtitle}</p>
+              <p className="text-sm sm:text-base text-white/80 mb-6 line-clamp-2 drop-shadow">{currentBanner.subtitle}</p>
               <span className="inline-flex items-center gap-2 w-fit px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold text-base rounded-xl shadow-lg shadow-green-600/25 transition-all hover:shadow-green-600/40 hover:-translate-y-0.5">
                 {currentBanner.link_text || 'Mua ngay'}
                 <ChevronRight className="w-5 h-5" />
@@ -185,10 +185,10 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
                   { icon: <Clock className="w-4 h-4" />, text: 'Hỗ trợ 24/7' },
                 ].map((badge, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <span className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                    <span className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white">
                       {badge.icon}
                     </span>
-                    <span className="text-xs font-semibold text-gray-700 whitespace-nowrap">{badge.text}</span>
+                    <span className="text-xs font-semibold text-white whitespace-nowrap drop-shadow">{badge.text}</span>
                   </div>
                 ))}
               </div>
@@ -210,7 +210,7 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex gap-2">
               {banners.map((_, idx) => (
                 <button key={idx} onClick={() => setCurrentIndex(idx)}
-                  className={`transition-all rounded-full ${idx === currentIndex ? 'bg-green-600 w-6 h-2' : 'bg-gray-300 hover:bg-gray-400 w-2 h-2'}`} />
+                  className={`transition-all rounded-full ${idx === currentIndex ? 'bg-white w-6 h-2' : 'bg-white/40 hover:bg-white/60 w-2 h-2'}`} />
               ))}
             </div>
           )}
