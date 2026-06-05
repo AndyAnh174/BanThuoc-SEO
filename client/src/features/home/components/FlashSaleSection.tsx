@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getCurrentFlashSale } from '@/src/features/products';
 import { useCartStore } from '@/src/features/cart/stores/cart.store';
 import { useAuthStore } from '@/src/features/auth/stores/auth.store';
-import { ArrowRight, ChevronRight, ChevronLeft, Zap, Plus, Flame, Clock } from 'lucide-react';
+import { ArrowRight, ChevronRight, ChevronLeft, Zap, Plus, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface FlashSaleData {
@@ -26,7 +26,6 @@ interface FlashSaleItem {
 }
 interface TimeLeft { hours: number; minutes: number; seconds: number; }
 
-// ── Countdown ──
 function CountdownTimer({ endTime }: { endTime: string }) {
   const [t, setT] = useState<TimeLeft>({ hours: 0, minutes: 0, seconds: 0 });
   const [expired, setExpired] = useState(false);
@@ -41,20 +40,18 @@ function CountdownTimer({ endTime }: { endTime: string }) {
     return () => clearInterval(timer);
   }, [endTime]);
   const pad = (n: number) => String(Math.max(0, n)).padStart(2, '0');
-  if (expired) return <span className="text-white/80 text-sm font-semibold">Đã kết thúc</span>;
+  if (expired) return <span className="text-gray-400 text-sm">Đã kết thúc</span>;
   return (
-    <div className="flex items-center gap-1.5">
-      <span className="bg-white/20 text-white text-xs px-1.5 py-1 rounded">Giờ</span>
-      <span className="bg-black/60 text-white font-mono text-lg font-bold w-10 h-9 inline-flex items-center justify-center rounded tabular-nums shadow-inner">{pad(t.hours)}</span>
-      <span className="text-white font-bold text-lg">:</span>
-      <span className="bg-black/60 text-white font-mono text-lg font-bold w-10 h-9 inline-flex items-center justify-center rounded tabular-nums shadow-inner">{pad(t.minutes)}</span>
-      <span className="text-white font-bold text-lg">:</span>
-      <span className="bg-black/60 text-white font-mono text-lg font-bold w-10 h-9 inline-flex items-center justify-center rounded tabular-nums shadow-inner">{pad(t.seconds)}</span>
+    <div className="flex items-center gap-1">
+      <span className="bg-gray-900 text-white font-mono text-sm font-bold w-8 h-8 inline-flex items-center justify-center rounded tabular-nums">{pad(t.hours)}</span>
+      <span className="text-gray-900 font-bold text-sm">:</span>
+      <span className="bg-gray-900 text-white font-mono text-sm font-bold w-8 h-8 inline-flex items-center justify-center rounded tabular-nums">{pad(t.minutes)}</span>
+      <span className="text-gray-900 font-bold text-sm">:</span>
+      <span className="bg-gray-900 text-white font-mono text-sm font-bold w-8 h-8 inline-flex items-center justify-center rounded tabular-nums">{pad(t.seconds)}</span>
     </div>
   );
 }
 
-// ── Product Card ──
 function FlashProductCard({ item, onAdd }: { item: FlashSaleItem; onAdd: (i: FlashSaleItem) => void }) {
   const discount = item.product.price > 0 ? Math.round(((item.product.price - item.flashSalePrice) / item.product.price) * 100) : 0;
   const soldPct = item.quantity > 0 ? Math.min(100, Math.round((item.soldQuantity / item.quantity) * 100)) : 0;
@@ -62,42 +59,44 @@ function FlashProductCard({ item, onAdd }: { item: FlashSaleItem; onAdd: (i: Fla
   const fmt = (p: number) => new Intl.NumberFormat('vi-VN').format(p);
 
   return (
-    <Link href={`/products/${item.product.slug}`} className="flex-shrink-0 w-[200px] bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group/card">
-      <div className="relative aspect-square bg-gray-50">
-        {item.product.imageUrl ? <Image src={item.product.imageUrl} alt={item.product.name} fill sizes="200px" className="object-contain p-3" />
-          : <div className="w-full h-full flex items-center justify-center text-gray-300"><Zap className="w-12 h-12" /></div>}
-        {discount > 0 && <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md">Giảm {discount}%</span>}
-        <span className="absolute top-2 right-2 bg-green-600 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded">FLASH SALE</span>
+    <Link href={`/products/${item.product.slug}`}
+      className="flex-shrink-0 w-[190px] bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md hover:border-red-100 transition-all duration-200 group/card">
+      <div className="relative aspect-square bg-gray-50/50">
+        {item.product.imageUrl
+          ? <Image src={item.product.imageUrl} alt={item.product.name} fill sizes="190px" className="object-contain p-3 group-hover/card:scale-105 transition-transform duration-500" />
+          : <div className="w-full h-full flex items-center justify-center text-gray-200"><Zap className="w-10 h-10" /></div>}
+        {discount > 0 && (
+          <span className="absolute top-2 left-2 bg-red-500 text-white text-[11px] font-bold px-1.5 py-0.5 rounded">-{discount}%</span>
+        )}
       </div>
-      <div className="p-3 space-y-2">
-        <h3 className="text-xs text-gray-700 line-clamp-2 leading-snug min-h-[2.4em]">{item.product.name}</h3>
-        <div>
-          <span className="text-base font-bold text-green-700">{fmt(item.flashSalePrice)}đ</span>
-          <span className="text-[10px] text-gray-400 ml-1">/{item.product.unit || 'Hộp'}</span>
-          {item.product.price > item.flashSalePrice && (
-            <p className="text-xs text-gray-400 line-through mt-0.5">{fmt(item.product.price)}đ</p>)}
+      <div className="p-2.5 space-y-1.5">
+        <h3 className="text-xs text-gray-800 line-clamp-2 leading-snug min-h-[2.4em]">{item.product.name}</h3>
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-sm font-bold text-red-600">{fmt(item.flashSalePrice)}đ</span>
+          <span className="text-[10px] text-gray-400">/{item.product.unit || 'Hộp'}</span>
         </div>
-        <div className="w-full h-5 bg-green-100 rounded-full overflow-hidden relative">
-          <div className="absolute inset-y-0 left-0 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full transition-all duration-700" style={{ width: `${soldPct}%` }} />
-          <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white drop-shadow-sm">
-            {soldPct >= 80 ? 'Sắp cháy hàng' : soldPct > 0 ? 'Đang bán chạy' : 'Mới mở bán'}
+        {item.product.price > item.flashSalePrice && (
+          <p className="text-[11px] text-gray-400 line-through">{fmt(item.product.price)}đ</p>)}
+        {/* Progress bar */}
+        <div className="w-full h-4 bg-red-50 rounded-full overflow-hidden relative mt-1">
+          <div className="absolute inset-y-0 left-0 bg-gradient-to-r from-red-400 to-red-500 rounded-full transition-all duration-700" style={{ width: `${soldPct}%` }} />
+          <span className="absolute inset-0 flex items-center justify-center text-[9px] font-semibold text-red-700">
+            {soldPct >= 80 ? 'Sắp hết' : `Đã bán ${soldPct}%`}
           </span>
         </div>
         <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onAdd(item); }}
           disabled={remaining <= 0}
-          className="w-full flex items-center justify-center gap-1 py-2 border-2 border-green-600 text-green-700 rounded-xl font-semibold text-sm hover:bg-green-50 transition-colors disabled:border-gray-200 disabled:text-gray-400">
-          <Plus className="w-4 h-4" />{remaining <= 0 ? 'Hết hàng' : 'Chọn mua'}
+          className="w-full py-1.5 border border-red-200 text-red-600 rounded-lg font-semibold text-xs hover:bg-red-50 transition-colors disabled:border-gray-150 disabled:text-gray-300 disabled:cursor-not-allowed">
+          {remaining <= 0 ? 'Hết hàng' : 'Chọn mua'}
         </button>
       </div>
     </Link>
   );
 }
 
-// ── Main ──
 export function FlashSaleSection() {
   const [flashSale, setFlashSale] = useState<FlashSaleData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { addToCart } = useCartStore();
@@ -140,58 +139,48 @@ export function FlashSaleSection() {
 
   const scroll = (dir: 'left' | 'right') => {
     if (!carouselRef.current) return;
-    carouselRef.current.scrollBy({ left: dir === 'left' ? -440 : 440, behavior: 'smooth' });
+    carouselRef.current.scrollBy({ left: dir === 'left' ? -420 : 420, behavior: 'smooth' });
   };
 
-  const filters = flashSale ? [...new Set(flashSale.items.map(i => i.product.category?.name).filter(Boolean))] : [];
-  const filtered = flashSale?.items.filter(i => !activeFilter || i.product.category?.name === activeFilter) || [];
-
-  if (loading) return <section className="py-6"><Skeleton className="h-[420px] rounded-2xl" /></section>;
+  if (loading) return <section className="py-6"><Skeleton className="h-[380px] rounded-2xl" /></section>;
   if (!flashSale || !flashSale.items.length) return null;
 
   return (
     <section className="py-6">
-      <div className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-2xl overflow-hidden shadow-lg shadow-green-600/20">
-        {/* Header */}
-        <div className="px-5 pt-5 pb-3 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-4 flex-wrap">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-2">
-                <Flame className="w-7 h-7 fill-white" />Flash Sale
-              </h2>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        {/* Header strip — red accent for urgency */}
+        <div className="bg-gradient-to-r from-red-500 to-rose-500 px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Zap className="w-5 h-5 text-yellow-300 fill-yellow-300" />
+              <h2 className="text-lg sm:text-xl font-extrabold text-white">Flash Sale</h2>
+            </div>
+            <span className="hidden sm:inline-flex items-center gap-1 bg-white/20 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-yellow-300 animate-pulse" />ĐANG DIỄN RA
+            </span>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-white/80 text-xs font-medium">Kết thúc sau</span>
               <CountdownTimer endTime={flashSale.endTime} />
             </div>
             <Link href="/flash-sale" className="flex items-center gap-1 text-white/90 hover:text-white font-semibold text-sm shrink-0">
               Xem tất cả <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-          {filters.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-              <button onClick={() => setActiveFilter(null)}
-                className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${!activeFilter ? 'bg-white text-green-700 border-white' : 'text-white border-white/40 hover:border-white/70'}`}>Tất cả</button>
-              {filters.map(f => (
-                <button key={f} onClick={() => setActiveFilter(f === activeFilter ? null : f!)}
-                  className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${activeFilter === f ? 'bg-white text-green-700 border-white' : 'text-white border-white/40 hover:border-white/70'}`}>{f}</button>
-              ))}
-            </div>
-          )}
         </div>
 
-        {/* Carousel */}
-        <div className="relative bg-white/10 backdrop-blur-sm mx-4 mb-4 rounded-2xl p-4">
-          {filtered.length > 3 && (
-            <button onClick={() => scroll('left')}
-              className="absolute left-1 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all -translate-x-2">
-              <ChevronLeft className="w-5 h-5 text-gray-700" /></button>
-          )}
-          <div ref={carouselRef} className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-1">
-            {filtered.map(item => <FlashProductCard key={item.id} item={item} onAdd={handleAdd} />)}
+        {/* Product carousel */}
+        <div className="relative p-4">
+          <button onClick={() => scroll('left')}
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all -translate-x-1">
+            <ChevronLeft className="w-4 h-4 text-gray-600" /></button>
+          <div ref={carouselRef} className="flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth px-2">
+            {flashSale.items.map(item => <FlashProductCard key={item.id} item={item} onAdd={handleAdd} />)}
           </div>
-          {filtered.length > 3 && (
-            <button onClick={() => scroll('right')}
-              className="absolute right-1 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all translate-x-2">
-              <ChevronRight className="w-5 h-5 text-gray-700" /></button>
-          )}
+          <button onClick={() => scroll('right')}
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all translate-x-1">
+            <ChevronRight className="w-4 h-4 text-gray-600" /></button>
         </div>
       </div>
     </section>
