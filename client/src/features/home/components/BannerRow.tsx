@@ -60,7 +60,7 @@ export function BannerRow() {
           <Link
             key={banner.id}
             href={banner.link_url || '#'}
-            className="relative rounded-2xl overflow-hidden h-36 sm:h-44 group shadow-sm hover:shadow-md transition-shadow"
+            className="relative rounded-2xl overflow-hidden h-40 sm:h-48 shadow-sm hover:shadow-md transition-shadow"
             style={{ backgroundColor: banner.background_color || '#f0fdf4' }}
           >
             {banner.image_url && (
@@ -69,10 +69,9 @@ export function BannerRow() {
                 alt={banner.title}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                className="object-cover"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-8">
               <h3
                 className="text-lg sm:text-xl font-bold mb-1 drop-shadow-sm"
