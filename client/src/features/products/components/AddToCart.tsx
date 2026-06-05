@@ -189,7 +189,7 @@ export function AddToCart({
       </div>
 
       {/* Total price */}
-      <div className="flex items-center justify-between py-3 px-4 bg-green-50 rounded-lg">
+      <div className="flex items-center justify-between py-3 px-4 bg-teal-50 rounded-lg">
         <span className="text-sm text-gray-700">Tạm tính:</span>
         <span className="text-xl font-bold text-primary">
           {formatPrice(price * quantity)}
@@ -204,7 +204,7 @@ export function AddToCart({
           className={cn(
             'flex-1 h-12 text-base font-semibold transition-all',
             isAdded
-              ? 'bg-green-600 hover:bg-green-700'
+              ? 'bg-teal-600 hover:bg-teal-700'
               : 'bg-primary hover:bg-primary/90'
           )}
         >

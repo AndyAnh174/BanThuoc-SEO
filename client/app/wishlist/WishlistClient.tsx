@@ -54,7 +54,7 @@ export function WishlistClient() {
   if (isAuthLoading || (isAuthenticated && isLoading)) {
     return (
         <div className="min-h-[60vh] flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-green-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
         </div>
     );
   }
@@ -108,7 +108,7 @@ export function WishlistClient() {
                 Bạn chưa lưu sản phẩm nào. Hãy khám phá và thả tim cho các sản phẩm bạn quan tâm nhé!
             </p>
             <Link href="/products">
-                <Button className="bg-green-600 hover:bg-green-700">
+                <Button className="bg-teal-600 hover:bg-teal-700">
                     <ShoppingBag className="w-4 h-4 mr-2" />
                     Khám phá sản phẩm
                 </Button>

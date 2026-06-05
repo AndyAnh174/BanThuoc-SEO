@@ -38,7 +38,7 @@ export function BrandStrip() {
           <div className="flex gap-8 animate-scroll">
             {[...brands, ...brands].map((brand, i) => (
               <Link key={`${brand.id}-${i}`} href={`/manufacturers/${brand.slug}`}
-                className="flex-shrink-0 w-24 h-16 bg-gray-50 rounded-xl flex items-center justify-center p-3 hover:shadow-md hover:border-green-200 border border-transparent transition-all">
+                className="flex-shrink-0 w-24 h-16 bg-gray-50 rounded-xl flex items-center justify-center p-3 hover:shadow-md hover:border-teal-200 border border-transparent transition-all">
                 {brand.logo ? (
                   <Image src={brand.logo} alt={brand.name} width={80} height={40} className="object-contain max-h-full opacity-70 hover:opacity-100 transition-opacity" />
                 ) : (

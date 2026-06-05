@@ -78,15 +78,15 @@ function ResetPasswordForm() {
         <div className="p-8">
             {isSuccess ? (
                 <div className="text-center space-y-4">
-                    <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                        <CheckCircle className="w-8 h-8 text-green-600" />
+                    <div className="mx-auto w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center">
+                        <CheckCircle className="w-8 h-8 text-teal-600" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900">Dat lai mat khau thanh cong!</h3>
                     <p className="text-gray-500 text-sm">
                         Ban co the dang nhap voi mat khau moi.
                     </p>
                     <Button
-                        className="w-full rounded-full h-12 bg-green-700 hover:bg-green-800 text-white mt-4"
+                        className="w-full rounded-full h-12 bg-teal-700 hover:bg-teal-800 text-white mt-4"
                         asChild
                     >
                         <Link href="/auth/login">Dang nhap ngay</Link>
@@ -110,9 +110,9 @@ function ResetPasswordForm() {
                                                     {...field}
                                                     type="password"
                                                     placeholder=" "
-                                                    className="peer block w-full px-6 h-14 rounded-full border border-gray-200 bg-green-50/30 text-base text-gray-900 focus:border-green-600 focus:ring-1 focus:ring-green-600 focus:bg-white transition-all outline-none"
+                                                    className="peer block w-full px-6 h-14 rounded-full border border-gray-200 bg-teal-50/30 text-base text-gray-900 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 focus:bg-white transition-all outline-none"
                                                 />
-                                                <label className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 text-base transition-all duration-300 pointer-events-none peer-focus:top-0 peer-focus:translate-y-[-50%] peer-focus:text-xs peer-focus:text-green-700 peer-focus:bg-white peer-focus:px-2 peer-focus:ml-[-8px] peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:translate-y-[-50%] peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:text-green-700 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:px-2 peer-not-placeholder-shown:ml-[-8px]">
+                                                <label className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 text-base transition-all duration-300 pointer-events-none peer-focus:top-0 peer-focus:translate-y-[-50%] peer-focus:text-xs peer-focus:text-teal-700 peer-focus:bg-white peer-focus:px-2 peer-focus:ml-[-8px] peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:translate-y-[-50%] peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:text-teal-700 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:px-2 peer-not-placeholder-shown:ml-[-8px]">
                                                     Mat khau moi
                                                 </label>
                                             </div>
@@ -133,9 +133,9 @@ function ResetPasswordForm() {
                                                     {...field}
                                                     type="password"
                                                     placeholder=" "
-                                                    className="peer block w-full px-6 h-14 rounded-full border border-gray-200 bg-green-50/30 text-base text-gray-900 focus:border-green-600 focus:ring-1 focus:ring-green-600 focus:bg-white transition-all outline-none"
+                                                    className="peer block w-full px-6 h-14 rounded-full border border-gray-200 bg-teal-50/30 text-base text-gray-900 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 focus:bg-white transition-all outline-none"
                                                 />
-                                                <label className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 text-base transition-all duration-300 pointer-events-none peer-focus:top-0 peer-focus:translate-y-[-50%] peer-focus:text-xs peer-focus:text-green-700 peer-focus:bg-white peer-focus:px-2 peer-focus:ml-[-8px] peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:translate-y-[-50%] peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:text-green-700 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:px-2 peer-not-placeholder-shown:ml-[-8px]">
+                                                <label className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 text-base transition-all duration-300 pointer-events-none peer-focus:top-0 peer-focus:translate-y-[-50%] peer-focus:text-xs peer-focus:text-teal-700 peer-focus:bg-white peer-focus:px-2 peer-focus:ml-[-8px] peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:translate-y-[-50%] peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:text-teal-700 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:px-2 peer-not-placeholder-shown:ml-[-8px]">
                                                     Xac nhan mat khau moi
                                                 </label>
                                             </div>
@@ -148,7 +148,7 @@ function ResetPasswordForm() {
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full h-14 rounded-full bg-green-700 hover:bg-green-800 text-white shadow-lg shadow-green-200 transition-all hover:scale-105 active:scale-95 text-lg font-semibold"
+                                className="w-full h-14 rounded-full bg-teal-700 hover:bg-teal-800 text-white shadow-lg shadow-teal-200 transition-all hover:scale-105 active:scale-95 text-lg font-semibold"
                             >
                                 {isLoading ? (
                                     <>
@@ -163,7 +163,7 @@ function ResetPasswordForm() {
                             <div className="text-center">
                                 <Link
                                     href="/auth/login"
-                                    className="text-sm text-green-600 hover:text-green-700 hover:underline inline-flex items-center gap-1"
+                                    className="text-sm text-teal-600 hover:text-teal-700 hover:underline inline-flex items-center gap-1"
                                 >
                                     <ArrowLeft className="w-3 h-3" />
                                     Quay lai dang nhap
@@ -187,7 +187,7 @@ export default function ResetPasswordPage() {
                 className="w-full max-w-[500px] bg-white rounded-[30px] shadow-xl overflow-hidden ring-1 ring-black/5"
             >
                 {/* Header */}
-                <div className="bg-green-600 p-8 text-white text-center relative overflow-hidden">
+                <div className="bg-teal-600 p-8 text-white text-center relative overflow-hidden">
                     <div className="absolute top-[-50px] right-[-50px] w-48 h-48 rounded-full border-[20px] border-white opacity-10" />
                     <div className="relative z-10">
                         <div className="flex items-center justify-center gap-2 mb-4">

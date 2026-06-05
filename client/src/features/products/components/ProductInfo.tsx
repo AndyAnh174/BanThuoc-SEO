@@ -174,7 +174,7 @@ export function ProductInfo({
             ⚠️ Chỉ còn {stockQuantity} sản phẩm
           </span>
         ) : (
-          <span className="text-green-600 font-medium flex items-center gap-1">
+          <span className="text-teal-600 font-medium flex items-center gap-1">
             <ShieldCheck className="w-4 h-4" />
             Còn hàng
           </span>

@@ -117,7 +117,7 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
       )}
 
       {/* Top bar - Darker/Premium */}
-      <div className="bg-emerald-900 text-emerald-50 py-3 text-xs font-medium hidden md:block transition-colors">
+      <div className="bg-teal-900 text-teal-50 py-3 text-xs font-medium hidden md:block transition-colors">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center gap-6 opacity-90 hover:opacity-100 transition-opacity">
             <span className="flex items-center gap-1.5 cursor-help" title="Hotline hỗ trợ 24/7">
@@ -125,16 +125,16 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
               Hotline: <span className="text-white font-bold tracking-wide">096.770.5287</span>
             </span>
             <span className="flex items-center gap-1.5 hover:text-white cursor-pointer transition-colors">
-              <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+              <MapPin className="w-3.5 h-3.5 text-teal-400" />
               Hệ thống nhà thuốc toàn quốc
             </span>
           </div>
           <div className="flex items-center gap-5">
-            <Link href="/about" className="hover:text-white hover:underline decoration-emerald-400 underline-offset-4 transition-all">
+            <Link href="/about" className="hover:text-white hover:underline decoration-teal-400 underline-offset-4 transition-all">
               Giới thiệu
             </Link>
-            <div className="w-px h-3 bg-emerald-700"></div>
-            <Link href="/contact" className="hover:text-white hover:underline decoration-emerald-400 underline-offset-4 transition-all">
+            <div className="w-px h-3 bg-teal-700"></div>
+            <Link href="/contact" className="hover:text-white hover:underline decoration-teal-400 underline-offset-4 transition-all">
               Liên hệ
             </Link>
           </div>

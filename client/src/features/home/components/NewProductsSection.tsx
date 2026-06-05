@@ -65,7 +65,7 @@ export function NewProductsSection() {
         {/* Section Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           {/* Colored Header - Solid green */}
-          <div className="bg-emerald-600 px-6 py-4">
+          <div className="bg-teal-600 px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {/* Custom Icon */}

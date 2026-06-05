@@ -82,7 +82,7 @@ export function CategorySidebar({
   return (
     <div className={cn('sticky top-4 rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-white', className)}>
       {/* Gradient header */}
-      <div className="bg-gradient-to-br from-green-600 to-green-500 px-5 py-4">
+      <div className="bg-gradient-to-br from-teal-600 to-teal-500 px-5 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center backdrop-blur-sm">
@@ -91,7 +91,7 @@ export function CategorySidebar({
             <div>
               <h2 className="font-semibold text-white text-base leading-tight">Bộ lọc</h2>
               {activeFiltersCount > 0 && (
-                <p className="text-green-100 text-xs">{activeFiltersCount} đang áp dụng</p>
+                <p className="text-teal-100 text-xs">{activeFiltersCount} đang áp dụng</p>
               )}
             </div>
           </div>
@@ -154,7 +154,7 @@ export function CategorySidebar({
         <div className="px-5 pb-5">
           <Button
             onClick={applyFilters}
-            className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl h-10 font-semibold"
+            className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-xl h-10 font-semibold"
           >
             <Sparkles className="w-4 h-4 mr-2" />
             Áp dụng bộ lọc

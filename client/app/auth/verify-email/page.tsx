@@ -15,11 +15,11 @@ function VerifyEmailContent() {
         switch (status) {
             case "success":
                 return {
-                    icon: <CheckCircle2 className="w-20 h-20 text-green-500" />,
+                    icon: <CheckCircle2 className="w-20 h-20 text-teal-500" />,
                     title: "Xác thực thành công!",
                     description: "Email của bạn đã được xác thực. Bạn có thể đăng nhập ngay bây giờ.",
-                    color: "text-green-600",
-                    bgColor: "bg-green-50",
+                    color: "text-teal-600",
+                    bgColor: "bg-teal-50",
                     showLogin: true
                 };
             case "expired":
@@ -55,7 +55,7 @@ function VerifyEmailContent() {
     const content = getContent();
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center p-4">
             <Card className="w-full max-w-md shadow-xl">
                 <CardHeader className="text-center pb-2">
                     <div className={`mx-auto p-6 rounded-full ${content.bgColor} mb-4`}>
@@ -71,7 +71,7 @@ function VerifyEmailContent() {
                 <CardContent className="pt-4">
                     {content.showLogin ? (
                         <Link href="/auth/login">
-                            <Button className="w-full bg-green-600 hover:bg-green-700">
+                            <Button className="w-full bg-teal-600 hover:bg-teal-700">
                                 Đăng nhập ngay
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
@@ -92,8 +92,8 @@ function VerifyEmailContent() {
 export default function VerifyEmailPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600"></div>
+            <div className="min-h-screen bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
             </div>
         }>
             <VerifyEmailContent />

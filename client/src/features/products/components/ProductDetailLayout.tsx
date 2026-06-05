@@ -97,9 +97,9 @@ export function ProductDetailLayout({
 
           {/* Trust badges */}
           <div className="grid grid-cols-2 gap-4 pt-4">
-            <Card className="p-4 bg-green-50/50 border-green-100 shadow-none hover:bg-green-50 transition-colors">
+            <Card className="p-4 bg-teal-50/50 border-teal-100 shadow-none hover:bg-teal-50 transition-colors">
               <div className="flex flex-col gap-2">
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-xl">
+                <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-xl">
                   🚚
                 </div>
                 <div>

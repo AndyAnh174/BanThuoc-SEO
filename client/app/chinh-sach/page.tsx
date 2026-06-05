@@ -199,9 +199,9 @@ export default function ChinhSachPage() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-linear-to-br from-primary/5 via-primary/10 to-emerald-50 py-12 md:py-16">
+      <section className="relative overflow-hidden bg-linear-to-br from-primary/5 via-primary/10 to-teal-50 py-12 md:py-16">
         <div className="absolute top-0 right-0 w-64 h-64 bg-linear-to-bl from-primary/10 to-transparent rounded-full translate-x-1/4 -translate-y-1/4" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-linear-to-tr from-emerald-100/50 to-transparent rounded-full -translate-x-1/4 translate-y-1/4" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-linear-to-tr from-teal-100/50 to-transparent rounded-full -translate-x-1/4 translate-y-1/4" />
         <div className="relative max-w-3xl mx-auto px-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -294,7 +294,7 @@ export default function ChinhSachPage() {
       {/* Contact Banner */}
       <section className="py-12">
         <div className="max-w-3xl mx-auto px-4">
-          <div className="bg-linear-to-r from-primary to-emerald-600 rounded-2xl p-6 md:p-8 text-white text-center">
+          <div className="bg-linear-to-r from-primary to-teal-600 rounded-2xl p-6 md:p-8 text-white text-center">
             <h3 className="text-xl md:text-2xl font-bold mb-3">
               Cần hỗ trợ thêm?
             </h3>

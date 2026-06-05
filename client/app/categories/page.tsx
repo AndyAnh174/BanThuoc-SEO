@@ -77,15 +77,15 @@ export default async function CategoriesPage() {
       />
       <div className="min-h-screen bg-gray-50">
         {/* Hero */}
-        <div className="bg-gradient-to-br from-green-600 to-green-500 text-white">
+        <div className="bg-gradient-to-br from-teal-600 to-teal-500 text-white">
           <div className="container mx-auto px-4 py-10 md:py-14">
-            <nav className="text-sm text-green-100 mb-3">
+            <nav className="text-sm text-teal-100 mb-3">
               <Link href="/" className="hover:text-white transition-colors">Trang chủ</Link>
               <span className="mx-2 opacity-50">/</span>
               <span className="text-white">Danh mục sản phẩm</span>
             </nav>
             <h1 className="text-2xl md:text-3xl font-bold mb-2">Danh mục sản phẩm</h1>
-            <p className="text-green-100 max-w-xl text-sm md:text-base">
+            <p className="text-teal-100 max-w-xl text-sm md:text-base">
               Khám phá tất cả danh mục sản phẩm dược phẩm chính hãng tại BanThuoc
             </p>
           </div>
@@ -103,10 +103,10 @@ export default async function CategoriesPage() {
                 <Link
                   key={cat.slug}
                   href={`/categories/${cat.slug}`}
-                  className="group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-green-200 transition-all duration-300 p-5 flex flex-col"
+                  className="group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-teal-200 transition-all duration-300 p-5 flex flex-col"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
+                    <div className="w-14 h-14 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
                       {cat.image ? (
                         <img
                           src={cat.image}
@@ -114,11 +114,11 @@ export default async function CategoriesPage() {
                           className="w-full h-full object-cover rounded-xl"
                         />
                       ) : (
-                        <Pill className="w-6 h-6 text-green-500" />
+                        <Pill className="w-6 h-6 text-teal-500" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h2 className="font-semibold text-gray-900 group-hover:text-green-700 transition-colors line-clamp-2 text-base">
+                      <h2 className="font-semibold text-gray-900 group-hover:text-teal-700 transition-colors line-clamp-2 text-base">
                         {cat.name}
                       </h2>
                       {cat.description && (
@@ -142,7 +142,7 @@ export default async function CategoriesPage() {
                         </div>
                       )}
                     </div>
-                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-green-500 group-hover:translate-x-0.5 transition-all shrink-0 mt-1" />
+                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-teal-500 group-hover:translate-x-0.5 transition-all shrink-0 mt-1" />
                   </div>
                 </Link>
               ))}

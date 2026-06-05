@@ -17,7 +17,7 @@ const badges = [
     icon: ShieldCheck,
     title: 'Hàng chính hãng',
     desc: 'Cam kết nguồn gốc rõ ràng',
-    color: 'bg-green-50 text-green-600',
+    color: 'bg-teal-50 text-teal-600',
   },
   {
     icon: ReceiptText,

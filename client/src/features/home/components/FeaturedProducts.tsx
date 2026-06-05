@@ -43,8 +43,8 @@ export function FeaturedProducts() {
     <section className="py-8">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-green-700" />
+          <div className="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-teal-700" />
           </div>
           <div>
             <h2 className="text-xl md:text-2xl font-bold text-gray-900">Sản Phẩm Nổi Bật</h2>
@@ -52,7 +52,7 @@ export function FeaturedProducts() {
           </div>
         </div>
         <Button variant="outline" size="sm" asChild
-          className="rounded-full border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300 font-semibold">
+          className="rounded-full border-teal-200 text-teal-700 hover:bg-teal-50 hover:border-teal-300 font-semibold">
           <Link href="/products?featured=true">Xem tất cả <ArrowRight className="w-4 h-4 ml-1.5" /></Link>
         </Button>
       </div>

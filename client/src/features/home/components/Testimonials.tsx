@@ -68,19 +68,19 @@ export function Testimonials() {
         {reviews.slice(0, 6).map((review, i) => (
           <div key={review.id}
             className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-all duration-300 hover:-translate-y-1 group">
-            <Quote className="w-8 h-8 text-green-100 group-hover:text-green-200 transition-colors mb-3" />
+            <Quote className="w-8 h-8 text-teal-100 group-hover:text-teal-200 transition-colors mb-3" />
             <p className="text-gray-600 text-sm leading-relaxed line-clamp-4 mb-4">{review.content}</p>
             <Stars rating={review.rating} />
             <div className="mt-3 pt-3 border-t border-gray-50 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-green-600" />
+                <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4 text-teal-600" />
                 </div>
                 <span className="text-sm font-semibold text-gray-800">{review.user_name}</span>
               </div>
               {review.product_slug ? (
                 <Link href={`/products/${review.product_slug}`}
-                  className="text-xs text-green-600 hover:underline font-medium">
+                  className="text-xs text-teal-600 hover:underline font-medium">
                   {review.product_name}
                 </Link>
               ) : null}

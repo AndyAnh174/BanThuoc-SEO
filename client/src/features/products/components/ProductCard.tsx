@@ -84,7 +84,7 @@ export function ProductCard({
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {discountPercent > 0 && <span className="bg-red-500 text-white text-[11px] font-bold px-1.5 py-0.5 rounded">-{discountPercent}%</span>}
           {flashSale && <span className="bg-orange-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">FLASH SALE</span>}
-          {!flashSale && isFeatured && <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">NỔI BẬT</span>}
+          {!flashSale && isFeatured && <span className="bg-teal-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">NỔI BẬT</span>}
         </div>
 
         {/* Wishlist */}
@@ -99,7 +99,7 @@ export function ProductCard({
       {/* Info */}
       <div className="p-3 flex flex-col flex-1">
         <Link href={`/products/${slug}`}>
-          <h3 className="text-[13px] text-gray-800 line-clamp-2 leading-snug min-h-[2.5em] mb-1.5 hover:text-green-700 transition-colors">{name}</h3>
+          <h3 className="text-[13px] text-gray-800 line-clamp-2 leading-snug min-h-[2.5em] mb-1.5 hover:text-teal-700 transition-colors">{name}</h3>
         </Link>
 
         {rating && rating > 0 ? (
@@ -117,7 +117,7 @@ export function ProductCard({
         <div className="flex items-center gap-3 text-[11px] text-gray-400 mb-1.5">
           {soldCount && soldCount > 0 && <span>Đã bán {fmt(soldCount)}</span>}
           {lowStock ? <span className="text-orange-500 font-medium flex items-center gap-1"><Circle className="w-1.5 h-1.5 fill-orange-500"/>Sắp hết</span>
-            : !outOfStock && <span className="flex items-center gap-1"><Circle className="w-1.5 h-1.5 fill-green-500 text-green-500"/>Còn hàng</span>}
+            : !outOfStock && <span className="flex items-center gap-1"><Circle className="w-1.5 h-1.5 fill-teal-500 text-teal-500"/>Còn hàng</span>}
         </div>
 
         {manufacturer && <div className="mt-auto pt-1 border-t border-gray-50 flex items-center gap-1"><Pill className="w-3 h-3 text-gray-300"/><p className="text-[11px] text-gray-400 truncate">{manufacturer.name}</p></div>}
@@ -129,16 +129,16 @@ export function ProductCard({
           disabled={quantityInCart===0||outOfStock}
           className="flex items-center justify-center text-gray-500 hover:bg-gray-50 border-r border-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-lg font-medium">–</button>
         {quantityInCart > 0 ? (
-          <span className="flex items-center justify-center text-sm font-bold text-green-700">{quantityInCart}</span>
+          <span className="flex items-center justify-center text-sm font-bold text-teal-700">{quantityInCart}</span>
         ) : (
           <button onClick={handleAdd} disabled={outOfStock}
-            className="flex items-center justify-center gap-1 text-xs font-semibold text-green-700 hover:bg-green-50 disabled:text-gray-300 disabled:cursor-not-allowed">
+            className="flex items-center justify-center gap-1 text-xs font-semibold text-teal-700 hover:bg-teal-50 disabled:text-gray-300 disabled:cursor-not-allowed">
             <ShoppingCart className="w-3.5 h-3.5" />Thêm
           </button>
         )}
         <button onClick={(e)=>quantityInCart===0?handleAdd(e):handleQty(e,quantityInCart+1)}
           disabled={outOfStock}
-          className="flex items-center justify-center text-green-600 hover:bg-green-50 border-l border-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-lg font-medium">+</button>
+          className="flex items-center justify-center text-teal-600 hover:bg-teal-50 border-l border-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-lg font-medium">+</button>
       </div>
     </div>
   );

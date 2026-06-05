@@ -243,8 +243,8 @@ export function FlashSaleClient({ initialData, serverTime }: Props) {
                                             FLASH SALE
                                         </span>
                                         {isActive ? (
-                                            <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-green-200">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                            <span className="inline-flex items-center gap-1 bg-teal-50 text-teal-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-teal-200">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
                                                 ĐANG DIỄN RA
                                             </span>
                                         ) : (

@@ -196,7 +196,7 @@ export function ProductsClient() {
       <div className="bg-white border-b border-gray-100">
         <div className="px-4 py-3">
           <nav className="flex items-center gap-1.5 text-sm text-gray-500">
-            <Link href="/" className="flex items-center gap-1 hover:text-green-600 transition-colors">
+            <Link href="/" className="flex items-center gap-1 hover:text-teal-600 transition-colors">
               <Home className="w-3.5 h-3.5" />
               <span>Trang chủ</span>
             </Link>
@@ -248,7 +248,7 @@ export function ProductsClient() {
                       placeholder="Tìm kiếm sản phẩm..."
                       value={searchInput}
                       onChange={(e) => setSearchInput(e.target.value)}
-                      className="pl-9 pr-4 h-9 rounded-full border-gray-200 focus-visible:ring-green-500 bg-gray-50 text-sm"
+                      className="pl-9 pr-4 h-9 rounded-full border-gray-200 focus-visible:ring-teal-500 bg-gray-50 text-sm"
                     />
                   </form>
 
@@ -276,7 +276,7 @@ export function ProductsClient() {
                     <SlidersHorizontal className="w-4 h-4" />
                     Lọc
                     {activeFilters.length > 0 && (
-                      <span className="w-5 h-5 flex items-center justify-center bg-green-600 text-white text-xs rounded-full font-semibold">
+                      <span className="w-5 h-5 flex items-center justify-center bg-teal-600 text-white text-xs rounded-full font-semibold">
                         {activeFilters.length}
                       </span>
                     )}
@@ -291,12 +291,12 @@ export function ProductsClient() {
                   {activeFilters.map((filter) => (
                     <span
                       key={filter.key}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 border border-green-200 rounded-full text-xs font-medium"
+                      className="inline-flex items-center gap-1.5 px-3 py-1 bg-teal-50 text-teal-700 border border-teal-200 rounded-full text-xs font-medium"
                     >
                       {filter.label}
                       <button
                         onClick={() => updateFilters({ [filter.key]: '' })}
-                        className="w-3.5 h-3.5 flex items-center justify-center rounded-full hover:bg-green-200 transition-colors"
+                        className="w-3.5 h-3.5 flex items-center justify-center rounded-full hover:bg-teal-200 transition-colors"
                         aria-label="Xóa bộ lọc"
                       >
                         <X className="w-2.5 h-2.5" />
@@ -331,7 +331,7 @@ export function ProductsClient() {
                 </p>
                 <Button
                   variant="outline"
-                  className="rounded-full border-green-200 text-green-700 hover:bg-green-50 text-sm"
+                  className="rounded-full border-teal-200 text-teal-700 hover:bg-teal-50 text-sm"
                   onClick={() => router.push('/products')}
                 >
                   Xóa bộ lọc
@@ -368,7 +368,7 @@ export function ProductsClient() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="w-9 h-9 rounded-full border-gray-200 hover:border-green-300 hover:bg-green-50 disabled:opacity-40"
+                  className="w-9 h-9 rounded-full border-gray-200 hover:border-teal-300 hover:bg-teal-50 disabled:opacity-40"
                   disabled={page <= 1}
                   onClick={() => updateFilters({ page: (page - 1).toString() })}
                 >
@@ -389,8 +389,8 @@ export function ProductsClient() {
                       size="icon"
                       className={
                         isActive
-                          ? 'w-9 h-9 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-200 font-semibold'
-                          : 'w-9 h-9 rounded-full border border-gray-200 bg-white hover:border-green-300 hover:bg-green-50 text-gray-600 font-medium'
+                          ? 'w-9 h-9 rounded-full bg-teal-600 hover:bg-teal-700 text-white shadow-sm shadow-teal-200 font-semibold'
+                          : 'w-9 h-9 rounded-full border border-gray-200 bg-white hover:border-teal-300 hover:bg-teal-50 text-gray-600 font-medium'
                       }
                       variant={isActive ? 'default' : 'outline'}
                       onClick={() => updateFilters({ page: pageNum.toString() })}
@@ -403,7 +403,7 @@ export function ProductsClient() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="w-9 h-9 rounded-full border-gray-200 hover:border-green-300 hover:bg-green-50 disabled:opacity-40"
+                  className="w-9 h-9 rounded-full border-gray-200 hover:border-teal-300 hover:bg-teal-50 disabled:opacity-40"
                   disabled={page >= totalPages}
                   onClick={() => updateFilters({ page: (page + 1).toString() })}
                 >

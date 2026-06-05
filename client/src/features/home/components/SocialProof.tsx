@@ -39,8 +39,8 @@ export function SocialProof() {
 
   return (
     <div className={`fixed bottom-24 left-6 z-50 bg-white/95 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg px-4 py-2.5 flex items-center gap-2.5 text-sm font-medium text-gray-700 transition-all duration-500 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse shrink-0" />
-      <ShoppingBag className="w-4 h-4 text-green-600 shrink-0" />
+      <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse shrink-0" />
+      <ShoppingBag className="w-4 h-4 text-teal-600 shrink-0" />
       <span className="whitespace-nowrap">{msg}</span>
     </div>
   );

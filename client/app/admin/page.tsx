@@ -69,7 +69,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
     CONFIRMED: { label: 'Da xac nhan', color: 'bg-blue-100 text-blue-700', icon: CheckCircle2 },
     PROCESSING: { label: 'Dang xu ly', color: 'bg-indigo-100 text-indigo-700', icon: Package },
     SHIPPING: { label: 'Dang giao', color: 'bg-purple-100 text-purple-700', icon: Truck },
-    DELIVERED: { label: 'Da giao', color: 'bg-green-100 text-green-700', icon: CheckCircle2 },
+    DELIVERED: { label: 'Da giao', color: 'bg-teal-100 text-teal-700', icon: CheckCircle2 },
     CANCELLED: { label: 'Da huy', color: 'bg-red-100 text-red-700', icon: XCircle },
     RETURNED: { label: 'Tra hang', color: 'bg-gray-100 text-gray-700', icon: XCircle },
 };
@@ -119,16 +119,16 @@ export default function AdminDashboardPage() {
 
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="border-none shadow-sm bg-gradient-to-br from-green-50 to-emerald-50">
+                <Card className="border-none shadow-sm bg-gradient-to-br from-teal-50 to-teal-50">
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-gray-500">Doanh thu thang</p>
-                                <p className="text-2xl font-bold text-green-700 mt-1">{formatMoney(stats.revenue.month)}</p>
+                                <p className="text-2xl font-bold text-teal-700 mt-1">{formatMoney(stats.revenue.month)}</p>
                                 <p className="text-xs text-gray-400 mt-1">Tong: {formatMoney(stats.revenue.total)}</p>
                             </div>
-                            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                                <DollarSign className="w-6 h-6 text-green-600" />
+                            <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                                <DollarSign className="w-6 h-6 text-teal-600" />
                             </div>
                         </div>
                     </CardContent>
@@ -206,7 +206,7 @@ export default function AdminDashboardPage() {
                 <Card className="border-none shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <CardTitle className="text-base">Don hang gan day</CardTitle>
-                        <Link href="/admin/orders" className="text-sm text-green-600 hover:underline">Xem tat ca</Link>
+                        <Link href="/admin/orders" className="text-sm text-teal-600 hover:underline">Xem tat ca</Link>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-3">
@@ -238,17 +238,17 @@ export default function AdminDashboardPage() {
                 <Card className="border-none shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <CardTitle className="text-base flex items-center gap-2">
-                            <TrendingUp className="w-4 h-4 text-green-600" />
+                            <TrendingUp className="w-4 h-4 text-teal-600" />
                             San pham ban chay (30 ngay)
                         </CardTitle>
-                        <Link href="/admin/products" className="text-sm text-green-600 hover:underline">Xem tat ca</Link>
+                        <Link href="/admin/products" className="text-sm text-teal-600 hover:underline">Xem tat ca</Link>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-3">
                             {stats.top_products.map((product, index) => (
                                 <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-sm font-bold text-green-700">
+                                        <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center text-sm font-bold text-teal-700">
                                             {index + 1}
                                         </div>
                                         <div>

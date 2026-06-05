@@ -45,7 +45,7 @@ interface PaginatedResponse {
 }
 
 const ACTION_COLORS: Record<string, string> = {
-    CREATE: "bg-green-100 text-green-700",
+    CREATE: "bg-teal-100 text-teal-700",
     UPDATE: "bg-blue-100 text-blue-700",
     DELETE: "bg-red-100 text-red-700",
     LOGIN: "bg-purple-100 text-purple-700",
@@ -390,7 +390,7 @@ export default function AuditLogPage() {
                                                             <td className="px-2 py-1 text-red-600 break-all">
                                                                 {String(val?.old ?? "—")}
                                                             </td>
-                                                            <td className="px-2 py-1 text-green-600 break-all">
+                                                            <td className="px-2 py-1 text-teal-600 break-all">
                                                                 {String(val?.new ?? "—")}
                                                             </td>
                                                         </tr>

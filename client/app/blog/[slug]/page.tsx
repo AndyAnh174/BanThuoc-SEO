@@ -149,9 +149,9 @@ export default async function BlogDetailPage({ params }: PageProps) {
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-4">
         <nav className="text-sm text-gray-500 flex items-center gap-2">
-          <Link href="/" className="hover:text-green-700">Trang chủ</Link>
+          <Link href="/" className="hover:text-teal-700">Trang chủ</Link>
           <span>/</span>
-          <Link href="/blog" className="hover:text-green-700">Blog</Link>
+          <Link href="/blog" className="hover:text-teal-700">Blog</Link>
           <span>/</span>
           <span className="text-gray-900 truncate max-w-xs">{post.title}</span>
         </nav>
@@ -166,7 +166,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
                 <Link
                   key={tag}
                   href={`/blog?tag=${tag}`}
-                  className="text-xs bg-green-50 text-green-700 px-3 py-1 rounded-full hover:bg-green-100 transition-colors"
+                  className="text-xs bg-teal-50 text-teal-700 px-3 py-1 rounded-full hover:bg-teal-100 transition-colors"
                 >
                   {tag}
                 </Link>
@@ -210,13 +210,13 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
           {/* Content */}
           <div
-            className="prose prose-lg prose-green max-w-none mb-12
+            className="prose prose-lg prose-teal max-w-none mb-12
               prose-headings:text-gray-900
               prose-p:text-gray-700 prose-p:leading-relaxed
-              prose-a:text-green-600 prose-a:no-underline hover:prose-a:underline
+              prose-a:text-teal-600 prose-a:no-underline hover:prose-a:underline
               prose-img:rounded-xl prose-img:shadow-md
               prose-strong:text-gray-900
-              prose-blockquote:border-green-500 prose-blockquote:bg-green-50 prose-blockquote:py-2 prose-blockquote:rounded-r-lg
+              prose-blockquote:border-teal-500 prose-blockquote:bg-teal-50 prose-blockquote:py-2 prose-blockquote:rounded-r-lg
               [&_iframe]:max-w-full
               [&_img]:max-w-full [&_img]:h-auto"
             dangerouslySetInnerHTML={{ __html: post.content }}
@@ -225,7 +225,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
           {/* Author bio */}
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-lg">
+              <div className="w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-lg">
                 {post.author_name?.[0] || 'B'}
               </div>
               <div>
@@ -239,7 +239,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
           <div className="flex justify-between items-center pt-6 border-t border-gray-200">
             <Link
               href="/blog"
-              className="text-green-600 hover:text-green-700 font-medium flex items-center gap-2"
+              className="text-teal-600 hover:text-teal-700 font-medium flex items-center gap-2"
             >
               ← Quay lại Blog
             </Link>
@@ -274,7 +274,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
                       </div>
                     )}
                   </div>
-                  <h4 className="font-medium text-gray-900 line-clamp-2 group-hover:text-green-700 transition-colors text-sm">
+                  <h4 className="font-medium text-gray-900 line-clamp-2 group-hover:text-teal-700 transition-colors text-sm">
                     {post.title}
                   </h4>
                   <span className="text-xs text-gray-400 mt-1 block">

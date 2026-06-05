@@ -66,7 +66,7 @@ export default function Home() {
       </div>
 
       {/* Trust Badges — green tint background */}
-      <div className="bg-gradient-to-r from-green-50 via-white to-green-50 py-2">
+      <div className="bg-gradient-to-r from-teal-50 via-white to-teal-50 py-2">
         <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
           <TrustBadges />
         </div>
@@ -108,7 +108,7 @@ export default function Home() {
       </div>
 
       {/* New Products — gray tint background */}
-      <div className="bg-gradient-to-b from-gray-50 to-green-50/50">
+      <div className="bg-gradient-to-b from-gray-50 to-teal-50/50">
         <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
           <NewProductsSection />
         </div>

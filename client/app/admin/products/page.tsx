@@ -27,11 +27,11 @@ export default function AdminProductsPage() {
           <Button
             variant="outline"
             onClick={() => setBulkOpen(true)}
-            className="border-green-600 text-green-700 hover:bg-green-50"
+            className="border-teal-600 text-teal-700 hover:bg-teal-50"
           >
             <Upload className="mr-2 h-4 w-4" /> Nhập Excel/CSV
           </Button>
-          <Button onClick={() => router.push('/admin/products/create')} className="bg-green-600 hover:bg-green-700">
+          <Button onClick={() => router.push('/admin/products/create')} className="bg-teal-600 hover:bg-teal-700">
             <Plus className="mr-2 h-4 w-4" /> Thêm sản phẩm
           </Button>
         </div>

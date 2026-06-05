@@ -38,7 +38,7 @@ export function CategoryShowcase() {
   if (loading) {
     return (
       <section className="py-8">
-        <div className="bg-gradient-to-br from-green-50 via-emerald-50/80 to-teal-50 rounded-2xl p-6">
+        <div className="bg-gradient-to-br from-teal-50 via-teal-50/80 to-teal-50 rounded-2xl p-6">
           <Skeleton className="h-8 w-48 mb-6" />
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-3">
             {[...Array(14)].map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
@@ -52,14 +52,14 @@ export function CategoryShowcase() {
 
   return (
     <section className="py-8">
-      <div className="relative bg-gradient-to-br from-green-50 via-emerald-50/80 to-teal-50 rounded-2xl p-6 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-teal-50 via-teal-50/80 to-teal-50 rounded-2xl p-6 overflow-hidden">
         {/* Decorative blobs */}
-        <div className="absolute top-0 left-0 w-40 h-40 bg-green-200/30 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl" />
-        <div className="absolute bottom-0 right-0 w-56 h-56 bg-emerald-200/30 rounded-full translate-x-1/4 translate-y-1/4 blur-2xl" />
+        <div className="absolute top-0 left-0 w-40 h-40 bg-teal-200/30 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl" />
+        <div className="absolute bottom-0 right-0 w-56 h-56 bg-teal-200/30 rounded-full translate-x-1/4 translate-y-1/4 blur-2xl" />
 
         <div className="relative flex items-center justify-between mb-6">
           <h2 className="text-xl md:text-2xl font-bold text-gray-900">Nhóm sản phẩm</h2>
-          <Link href="/products" className="inline-flex items-center gap-1 text-green-700 font-semibold text-sm hover:underline">
+          <Link href="/products" className="inline-flex items-center gap-1 text-teal-700 font-semibold text-sm hover:underline">
             Xem tất cả <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
@@ -70,9 +70,9 @@ export function CategoryShowcase() {
             const count = cat.productCount ?? cat.product_count;
             return (
               <Link key={cat.id} href={`/products?category=${cat.slug}`}
-                className="group flex flex-col items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-transparent hover:border-green-300/50 hover:-translate-y-0.5">
-                <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-green-100 transition-all">
-                  <span className="text-green-600">{icon}</span>
+                className="group flex flex-col items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-transparent hover:border-teal-300/50 hover:-translate-y-0.5">
+                <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-teal-100 transition-all">
+                  <span className="text-teal-600">{icon}</span>
                 </div>
                 <h3 className="text-xs font-semibold text-center text-gray-800 line-clamp-2 leading-tight min-h-[2.5em]">{cat.name}</h3>
                 <span className="text-xs text-gray-400 mt-1">{count ? `${count} SP` : ''}</span>

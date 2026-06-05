@@ -52,7 +52,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
     if (isLoading) {
         return (
             <div className="flex w-full h-[50vh] items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-green-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
             </div>
         );
     }

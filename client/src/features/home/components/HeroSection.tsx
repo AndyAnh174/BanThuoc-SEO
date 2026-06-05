@@ -29,7 +29,7 @@ const defaultBanner: Banner = {
   subtitle: 'Hơn 10.000+ sản phẩm dược phẩm chính hãng, giao hàng nhanh toàn quốc. Đội ngũ dược sĩ tư vấn 24/7.',
   image_url: '',
   link_url: '/products', link_text: 'Mua ngay',
-  background_color: '#f0fdf4', text_color: '#065f46',
+  background_color: '#f0fdf4', text_color: '#0f766e',
 };
 
 const categoryIcons: Record<string, React.ReactNode> = {
@@ -109,9 +109,9 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
       <div className="flex gap-4">
         {/* ── Left: Category Sidebar (desktop) ── */}
         <aside className="hidden lg:flex flex-col w-[280px] shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden h-fit">
-          <div className="px-5 py-4 border-b border-gray-50 bg-gradient-to-r from-green-50 to-emerald-50">
+          <div className="px-5 py-4 border-b border-gray-50 bg-gradient-to-r from-teal-50 to-teal-50">
             <div className="flex items-center gap-2">
-              <Leaf className="w-5 h-5 text-green-600" />
+              <Leaf className="w-5 h-5 text-teal-600" />
               <h3 className="font-bold text-gray-900">Danh mục sản phẩm</h3>
             </div>
           </div>
@@ -126,15 +126,15 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
                   return (
                     <li key={cat.id}>
                       <Link href={`/products?category=${cat.slug}`}
-                        className="flex items-center gap-3 px-5 py-3 hover:bg-green-50/60 transition-colors group/item">
-                        <span className="w-9 h-9 bg-green-50 rounded-lg flex items-center justify-center text-green-600 shrink-0 group-hover/item:bg-green-100 transition-colors">
+                        className="flex items-center gap-3 px-5 py-3 hover:bg-teal-50/60 transition-colors group/item">
+                        <span className="w-9 h-9 bg-teal-50 rounded-lg flex items-center justify-center text-teal-600 shrink-0 group-hover/item:bg-teal-100 transition-colors">
                           {icon}
                         </span>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-gray-900 truncate">{cat.name}</p>
                           <p className="text-xs text-gray-400 truncate">{count ? `${count} sản phẩm` : cat.description || ''}</p>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover/item:text-green-600 group-hover/item:translate-x-0.5 transition-all shrink-0" />
+                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover/item:text-teal-600 group-hover/item:translate-x-0.5 transition-all shrink-0" />
                       </Link>
                     </li>
                   );
@@ -144,14 +144,14 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
           </nav>
           <div className="px-4 py-3 border-t border-gray-50 bg-gray-50/50">
             <Link href="/products"
-              className="flex items-center justify-center gap-2 w-full py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold text-sm transition-colors shadow-sm">
+              className="flex items-center justify-center gap-2 w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold text-sm transition-colors shadow-sm">
               Xem tất cả danh mục <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
         </aside>
 
         {/* ── Right: Banner Carousel ── */}
-        <div className="flex-1 relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] bg-gradient-to-br from-green-50 via-white to-emerald-50 shadow-sm border border-gray-100">
+        <div className="flex-1 relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] bg-gradient-to-br from-teal-50 via-white to-teal-50 shadow-sm border border-gray-100">
           <Link href={currentBanner.link_url || '#'} className="absolute inset-0 block">
             {currentBanner.image_url && (
               <Image src={currentBanner.image_url} alt={currentBanner.title} fill
@@ -187,13 +187,13 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
         {catLoading ? [...Array(5)].map((_, i) => <Skeleton key={i} className="h-10 w-28 rounded-full shrink-0" />) :
           categories.slice(0, 8).map(cat => (
             <Link key={cat.id} href={`/products?category=${cat.slug}`}
-              className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-700 hover:border-green-300 hover:text-green-700 hover:bg-green-50 shrink-0 transition-colors">
-              <span className="text-green-600">{categoryIcons[cat.slug] || <Pill className="w-3.5 h-3.5" />}</span>
+              className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-700 hover:border-teal-300 hover:text-teal-700 hover:bg-teal-50 shrink-0 transition-colors">
+              <span className="text-teal-600">{categoryIcons[cat.slug] || <Pill className="w-3.5 h-3.5" />}</span>
               {cat.name}
             </Link>
           ))}
         <Link href="/products"
-          className="flex items-center gap-1 px-3 py-2 bg-green-600 text-white rounded-full text-xs font-semibold shrink-0 hover:bg-green-700 transition-colors">
+          className="flex items-center gap-1 px-3 py-2 bg-teal-600 text-white rounded-full text-xs font-semibold shrink-0 hover:bg-teal-700 transition-colors">
           Tất cả <ChevronRight className="w-3.5 h-3.5" />
         </Link>
       </div>

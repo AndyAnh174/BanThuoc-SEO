@@ -239,7 +239,7 @@ export default function CartPage() {
                                         </div>
                                         <div className="flex justify-between text-sm">
                                             <span className="text-gray-600">Giảm giá:</span>
-                                            <span className="font-medium text-green-600">
+                                            <span className="font-medium text-teal-600">
                                                 -{formatCurrency(cart!.items.reduce((total, item) => total + (item.product.price * item.quantity), 0) - Number(cart!.total_price))}
                                             </span>
                                         </div>

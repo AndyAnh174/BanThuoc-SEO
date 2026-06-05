@@ -48,12 +48,12 @@ export default function BlogClientWrapper({ initialPosts, tags }: Props) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero */}
-      <section className="bg-gradient-to-r from-green-700 to-green-500 text-white py-16">
+      <section className="bg-gradient-to-r from-teal-700 to-teal-500 text-white py-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Blog Kiến Thức Dược Phẩm
           </h1>
-          <p className="text-lg md:text-xl text-green-50 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-teal-50 max-w-2xl mx-auto">
             Cập nhật kiến thức về dược phẩm, sức khỏe và hướng dẫn sử dụng thuốc an toàn từ chuyên gia BanThuocSi
           </p>
         </div>
@@ -67,7 +67,7 @@ export default function BlogClientWrapper({ initialPosts, tags }: Props) {
               onClick={() => filterByTag('')}
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                 !selectedTag
-                  ? 'bg-green-600 text-white'
+                  ? 'bg-teal-600 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -79,7 +79,7 @@ export default function BlogClientWrapper({ initialPosts, tags }: Props) {
                 onClick={() => filterByTag(tag)}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   selectedTag === tag
-                    ? 'bg-green-600 text-white'
+                    ? 'bg-teal-600 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -112,21 +112,21 @@ export default function BlogClientWrapper({ initialPosts, tags }: Props) {
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100">
-                      <span className="text-green-300 text-6xl">📄</span>
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-teal-50 to-teal-100">
+                      <span className="text-teal-300 text-6xl">📄</span>
                     </div>
                   )}
                 </div>
                 <div className="p-5 flex-1 flex flex-col">
                   <div className="flex items-center gap-2 text-xs text-gray-400 mb-2">
                     {post.tags.slice(0, 2).map(tag => (
-                      <span key={tag} className="bg-green-50 text-green-700 px-2 py-0.5 rounded-full">
+                      <span key={tag} className="bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full">
                         {tag}
                       </span>
                     ))}
                     <span className="ml-auto">{post.reading_time_minutes} phút đọc</span>
                   </div>
-                  <h2 className="text-lg font-semibold text-gray-900 line-clamp-2 group-hover:text-green-700 transition-colors mb-2">
+                  <h2 className="text-lg font-semibold text-gray-900 line-clamp-2 group-hover:text-teal-700 transition-colors mb-2">
                     {post.title}
                   </h2>
                   <p className="text-gray-500 text-sm line-clamp-2 flex-1">
@@ -155,7 +155,7 @@ export default function BlogClientWrapper({ initialPosts, tags }: Props) {
             <button
               onClick={loadMore}
               disabled={loading}
-              className="px-8 py-3 bg-white border border-gray-200 rounded-full text-gray-700 font-medium hover:bg-gray-50 hover:border-green-300 transition-all disabled:opacity-50"
+              className="px-8 py-3 bg-white border border-gray-200 rounded-full text-gray-700 font-medium hover:bg-gray-50 hover:border-teal-300 transition-all disabled:opacity-50"
             >
               {loading ? 'Đang tải...' : 'Xem thêm bài viết'}
             </button>

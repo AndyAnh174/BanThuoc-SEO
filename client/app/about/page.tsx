@@ -239,7 +239,7 @@ export default function AboutPage() {
                 </div>
                 <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
                   <div className="flex items-center gap-2 mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-green-600"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-teal-600"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                     <h3 className="font-semibold text-gray-900">Phí vận chuyển</h3>
                   </div>
                   <p className="text-gray-600 text-sm leading-relaxed">
@@ -248,7 +248,7 @@ export default function AboutPage() {
                 </div>
                 <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
                   <div className="flex items-center gap-2 mb-3">
-                    <ShieldCheck className="w-5 h-5 text-green-600" />
+                    <ShieldCheck className="w-5 h-5 text-teal-600" />
                     <h3 className="font-semibold text-gray-900">Kiểm tra hàng</h3>
                   </div>
                   <p className="text-gray-600 text-sm leading-relaxed">
@@ -261,8 +261,8 @@ export default function AboutPage() {
             {/* Payment */}
             <div>
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-green-600"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-teal-600"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
                 </div>
                 <h2 className="text-3xl font-bold text-gray-900">
                   Phương thức thanh toán
@@ -272,8 +272,8 @@ export default function AboutPage() {
               <div className="grid sm:grid-cols-2 gap-6">
                 <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-green-600"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                    <div className="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-teal-600"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
                     </div>
                     <h3 className="font-semibold text-gray-900">Thanh toán khi nhận hàng (COD)</h3>
                   </div>

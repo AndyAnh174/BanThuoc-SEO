@@ -86,9 +86,9 @@ function TagInput({ value, onChange }: { value: string[]; onChange: (tags: strin
   };
 
   return (
-    <div className="flex flex-wrap gap-1.5 items-center p-2 min-h-[42px] border border-gray-200 rounded-lg bg-white focus-within:border-green-400 focus-within:ring-1 focus-within:ring-green-100 transition-all">
+    <div className="flex flex-wrap gap-1.5 items-center p-2 min-h-[42px] border border-gray-200 rounded-lg bg-white focus-within:border-teal-400 focus-within:ring-1 focus-within:ring-teal-100 transition-all">
       {value.map(tag => (
-        <span key={tag} className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-700 text-xs rounded-full border border-green-200">
+        <span key={tag} className="inline-flex items-center gap-1 px-2 py-0.5 bg-teal-50 text-teal-700 text-xs rounded-full border border-teal-200">
           {tag}
           <button onClick={() => removeTag(tag)} className="hover:text-red-500">
             <X className="h-3 w-3" />
@@ -345,7 +345,7 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
       </div>
     );
   }
@@ -356,7 +356,7 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
       {/* Publish Card */}
       <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
         <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <Globe className="h-4 w-4 text-green-600" />
+          <Globe className="h-4 w-4 text-teal-600" />
           Đăng bài
         </h3>
 
@@ -366,7 +366,7 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
             <select
               value={status}
               onChange={e => setStatus(e.target.value)}
-              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white focus:border-green-400 focus:ring-1 focus:ring-green-100 outline-none"
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white focus:border-teal-400 focus:ring-1 focus:ring-teal-100 outline-none"
             >
               <option value="DRAFT">Nháp</option>
               <option value="PUBLISHED">Công khai</option>
@@ -385,7 +385,7 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
             <button
               onClick={() => handleSave(true)}
               disabled={saving}
-              className="w-full px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
+              className="w-full px-4 py-2.5 bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-semibold disabled:opacity-50 flex items-center justify-center gap-2 transition-colors shadow-sm"
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               {saving ? 'Đang lưu...' : 'Đăng bài'}
@@ -448,7 +448,7 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
             <div className="text-blue-700 text-base leading-tight truncate font-medium font-sans">
               {displaySeoTitle || 'Tiêu đề bài viết'}
             </div>
-            <div className="text-green-700 text-xs leading-normal">
+            <div className="text-teal-700 text-xs leading-normal">
               banthuocsi.vn › blog › {editSlug || 'tieu-de'}
             </div>
             <div className="text-gray-600 leading-normal mt-0.5 line-clamp-2">
@@ -543,7 +543,7 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
               ) : (
                 <button
                   onClick={() => coverInputRef.current?.click()}
-                  className="w-full aspect-[21/9] max-h-[220px] border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-green-300 hover:text-green-600 hover:bg-green-50/50 transition-all"
+                  className="w-full aspect-[21/9] max-h-[220px] border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-teal-300 hover:text-teal-600 hover:bg-teal-50/50 transition-all"
                 >
                   <ImageIcon className="h-10 w-10" />
                   <span className="text-sm font-medium">Thêm ảnh bìa</span>
@@ -563,7 +563,7 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
                   value={coverImage}
                   onChange={e => setCoverImage(e.target.value)}
                   placeholder="Hoặc dán URL ảnh..."
-                  className="w-full text-xs text-gray-400 border border-gray-100 rounded-lg px-3 py-1.5 mt-2 outline-none focus:border-green-300"
+                  className="w-full text-xs text-gray-400 border border-gray-100 rounded-lg px-3 py-1.5 mt-2 outline-none focus:border-teal-300"
                 />
               )}
             </div>
@@ -640,7 +640,7 @@ export default function BlogEditor({ editSlug, onSaved, onCancel }: BlogEditorPr
         <button
           onClick={() => handleSave(true)}
           disabled={saving}
-          className="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg font-semibold disabled:opacity-50"
+          className="flex-1 px-4 py-2.5 bg-teal-600 text-white rounded-lg font-semibold disabled:opacity-50"
         >
           {saving ? 'Đang lưu...' : 'Đăng bài'}
         </button>

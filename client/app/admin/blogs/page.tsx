@@ -59,7 +59,7 @@ export default function AdminBlogPage() {
   const statusBadge = (status: string) => {
     const colors: Record<string, string> = {
       DRAFT: 'bg-yellow-100 text-yellow-800',
-      PUBLISHED: 'bg-green-100 text-green-800',
+      PUBLISHED: 'bg-teal-100 text-teal-800',
       ARCHIVED: 'bg-gray-100 text-gray-600',
     };
     const labels: Record<string, string> = {
@@ -77,7 +77,7 @@ export default function AdminBlogPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin h-8 w-8 border-4 border-green-600 border-t-transparent rounded-full" />
+        <div className="animate-spin h-8 w-8 border-4 border-teal-600 border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -88,7 +88,7 @@ export default function AdminBlogPage() {
         <h1 className="text-2xl font-bold text-gray-900">Quản lý Blog</h1>
         <Link
           href="/admin/blogs/new"
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium"
+          className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors font-medium"
         >
           + Viết bài mới
         </Link>
@@ -100,7 +100,7 @@ export default function AdminBlogPage() {
           <p className="text-gray-500 mt-4">Chưa có bài viết nào</p>
           <Link
             href="/admin/blogs/new"
-            className="inline-block mt-4 text-green-600 hover:underline font-medium"
+            className="inline-block mt-4 text-teal-600 hover:underline font-medium"
           >
             Viết bài đầu tiên
           </Link>

@@ -96,14 +96,14 @@ function ReviewCard({ review }: { review: Review }) {
     <div className="py-5 border-b border-gray-100 last:border-0">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-semibold text-sm shrink-0">
+          <div className="w-9 h-9 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold text-sm shrink-0">
             {review.user_name?.[0]?.toUpperCase() || 'U'}
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-800">{review.user_name || 'Ẩn danh'}</span>
               {review.is_verified_purchase && (
-                <span className="inline-flex items-center gap-1 text-[11px] text-green-600 font-medium">
+                <span className="inline-flex items-center gap-1 text-[11px] text-teal-600 font-medium">
                   <CheckCircle className="w-3 h-3" />
                   Đã mua hàng
                 </span>
@@ -240,7 +240,7 @@ export function ProductReviews({ productId }: { productId: string }) {
             </Button>
           ) : (
             <p className="text-sm text-gray-400">
-              <a href="/auth/login" className="text-green-600 hover:underline font-medium">
+              <a href="/auth/login" className="text-teal-600 hover:underline font-medium">
                 Đăng nhập
               </a>{' '}
               để viết đánh giá
@@ -289,14 +289,14 @@ export function ProductReviews({ productId }: { productId: string }) {
 
           <div className="flex items-center justify-between pt-1">
             <p className="text-xs text-gray-400 flex items-center gap-1.5">
-              <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+              <CheckCircle className="w-3.5 h-3.5 text-teal-500" />
               Đánh giá sẽ được hiển thị sau khi admin duyệt
             </p>
             <Button
               type="submit"
               size="sm"
               disabled={submitting}
-              className="gap-2 bg-green-600 hover:bg-green-700 text-white rounded-full px-5"
+              className="gap-2 bg-teal-600 hover:bg-teal-700 text-white rounded-full px-5"
             >
               {submitting ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />

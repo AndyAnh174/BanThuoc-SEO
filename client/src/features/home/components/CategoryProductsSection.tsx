@@ -30,9 +30,9 @@ const CATEGORY_STYLE: Record<string, { icon: React.ReactNode; accent: string; bg
     },
     'thiet-bi-y-te': {
         icon: <Stethoscope className="w-5 h-5" />,
-        accent: 'text-green-600',
-        bg: 'bg-green-600',
-        pill: 'bg-green-50 text-green-700 border-green-100',
+        accent: 'text-teal-600',
+        bg: 'bg-teal-600',
+        pill: 'bg-teal-50 text-teal-700 border-teal-100',
     },
     'thuc-pham-chuc-nang': {
         icon: <Apple className="w-5 h-5" />,

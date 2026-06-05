@@ -302,7 +302,7 @@ export function ProductDetailClient({ product }: ProductDetailProps) {
           {isOutOfStock ? (
             <Badge variant="destructive" className="text-sm">Hết hàng</Badge>
           ) : (
-            <Badge variant="outline" className="text-sm text-green-600 border-green-200 bg-green-50">
+            <Badge variant="outline" className="text-sm text-teal-600 border-teal-200 bg-teal-50">
               Còn {product.stockQuantity} sản phẩm
             </Badge>
           )}

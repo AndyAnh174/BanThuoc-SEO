@@ -106,8 +106,8 @@ export function UserDropdownMenu() {
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
                         <Link href="/auth/register" className="flex items-center gap-2 font-medium">
-                            <div className="w-6 h-6 rounded bg-emerald-100 flex items-center justify-center">
-                                <span className="text-xs font-bold text-emerald-600">+</span>
+                            <div className="w-6 h-6 rounded bg-teal-100 flex items-center justify-center">
+                                <span className="text-xs font-bold text-teal-600">+</span>
                             </div>
                             Đăng ký
                         </Link>
@@ -122,7 +122,7 @@ export function UserDropdownMenu() {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full w-10 h-10 hover:bg-gray-100 transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-linear-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold text-sm overflow-hidden">
+                    <div className="w-8 h-8 rounded-full bg-linear-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white font-bold text-sm overflow-hidden">
                         {avatar ? (
                             <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
                         ) : (

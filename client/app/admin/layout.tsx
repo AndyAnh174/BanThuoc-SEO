@@ -89,13 +89,13 @@ export default function AdminLayout({
       <AdminSidebar />
       <main className="flex-1 ml-64 flex flex-col h-full overflow-hidden">
         {/* Header */}
-        <header className="h-16 border-b bg-green-600 flex items-center justify-between px-8 shrink-0 shadow-sm">
+        <header className="h-16 border-b bg-teal-600 flex items-center justify-between px-8 shrink-0 shadow-sm">
           <h1 className="text-xl font-bold text-white">Quản trị hệ thống</h1>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-green-50">Xin chào, {fullName}</span>
+            <span className="text-sm text-teal-50">Xin chào, {fullName}</span>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full text-green-100 hover:text-white hover:bg-green-500">
+                <Button variant="ghost" size="icon" className="rounded-full text-teal-100 hover:text-white hover:bg-teal-500">
                   {avatar ? (
                     <img src={avatar} alt="Avatar" className="h-8 w-8 rounded-full object-cover" />
                   ) : (
