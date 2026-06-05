@@ -40,6 +40,7 @@ interface Banner {
   is_visible: boolean;
   start_date: string | null;
   end_date: string | null;
+  display_position?: string;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -123,6 +124,7 @@ export function BannerManager({ token, position }: BannerManagerProps) {
     is_active: true,
     start_date: '',
     end_date: '',
+    display_position: 'HERO',
   });
 
   useEffect(() => {
@@ -164,6 +166,7 @@ export function BannerManager({ token, position }: BannerManagerProps) {
       is_active: true,
       start_date: '',
       end_date: '',
+      display_position: position || 'HERO',
     });
     setModalOpen(true);
   }
@@ -181,6 +184,7 @@ export function BannerManager({ token, position }: BannerManagerProps) {
       is_active: banner.is_active,
       start_date: banner.start_date ? toLocalDatetimeString(banner.start_date) : '',
       end_date: banner.end_date ? toLocalDatetimeString(banner.end_date) : '',
+      display_position: (banner as any).display_position || position || 'HERO',
     });
     setModalOpen(true);
   }
@@ -406,6 +410,23 @@ export function BannerManager({ token, position }: BannerManagerProps) {
 
               {/* Explicitly hide unused fields but keep in state if needed or just ignore */}
             </div>
+
+            {/* Position selector — only show on main Banner page (not Banner Mini) */}
+            {!position && (
+              <div className="space-y-2">
+                <Label htmlFor="display_position">Vị trí hiển thị</Label>
+                <select
+                  id="display_position"
+                  value={(formData as any).display_position || 'HERO'}
+                  onChange={(e) => setFormData({ ...formData, display_position: e.target.value } as any)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:border-green-400 focus:ring-1 focus:ring-green-100 outline-none"
+                >
+                  <option value="HERO">Hero Banner (carousel chính)</option>
+                  <option value="ROW">Banner Mini (dưới hero)</option>
+                  <option value="PROMO">Promo Banner (grid giữa trang)</option>
+                </select>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="link_url">Link đích</Label>
