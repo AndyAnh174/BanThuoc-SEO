@@ -359,7 +359,7 @@ export default function AboutPage() {
                   <ul className="list-disc pl-4 space-y-1">
                     <li>Giấy chứng nhận đủ điều kiện kinh doanh dược</li>
                     <li>Người quản lý chuyên môn có bằng dược sĩ</li>
-                    <li>Cơ sở vật chất đạt chuẩn GSP (Good Storage Practice)</li>
+                    <li>Cơ sở vật chất đạt chuẩn GDP, GPP</li>
                     <li>Tuân thủ quy định về bảo quản và phân phối thuốc</li>
                   </ul>
                 </div>
