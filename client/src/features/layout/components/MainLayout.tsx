@@ -1,6 +1,7 @@
 import React from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
+import { BackToTop } from './BackToTop';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -23,6 +24,7 @@ export function MainLayout({ children, cartItemCount = 0, fullWidth = false }: M
         )}
       </main>
       <Footer />
+      <BackToTop />
     </div>
   );
 }

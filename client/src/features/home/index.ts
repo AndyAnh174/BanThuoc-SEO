@@ -4,6 +4,8 @@
 
 export { BestSellers } from './components/BestSellers';
 export { PromoBanners } from './components/PromoBanners';
+export { SocialProof } from './components/SocialProof';
+export { WaveDivider } from './components/WaveDivider';
 export { HeroBanner } from './components/HeroBanner';
 export { BannerRow } from './components/BannerRow';
 export { BrandStrip } from './components/BrandStrip';
