@@ -2,6 +2,7 @@
  * Home Feature Module
  */
 
+export { BestSellers } from './components/BestSellers';
 export { HeroBanner } from './components/HeroBanner';
 export { BannerRow } from './components/BannerRow';
 export { BrandStrip } from './components/BrandStrip';

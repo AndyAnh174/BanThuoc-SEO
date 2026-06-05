@@ -49,6 +49,12 @@ export const getFeaturedProducts = async () => {
   return { ...res, data: transformProductList(res.data) };
 };
 
+export const getBestSellingProducts = async () => {
+  const res = await api.get('/products/best-selling/');
+  if (Array.isArray(res.data)) return { ...res, data: res.data.map(transformProduct) };
+  return { ...res, data: transformProductList(res.data) };
+};
+
 export const getOnSaleProducts = async () => {
   const res = await api.get('/products/on-sale/');
   if (Array.isArray(res.data)) {
@@ -156,6 +162,7 @@ export const productsApi = {
   getProducts,
   getProduct,
   getFeaturedProducts,
+  getBestSellingProducts,
   getOnSaleProducts,
   getNewProducts,
   searchProducts,

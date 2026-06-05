@@ -373,6 +373,22 @@ class OnSaleProductsView(generics.ListAPIView):
         return annotate_product_queryset(qs, self.request.user)
 
 
+class BestSellingProductsView(generics.ListAPIView):
+    """
+    List best selling products (admin-curated).
+    """
+    permission_classes = [AllowAny]
+    serializer_class = ProductListSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        qs = Product.objects.filter(
+            status__in=['ACTIVE', 'OUT_OF_STOCK'],
+            is_best_selling=True,
+        ).select_related('category', 'manufacturer').prefetch_related('images').order_by('?')
+        return annotate_product_queryset(qs, self.request.user)
+
+
 class ProductSearchView(APIView):
     """
     Quick search endpoint for autocomplete/suggestions.

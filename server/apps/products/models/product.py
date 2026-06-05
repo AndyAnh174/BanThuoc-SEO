@@ -77,6 +77,7 @@ class Product(models.Model):
     )
     requires_prescription = models.BooleanField(default=False, help_text=_("Requires prescription to purchase"))
     is_featured = models.BooleanField(default=False, help_text=_("Featured product"))
+    is_best_selling = models.BooleanField(default=False, help_text=_("Best selling product"))
     
     # SEO
     meta_title = models.CharField(max_length=200, blank=True, help_text=_("SEO title"))
