@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { MainLayout } from '@/src/features/layout';
-import { HeroSectionServer, BannerRow, BestSellers, TrustBadges, CategoryShowcase, FeaturedProducts, NewProductsSection, FlashSaleSection, CategoryProductsSection } from '@/src/features/home';
+import { HeroSectionServer, BannerRow, BestSellers, PromoBanners, TrustBadges, CategoryShowcase, FeaturedProducts, NewProductsSection, FlashSaleSection, CategoryProductsSection } from '@/src/features/home';
 
 export const metadata: Metadata = {
   title: 'Bán Thuốc Sỉ - Ngọc Kim Ngân Pharma (NKN) | BanThuocSi.vn',
@@ -83,6 +83,13 @@ export default function Home() {
       <div className="bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
           <FlashSaleSection />
+        </div>
+      </div>
+
+      {/* Promo Banners — inline promotional grid */}
+      <div className="bg-white">
+        <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
+          <PromoBanners />
         </div>
       </div>
 

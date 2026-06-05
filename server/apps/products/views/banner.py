@@ -19,7 +19,7 @@ class BannerViewSet(viewsets.ModelViewSet):
     serializer_class = BannerSerializer
     
     def get_permissions(self):
-        if self.action in ['list', 'retrieve', 'visible', 'row']:
+        if self.action in ['list', 'retrieve', 'visible', 'row', 'promo']:
             return [AllowAny()]
         return [IsAuthenticated()]
     
@@ -51,7 +51,14 @@ class BannerViewSet(viewsets.ModelViewSet):
         banners = Banner.get_visible_banners(position=Banner.Position.ROW)
         serializer = BannerSerializer(banners, many=True)
         return Response(serializer.data)
-    
+
+    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
+    def promo(self, request):
+        """Get all currently visible PROMO banners for inline promo grid"""
+        banners = Banner.get_visible_banners(position=Banner.Position.PROMO)
+        serializer = BannerSerializer(banners, many=True)
+        return Response(serializer.data)
+
     @action(detail=False, methods=['post'], permission_classes=[IsAdminUser])
     def reorder(self, request):
         """Reorder banners by providing list of IDs in order"""
