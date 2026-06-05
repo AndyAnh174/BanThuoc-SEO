@@ -54,14 +54,13 @@ export function BannerRow() {
   if (banners.length === 0) return null;
 
   return (
-    <section className="py-6">
+    <section className="pb-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {banners.slice(0, 2).map((banner) => (
           <Link
             key={banner.id}
             href={banner.link_url || '#'}
             className="relative rounded-2xl overflow-hidden h-40 sm:h-48 shadow-sm hover:shadow-md transition-shadow"
-            style={{ backgroundColor: banner.background_color || 'transparent' }}
           >
             {banner.image_url && (
               <Image
