@@ -16,7 +16,7 @@ const defaultBanner: Banner = {
   title: 'Sức khỏe là vàng,\nChăm sóc tận tâm',
   subtitle:
     'Hơn 10.000+ sản phẩm dược phẩm chính hãng, giao hàng nhanh toàn quốc. Đội ngũ dược sĩ tư vấn 24/7.',
-  image_url: '',
+  image_url: '/3.png',
   link_url: '/products',
   link_text: 'Mua ngay',
   background_color: '#ffffff',
