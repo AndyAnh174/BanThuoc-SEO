@@ -41,8 +41,7 @@ import {
 import { useManufacturersStore } from '../stores/manufacturers.store';
 import { Manufacturer } from '../api/manufacturers.api';
 import { ExportButton } from './export-button';
-import { exportToCSV, exportToXLSX, timestampFilename } from '../utils/export';
-import { http } from '@/lib/http';
+import { exportToCSV, exportToXLSX, timestampFilename, fetchAllPages } from '../utils/export';
 
 export function ManufacturerTable() {
     const {
@@ -68,10 +67,7 @@ export function ManufacturerTable() {
     ];
 
     const fetchAllManufacturers = async () => {
-      const { data } = await http.get('/admin/manufacturers/', {
-        params: { page_size: 99999 },
-      });
-      return (data as any).results || data || [];
+      return fetchAllPages('/admin/manufacturers/');
     };
 
     const handleExportCSV = async () => {

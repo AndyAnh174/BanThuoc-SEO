@@ -51,7 +51,7 @@ import {
 import { useCategoriesStore } from '../stores/categories.store';
 import type { Category } from '../types/category.types';
 import { ExportButton } from './export-button';
-import { exportToCSV, exportToXLSX, timestampFilename } from '../utils/export';
+import { exportToCSV, exportToXLSX, timestampFilename, fetchAllPages } from '../utils/export';
 
 interface CategoryTableProps {
   categories: Category[];
@@ -86,12 +86,28 @@ export function CategoryTable({
     { key: 'is_active' as const, label: 'Trạng thái' },
   ];
 
-  const handleExportCSV = () => {
-    exportToCSV(categories, categoryColumns, timestampFilename('danh-muc'));
+  const handleExportCSV = async () => {
+    setIsExporting(true);
+    try {
+      const all = await fetchAllPages('/categories/');
+      exportToCSV(all, categoryColumns, timestampFilename('danh-muc'));
+    } catch (e) {
+      console.error('Export CSV failed:', e);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
-  const handleExportXLSX = () => {
-    exportToXLSX(categories, categoryColumns, timestampFilename('danh-muc'));
+  const handleExportXLSX = async () => {
+    setIsExporting(true);
+    try {
+      const all = await fetchAllPages('/categories/');
+      exportToXLSX(all, categoryColumns, timestampFilename('danh-muc'));
+    } catch (e) {
+      console.error('Export XLSX failed:', e);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const {

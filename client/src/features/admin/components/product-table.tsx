@@ -53,8 +53,7 @@ import {
 } from '@/components/ui/select';
 import { Filter, X } from 'lucide-react';
 import { ExportButton } from './export-button';
-import { exportToCSV, exportToXLSX, timestampFilename } from '../utils/export';
-import { http } from '@/lib/http';
+import { exportToCSV, exportToXLSX, timestampFilename, fetchAllPages } from '../utils/export';
 
 export function ProductTable() {
   const router = useRouter();
@@ -92,15 +91,11 @@ export function ProductTable() {
   ];
 
   const fetchAllProducts = async () => {
-    const { data } = await http.get('/admin/products/', {
-      params: {
-        page_size: 99999,
-        search: searchTerm || undefined,
-        category: categoryFilter || undefined,
-        status: statusFilter || undefined,
-      },
+    return fetchAllPages('/admin/products/', {
+      search: searchTerm || undefined,
+      category: categoryFilter || undefined,
+      status: statusFilter || undefined,
     });
-    return (data as any).results || data || [];
   };
 
   const handleExportCSV = async () => {

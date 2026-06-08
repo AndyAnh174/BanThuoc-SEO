@@ -2,6 +2,34 @@
  * Export utilities — CSV & XLSX generation
  */
 import * as XLSX from 'xlsx';
+import { http } from '@/lib/http';
+
+/**
+ * Fetch all pages of a paginated API endpoint.
+ * Loops through pages until there's no more data (handles max_page_size cap).
+ */
+export async function fetchAllPages(
+  url: string,
+  params?: Record<string, string | number | boolean | undefined>,
+): Promise<any[]> {
+  const all: any[] = [];
+  let page = 1;
+  const pageSize = 100; // match backend max_page_size
+
+  while (true) {
+    const { data } = await http.get(url, {
+      params: { ...params, page, page_size: pageSize },
+    });
+    const results = data.results ?? (Array.isArray(data) ? data : []);
+    all.push(...results);
+
+    // Stop if we got fewer items than page_size, or no next page
+    if (!data.next || results.length < pageSize) break;
+    page++;
+  }
+
+  return all;
+}
 
 function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
