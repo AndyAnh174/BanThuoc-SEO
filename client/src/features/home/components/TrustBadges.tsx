@@ -4,7 +4,7 @@ const badges = [
   {
     icon: Truck,
     title: 'Giao hàng toàn quốc',
-    desc: 'Vận chuyển nhanh 63 tỉnh thành',
+    desc: 'Vận chuyển nhanh 34 tỉnh thành',
     color: 'bg-orange-50 text-orange-600',
   },
   {

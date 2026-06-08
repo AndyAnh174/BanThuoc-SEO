@@ -62,9 +62,7 @@ export default function AboutPage() {
               Về <span className="text-primary">Bán Thuốc Sỉ</span>
             </h1>
             <p className="text-lg text-gray-600 mb-8">
-              Chúng tôi là hệ thống nhà thuốc online uy tín hàng đầu Việt Nam, 
-              với sứ mệnh mang đến sản phẩm chất lượng và dịch vụ tận tâm 
-              cho mọi gia đình Việt.
+              Chúng tôi là nhà phân phối dược phẩm uy tín tại Việt Nam, với sứ mệnh mang đến sản phẩm chất lượng và dịch vụ tận tâm cho quý nhà thuốc, phòng khám, công ty.
             </p>
           </div>
         </div>
@@ -95,13 +93,13 @@ export default function AboutPage() {
                 Sứ mệnh của chúng tôi
               </h2>
               <p className="text-gray-600 mb-4">
-                BanThuoc được thành lập với mong muốn mang đến cho mọi người 
-                khả năng tiếp cận các sản phẩm dược phẩm chất lượng cao một cách 
+                banthuocsi được thành lập với mong muốn mang đến cho mọi người
+                khả năng tiếp cận các sản phẩm dược phẩm chất lượng cao một cách
                 thuận tiện và nhanh chóng nhất.
               </p>
               <p className="text-gray-600 mb-4">
-                Chúng tôi tin rằng sức khỏe là tài sản quý giá nhất. Vì vậy, 
-                mỗi sản phẩm được bán tại BanThuoc đều được kiểm định nghiêm ngặt, 
+                Chúng tôi tin rằng sức khỏe là tài sản quý giá nhất. Vì vậy,
+                mỗi sản phẩm được bán tại banthuocsi đều được kiểm định nghiêm ngặt,
                 đảm bảo 100% chính hãng và có nguồn gốc rõ ràng.
               </p>
               <p className="text-gray-600">
@@ -225,7 +223,7 @@ export default function AboutPage() {
                     <h3 className="font-semibold text-gray-900">Phạm vi giao hàng</h3>
                   </div>
                   <p className="text-gray-600 text-sm leading-relaxed">
-                    Giao hàng toàn quốc 63 tỉnh thành. Nội thành TP.HCM giao trong ngày với đơn đặt trước 12:00 trưa.
+                    Giao hàng toàn quốc 34 tỉnh thành. Nội thành TP.HCM giao trong ngày với đơn đặt trước 12:00 trưa.
                   </p>
                 </div>
                 <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
