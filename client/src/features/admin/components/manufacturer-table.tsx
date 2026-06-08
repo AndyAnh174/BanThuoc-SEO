@@ -40,6 +40,9 @@ import {
 } from 'lucide-react';
 import { useManufacturersStore } from '../stores/manufacturers.store';
 import { Manufacturer } from '../api/manufacturers.api';
+import { ExportButton } from './export-button';
+import { exportToCSV, exportToXLSX, timestampFilename } from '../utils/export';
+import { http } from '@/lib/http';
 
 export function ManufacturerTable() {
     const {
@@ -53,6 +56,47 @@ export function ManufacturerTable() {
 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Manufacturer | null>(null);
+    const [isExporting, setIsExporting] = useState(false);
+
+    // Manufacturer export columns
+    const mfrColumns = [
+      { key: 'name' as const, label: 'Tên' },
+      { key: 'slug' as const, label: 'Slug' },
+      { key: 'country' as const, label: 'Quốc gia' },
+      { key: 'website' as const, label: 'Website' },
+      { key: 'is_active' as const, label: 'Trạng thái' },
+    ];
+
+    const fetchAllManufacturers = async () => {
+      const { data } = await http.get('/admin/manufacturers/', {
+        params: { page_size: 99999 },
+      });
+      return (data as any).results || data || [];
+    };
+
+    const handleExportCSV = async () => {
+      setIsExporting(true);
+      try {
+        const all = await fetchAllManufacturers();
+        exportToCSV(all, mfrColumns, timestampFilename('nha-san-xuat'));
+      } catch (e) {
+        console.error('Export CSV failed:', e);
+      } finally {
+        setIsExporting(false);
+      }
+    };
+
+    const handleExportXLSX = async () => {
+      setIsExporting(true);
+      try {
+        const all = await fetchAllManufacturers();
+        exportToXLSX(all, mfrColumns, timestampFilename('nha-san-xuat'));
+      } catch (e) {
+        console.error('Export XLSX failed:', e);
+      } finally {
+        setIsExporting(false);
+      }
+    };
 
     const handleDelete = async () => {
         if (itemToDelete) {
@@ -78,6 +122,12 @@ export function ManufacturerTable() {
                     <Plus className="h-4 w-4 mr-2" />
                     Thêm nhà sản xuất
                 </Button>
+
+                <ExportButton
+                  onExportXLSX={handleExportXLSX}
+                  onExportCSV={handleExportCSV}
+                  disabled={isExporting || manufacturers.length === 0}
+                />
             </div>
 
             {/* Table */}

@@ -50,6 +50,8 @@ import {
 } from 'lucide-react';
 import { useCategoriesStore } from '../stores/categories.store';
 import type { Category } from '../types/category.types';
+import { ExportButton } from './export-button';
+import { exportToCSV, exportToXLSX, timestampFilename } from '../utils/export';
 
 interface CategoryTableProps {
   categories: Category[];
@@ -71,6 +73,26 @@ export function CategoryTable({
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  // Category export columns
+  const categoryColumns = [
+    { key: 'name' as const, label: 'Tên danh mục' },
+    { key: 'slug' as const, label: 'Slug' },
+    { key: 'parent_name' as const, label: 'Danh mục cha' },
+    { key: 'level' as const, label: 'Cấp độ' },
+    { key: 'children_count' as const, label: 'Số DM con' },
+    { key: 'product_count' as const, label: 'Số sản phẩm' },
+    { key: 'is_active' as const, label: 'Trạng thái' },
+  ];
+
+  const handleExportCSV = () => {
+    exportToCSV(categories, categoryColumns, timestampFilename('danh-muc'));
+  };
+
+  const handleExportXLSX = () => {
+    exportToXLSX(categories, categoryColumns, timestampFilename('danh-muc'));
+  };
 
   const {
     openCreateModal,
@@ -129,6 +151,12 @@ export function CategoryTable({
           <Plus className="h-4 w-4 mr-2" />
           Thêm danh mục
         </Button>
+
+        <ExportButton
+          onExportXLSX={handleExportXLSX}
+          onExportCSV={handleExportCSV}
+          disabled={isExporting || categories.length === 0}
+        />
       </div>
 
       {/* Table */}

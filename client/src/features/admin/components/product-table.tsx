@@ -52,6 +52,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Filter, X } from 'lucide-react';
+import { ExportButton } from './export-button';
+import { exportToCSV, exportToXLSX, timestampFilename } from '../utils/export';
+import { http } from '@/lib/http';
 
 export function ProductTable() {
   const router = useRouter();
@@ -72,7 +75,57 @@ export function ProductTable() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [categories, setCategories] = useState<{ name: string; slug: string }[]>([]);
   const [searchInput, setSearchInput] = useState(searchTerm);
+  const [isExporting, setIsExporting] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Product export columns
+  const productColumns = [
+    { key: 'name' as const, label: 'Tên sản phẩm' },
+    { key: 'sku' as const, label: 'SKU' },
+    { key: 'category_name' as const, label: 'Danh mục' },
+    { key: 'manufacturer_name' as const, label: 'Nhà sản xuất' },
+    { key: 'price' as const, label: 'Giá gốc' },
+    { key: 'sale_price' as const, label: 'Giá sale' },
+    { key: 'stock_quantity' as const, label: 'Tồn kho' },
+    { key: 'unit' as const, label: 'Đơn vị' },
+    { key: 'status' as const, label: 'Trạng thái' },
+  ];
+
+  const fetchAllProducts = async () => {
+    const { data } = await http.get('/admin/products/', {
+      params: {
+        page_size: 99999,
+        search: searchTerm || undefined,
+        category: categoryFilter || undefined,
+        status: statusFilter || undefined,
+      },
+    });
+    return (data as any).results || data || [];
+  };
+
+  const handleExportCSV = async () => {
+    setIsExporting(true);
+    try {
+      const all = await fetchAllProducts();
+      exportToCSV(all, productColumns, timestampFilename('san-pham'));
+    } catch (e) {
+      console.error('Export CSV failed:', e);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportXLSX = async () => {
+    setIsExporting(true);
+    try {
+      const all = await fetchAllProducts();
+      exportToXLSX(all, productColumns, timestampFilename('san-pham'));
+    } catch (e) {
+      console.error('Export XLSX failed:', e);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   useEffect(() => {
     getCategories({ active_only: true }).then((res: any) => {
@@ -181,6 +234,14 @@ export function ProductTable() {
             <X className="mr-1 h-4 w-4" /> Xóa lọc
           </Button>
         )}
+
+        <div className="flex-1" />
+
+        <ExportButton
+          onExportXLSX={handleExportXLSX}
+          onExportCSV={handleExportCSV}
+          disabled={isExporting}
+        />
       </div>
 
       {/* Table */}
