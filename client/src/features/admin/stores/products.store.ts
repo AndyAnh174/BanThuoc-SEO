@@ -23,6 +23,7 @@ interface ProductsState {
   // Filters
   searchTerm: string;
   categoryFilter: string | undefined;
+  manufacturerFilter: string | undefined;
   statusFilter: string | undefined;
 
   // Loading states
@@ -40,7 +41,7 @@ interface ProductsState {
   // UI actions
   setPage: (page: number) => void;
   setPageSize: (size: number) => void;
-  setFilters: (filters: { search?: string; category?: string; status?: string }) => void;
+  setFilters: (filters: { search?: string; category?: string; manufacturer?: string; status?: string }) => void;
 }
 
 export const useProductsStore = create<ProductsState>((set, get) => ({
@@ -51,6 +52,7 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
   pageSize: 10,
   searchTerm: '',
   categoryFilter: undefined,
+  manufacturerFilter: undefined,
   statusFilter: undefined,
   isLoading: false,
   isCreating: false,
@@ -61,13 +63,14 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
   fetchProducts: async (params?: ProductListParams) => {
     set({ isLoading: true });
     try {
-      const { currentPage, pageSize, searchTerm, categoryFilter, statusFilter } = get();
+      const { currentPage, pageSize, searchTerm, categoryFilter, manufacturerFilter, statusFilter } = get();
 
       const queryParams: ProductListParams = {
         page: params?.page ?? currentPage,
         page_size: params?.page_size ?? pageSize,
         search: params?.search ?? searchTerm,
         category: params?.category ?? categoryFilter,
+        manufacturer: params?.manufacturer ?? manufacturerFilter,
         status: (params?.status ?? statusFilter) as any,
         ...params,
       };
@@ -174,6 +177,7 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
     const updates: Record<string, any> = { currentPage: 1 };
     if (filters.search !== undefined) updates.searchTerm = filters.search;
     if (filters.category !== undefined) updates.categoryFilter = filters.category;
+    if (filters.manufacturer !== undefined) updates.manufacturerFilter = filters.manufacturer;
     if (filters.status !== undefined) updates.statusFilter = filters.status;
     set(updates);
     get().fetchProducts({ page: 1 });

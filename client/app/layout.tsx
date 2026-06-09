@@ -130,7 +130,7 @@ export const metadata: Metadata = {
       "Sàn dược phẩm sỉ B2B của Công ty Dược phẩm Ngọc Kim Ngân (NKN Pharma). 10.000+ sản phẩm thuốc sỉ chính hãng cho nhà thuốc, phòng khám toàn quốc.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/logo-raw.png",
         width: 1200,
         height: 630,
         alt: "BanThuocSi - Ngọc Kim Ngân Pharma (NKN)",
@@ -142,7 +142,7 @@ export const metadata: Metadata = {
     title: "Bán Thuốc Sỉ - NKN Pharma | BanThuocSi.vn",
     description:
       "Sàn dược phẩm sỉ B2B của Ngọc Kim Ngân Pharma - 10.000+ sản phẩm thuốc sỉ chính hãng.",
-    images: ["/og-image.png"],
+    images: ["/logo-raw.png"],
   },
   robots: {
     index: true,

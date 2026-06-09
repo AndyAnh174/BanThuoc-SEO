@@ -65,6 +65,7 @@ export function ProductTable() {
     pageSize,
     searchTerm,
     categoryFilter,
+    manufacturerFilter,
     statusFilter,
     deleteProduct,
     setPage,
@@ -73,6 +74,7 @@ export function ProductTable() {
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [categories, setCategories] = useState<{ name: string; slug: string }[]>([]);
+  const [manufacturers, setManufacturers] = useState<{ name: string; id: string }[]>([]);
   const [searchInput, setSearchInput] = useState(searchTerm);
   const [isExporting, setIsExporting] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -94,6 +96,7 @@ export function ProductTable() {
     return fetchAllPages('/admin/products/', {
       search: searchTerm || undefined,
       category: categoryFilter || undefined,
+      manufacturer: manufacturerFilter || undefined,
       status: statusFilter || undefined,
     });
   };
@@ -134,6 +137,13 @@ export function ProductTable() {
       walk(Array.isArray(res.data) ? res.data : res.data?.results || []);
       setCategories(names);
     }).catch(() => {});
+    // Fetch manufacturers list for filter
+    import('@/src/features/products/api/products.api').then(({ getManufacturers }) => {
+      getManufacturers().then((res: any) => {
+        const data = Array.isArray(res.data) ? res.data : res.data?.results || [];
+        setManufacturers(data.map((m: any) => ({ name: m.name, id: m.id })));
+      }).catch(() => {});
+    });
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, []);
 
@@ -149,11 +159,11 @@ export function ProductTable() {
     setSearchInput(searchTerm);
   }, [searchTerm]);
 
-  const hasFilters = !!(searchTerm || categoryFilter || statusFilter);
+  const hasFilters = !!(searchTerm || categoryFilter || manufacturerFilter || statusFilter);
 
   const clearAllFilters = () => {
     setSearchInput('');
-    setFilters({ search: '', category: '', status: '' });
+    setFilters({ search: '', category: '', manufacturer: '', status: '' });
   };
 
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -204,6 +214,21 @@ export function ProductTable() {
             <SelectItem value="all">Tất cả danh mục</SelectItem>
             {categories.map((c) => (
               <SelectItem key={c.slug} value={c.slug}>{c.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={manufacturerFilter || 'all'}
+          onValueChange={(v) => setFilters({ manufacturer: v === 'all' ? '' : v })}
+        >
+          <SelectTrigger className="w-[160px]">
+            <SelectValue placeholder="Nhà sản xuất" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tất cả NSX</SelectItem>
+            {manufacturers.map((m) => (
+              <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
