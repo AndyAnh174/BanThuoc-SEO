@@ -38,6 +38,14 @@ import {
     Globe,
     ExternalLink,
 } from 'lucide-react';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
 import { useManufacturersStore } from '../stores/manufacturers.store';
 import { Manufacturer } from '../api/manufacturers.api';
 import { ExportButton } from './export-button';
@@ -47,11 +55,23 @@ export function ManufacturerTable() {
     const {
         manufacturers,
         isLoading,
+        totalCount,
+        currentPage,
+        fetchManufacturers,
         openCreateModal,
         openEditModal,
         deleteManufacturer,
         isDeleting,
     } = useManufacturersStore();
+
+    const pageSize = 20; // matches backend StandardResultsSetPagination
+    const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= totalPages) {
+            fetchManufacturers(page);
+        }
+    };
 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Manufacturer | null>(null);
@@ -223,6 +243,55 @@ export function ManufacturerTable() {
                     </TableBody>
                 </Table>
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between pt-2">
+                    <p className="text-sm text-gray-500">
+                        Trang {currentPage} / {totalPages} — {totalCount} nhà sản xuất
+                    </p>
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    className={currentPage <= 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                                />
+                            </PaginationItem>
+                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                // Show pages around current page
+                                let page: number;
+                                if (totalPages <= 5) {
+                                    page = i + 1;
+                                } else if (currentPage <= 3) {
+                                    page = i + 1;
+                                } else if (currentPage >= totalPages - 2) {
+                                    page = totalPages - 4 + i;
+                                } else {
+                                    page = currentPage - 2 + i;
+                                }
+                                return (
+                                    <PaginationItem key={page}>
+                                        <PaginationLink
+                                            onClick={() => handlePageChange(page)}
+                                            isActive={currentPage === page}
+                                            className="cursor-pointer"
+                                        >
+                                            {page}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                );
+                            })}
+                            <PaginationItem>
+                                <PaginationNext
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    className={currentPage >= totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                </div>
+            )}
 
             {/* Delete Confirmation Dialog */}
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
