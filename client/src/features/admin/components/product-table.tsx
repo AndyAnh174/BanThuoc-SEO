@@ -74,7 +74,7 @@ export function ProductTable() {
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [categories, setCategories] = useState<{ name: string; slug: string }[]>([]);
-  const [manufacturers, setManufacturers] = useState<{ name: string; id: string }[]>([]);
+  const [manufacturers, setManufacturers] = useState<{ name: string; slug: string }[]>([]);
   const [searchInput, setSearchInput] = useState(searchTerm);
   const [isExporting, setIsExporting] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -141,7 +141,7 @@ export function ProductTable() {
     import('@/src/features/products/api/products.api').then(({ getManufacturers }) => {
       getManufacturers().then((res: any) => {
         const data = Array.isArray(res.data) ? res.data : res.data?.results || [];
-        setManufacturers(data.map((m: any) => ({ name: m.name, id: m.id })));
+        setManufacturers(data.map((m: any) => ({ name: m.name, slug: m.slug })));
       }).catch(() => {});
     });
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
@@ -228,7 +228,7 @@ export function ProductTable() {
           <SelectContent>
             <SelectItem value="all">Tất cả NSX</SelectItem>
             {manufacturers.map((m) => (
-              <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+              <SelectItem key={m.slug} value={m.slug}>{m.name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
