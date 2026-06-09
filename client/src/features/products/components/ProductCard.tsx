@@ -120,7 +120,7 @@ export function ProductCard({
             : !outOfStock && <span className="flex items-center gap-1"><Circle className="w-1.5 h-1.5 fill-teal-500 text-teal-500"/>Còn hàng</span>}
         </div>
 
-        {manufacturer && <div className="mt-auto pt-1 border-t border-gray-50 flex items-center gap-1"><Pill className="w-3 h-3 text-gray-300"/><p className="text-[11px] text-gray-400 truncate">{manufacturer.name}</p></div>}
+        {manufacturer && <div className="mt-auto pt-1 border-t border-gray-50 flex items-center gap-1"><Pill className="w-3 h-3 text-teal-400"/><p className="text-[11px] text-teal-600 font-medium truncate">{manufacturer.name}</p></div>}
       </div>
 
       {/* Always-visible quantity selector */}
