@@ -27,7 +27,8 @@ import {
     Star,
     RotateCcw,
     History,
-    Bug
+    Bug,
+    MonitorPlay
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -75,6 +76,7 @@ const sidebarSections: SidebarSection[] = [
             { label: "Flash Sale", href: "/admin/flash-sales", icon: Zap },
             { label: "Banner", href: "/admin/banners", icon: Image },
             { label: "Banner Mini", href: "/admin/banner-mini", icon: Layout },
+            { label: "Popup Ads", href: "/admin/popup-ads", icon: MonitorPlay },
         ]
     },
     {

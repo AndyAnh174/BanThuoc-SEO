@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Be_Vietnam_Pro } from "next/font/google";
 import Script from "next/script";
 import { Toaster } from "sonner";
 import FloatingContact from "@/src/components/FloatingContact";
+import { PopupAd } from "@/src/features/home/components/PopupAd";
 import "./globals.css";
 
 const SITE_URL = "https://banthuocsi.vn";
@@ -210,6 +211,7 @@ gtag('config', '${GA_ID}');`}
         />
         {children}
         <FloatingContact />
+        <PopupAd />
         <Toaster
           position="top-right" 
           richColors 

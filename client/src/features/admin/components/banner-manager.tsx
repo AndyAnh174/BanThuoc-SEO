@@ -101,7 +101,7 @@ async function deleteBanner(token: string, id: string): Promise<void> {
 
 interface BannerManagerProps {
   token: string;
-  position?: 'HERO' | 'ROW';
+  position?: 'HERO' | 'ROW' | 'POPUP';
 }
 
 export function BannerManager({ token, position }: BannerManagerProps) {
@@ -252,8 +252,8 @@ export function BannerManager({ token, position }: BannerManagerProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">{position === 'ROW' ? 'Banner Mini' : 'Quản lý Banner'}</h2>
-          <p className="text-gray-500">{position === 'ROW' ? 'Banner phụ hiển thị dưới hero trang chủ' : 'Quản lý các banner hiển thị trên trang chủ'}</p>
+          <h2 className="text-2xl font-bold">{position === 'POPUP' ? 'Popup Ads' : position === 'ROW' ? 'Banner Mini' : 'Quản lý Banner'}</h2>
+          <p className="text-gray-500">{position === 'POPUP' ? 'Quản lý popup quảng cáo hiển thị giữa màn hình (chỉ 1 active)' : position === 'ROW' ? 'Banner phụ hiển thị dưới hero trang chủ' : 'Quản lý các banner hiển thị trên trang chủ'}</p>
         </div>
         <Button onClick={openCreateModal}>
           <Plus className="w-4 h-4 mr-2" />
@@ -423,6 +423,7 @@ export function BannerManager({ token, position }: BannerManagerProps) {
                 >
                   <option value="HERO">Hero Banner (carousel chính)</option>
                   <option value="ROW">Banner Mini (dưới hero)</option>
+                  <option value="POPUP">Popup Ad (quảng cáo giữa màn hình)</option>
                   <option value="PROMO">Promo Banner (grid giữa trang)</option>
                 </select>
               </div>

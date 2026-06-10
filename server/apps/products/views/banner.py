@@ -59,6 +59,33 @@ class BannerViewSet(viewsets.ModelViewSet):
         serializer = BannerSerializer(banners, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
+    def popup(self, request):
+        """Get the single active POPUP banner (returns first visible, or empty)"""
+        popup = Banner.get_visible_banners(position=Banner.Position.POPUP).first()
+        if popup:
+            serializer = BannerSerializer(popup)
+            return Response(serializer.data)
+        return Response(None)
+
+    def perform_create(self, serializer):
+        """Auto-deactivate other POPUPs when creating a new active POPUP"""
+        instance = serializer.save()
+        if instance.display_position == Banner.Position.POPUP and instance.is_active:
+            Banner.objects.filter(
+                display_position=Banner.Position.POPUP,
+                is_active=True,
+            ).exclude(id=instance.id).update(is_active=False)
+
+    def perform_update(self, serializer):
+        """Auto-deactivate other POPUPs when activating a POPUP"""
+        instance = serializer.save()
+        if instance.display_position == Banner.Position.POPUP and instance.is_active:
+            Banner.objects.filter(
+                display_position=Banner.Position.POPUP,
+                is_active=True,
+            ).exclude(id=instance.id).update(is_active=False)
+
     @action(detail=False, methods=['post'], permission_classes=[IsAdminUser])
     def reorder(self, request):
         """Reorder banners by providing list of IDs in order"""
