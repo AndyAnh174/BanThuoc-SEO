@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getCategories } from '@/src/features/products';
-import { Pill, Apple, Heart, Baby, Stethoscope, Sparkles, Brain, Ear, Bone, Activity, Shield, Droplet, ChevronRight } from 'lucide-react';
+import { Pill, Apple, Stethoscope, Sparkles, Brain, Bone, Activity, Droplet, ChevronRight, Bath, ShieldBan, BugOff, ScanFace, Bandage, Wind, Microscope, FlaskConical, Utensils, LeafyGreen } from 'lucide-react';
 
 interface Category {
   id: string; name: string; slug: string; description?: string;
@@ -12,13 +12,26 @@ interface Category {
 }
 
 const categoryIcons: Record<string, React.ReactNode> = {
-  'thuoc-ke-don': <Pill className="w-6 h-6" />, 'thuoc-khong-ke-don': <Pill className="w-6 h-6" />,
-  'thuc-pham-chuc-nang': <Apple className="w-6 h-6" />, 'duoc-my-pham': <Sparkles className="w-6 h-6" />,
-  'thiet-bi-y-te': <Stethoscope className="w-6 h-6" />, 'cham-soc-ca-nhan': <Heart className="w-6 h-6" />,
-  'san-pham-me-be': <Baby className="w-6 h-6" />, 'vitamin': <Apple className="w-6 h-6" />,
-  'tim-mach': <Activity className="w-6 h-6" />, 'nao-than-kinh': <Brain className="w-6 h-6" />,
-  'tai-mui-hong': <Ear className="w-6 h-6" />, 'co-xuong-khop': <Bone className="w-6 h-6" />,
-  'mau-huyet-hoc': <Droplet className="w-6 h-6" />, 'khang-vi-sinh-vat': <Shield className="w-6 h-6" />,
+  // Root categories (level 0)
+  'chăm-sóc-cá-nhân': <Bath className="w-6 h-6" />,
+  'dược-mỹ-phẩm': <Sparkles className="w-6 h-6" />,
+  'thiết-bị-y-tế': <Stethoscope className="w-6 h-6" />,
+  'thuốc': <Pill className="w-6 h-6" />,
+  'thực-phẩm-chức-năng': <LeafyGreen className="w-6 h-6" />,
+  // Sub-categories (level 1)
+  'chống-dị-ứng': <ShieldBan className="w-6 h-6" />,
+  'chống-ký-sinh-trùng': <BugOff className="w-6 h-6" />,
+  'cơ-xương-khớp': <Bone className="w-6 h-6" />,
+  'da-liễu': <ScanFace className="w-6 h-6" />,
+  'giảm-đau-kháng-viêm': <Bandage className="w-6 h-6" />,
+  'hô-hấp': <Wind className="w-6 h-6" />,
+  'kháng-sinh-virus-và-nấm': <Microscope className="w-6 h-6" />,
+  'nội-tiết': <FlaskConical className="w-6 h-6" />,
+  'thần-kinh': <Brain className="w-6 h-6" />,
+  'tim-mạch': <Activity className="w-6 h-6" />,
+  'tiêu-hóa': <Utensils className="w-6 h-6" />,
+  'tiết-niệu': <Droplet className="w-6 h-6" />,
+  'vitamin-và-khoáng-chất': <Apple className="w-6 h-6" />,
 };
 
 export function CategoryShowcase() {
