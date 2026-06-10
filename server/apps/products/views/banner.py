@@ -19,7 +19,7 @@ class BannerViewSet(viewsets.ModelViewSet):
     serializer_class = BannerSerializer
     
     def get_permissions(self):
-        if self.action in ['list', 'retrieve', 'visible', 'row', 'promo']:
+        if self.action in ['list', 'retrieve', 'visible', 'row', 'promo', 'popup']:
             return [AllowAny()]
         return [IsAuthenticated()]
     
