@@ -28,6 +28,7 @@ export function CheckoutPage() {
     defaultValues: {
       deliveryMethod: 'shipping',
       paymentMethod: 'COD',
+      shippingCarrier: 'VTP',
       city: '',
       ward: '',
     }
@@ -149,7 +150,7 @@ export function CheckoutPage() {
             full_name: data.fullName,
             phone_number: data.phoneNumber,
             payment_method: data.paymentMethod,
-            shipping_carrier: data.shippingCarrier || 'GHN',
+            shipping_carrier: data.shippingCarrier || 'VTP',
             shipping_fee: shippingFee,
             items_input: cart.items.map(item => ({
                 product: item.product.id,
