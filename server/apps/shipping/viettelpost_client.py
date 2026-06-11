@@ -31,33 +31,27 @@ class ViettelPostClient:
         r = requests.get(f'{self.base_url}{path}', headers=self._headers(), params=params, timeout=15)
         return r.json()
 
-    # ---- Address APIs ----
+    # ---- Address APIs (V3 - no auth, 34 provinces, 2-level) ----
 
-    def get_provinces(self):
-        cache_key = 'vtp_provinces'
+    def get_provinces_v3(self):
+        """V3 provinces — no auth required, returns 34 provinces"""
+        cache_key = 'vtp_v3_provinces'
         cached = cache.get(cache_key)
         if cached: return cached
-        data = self._get('/v2/address/listProvinces')
+        r = requests.get(f'{self.base_url}/v3/categories/listProvinceNew', timeout=15)
+        data = r.json()
         result = data.get('data', [])
         if not isinstance(result, list): result = []
         cache.set(cache_key, result, 86400)
         return result
 
-    def get_districts(self, province_id):
-        cache_key = f'vtp_districts_{province_id}'
+    def get_wards_v3(self, province_id):
+        """V3 wards — no auth required, direct province→ward"""
+        cache_key = f'vtp_v3_wards_{province_id}'
         cached = cache.get(cache_key)
         if cached: return cached
-        data = self._get('/v2/address/listDistricts', {'provinceId': province_id})
-        result = data.get('data', [])
-        if not isinstance(result, list): result = []
-        cache.set(cache_key, result, 86400)
-        return result
-
-    def get_wards(self, district_id):
-        cache_key = f'vtp_wards_{district_id}'
-        cached = cache.get(cache_key)
-        if cached: return cached
-        data = self._get('/v2/address/listWards', {'districtId': district_id})
+        r = requests.get(f'{self.base_url}/v3/categories/listWardsNew?provinceId={province_id}', timeout=15)
+        data = r.json()
         result = data.get('data', [])
         if not isinstance(result, list): result = []
         cache.set(cache_key, result, 86400)

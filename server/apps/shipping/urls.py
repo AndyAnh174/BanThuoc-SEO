@@ -24,7 +24,6 @@ urlpatterns = [
 
     # ---- ViettelPost ----
     path('vtp/provinces/', views.VTPProvinceListView.as_view(), name='vtp-provinces'),
-    path('vtp/districts/', views.VTPDistrictListView.as_view(), name='vtp-districts'),
     path('vtp/wards/', views.VTPWardListView.as_view(), name='vtp-wards'),
     path('vtp/calculate-fee/', views.VTPCalculateFeeView.as_view(), name='vtp-calc-fee'),
     path('vtp/orders/<int:order_id>/create/', views.VTPCreateShipmentView.as_view(), name='vtp-create'),

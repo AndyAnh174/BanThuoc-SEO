@@ -260,24 +260,8 @@ class VTPProvinceListView(APIView):
 
     def get(self, request):
         try:
-            provinces = vtp.get_provinces()
-            data = [{'id': p.get('PROVINCE_ID'), 'name': p.get('PROVINCE_NAME'),
-                     'code': p.get('PROVINCE_CODE')} for p in provinces]
-            return Response(data)
-        except Exception as e:
-            return Response({'error': str(e)}, status=500)
-
-
-class VTPDistrictListView(APIView):
-    permission_classes = [AllowAny]
-
-    def get(self, request):
-        province_id = request.query_params.get('province_id')
-        if not province_id:
-            return Response({'error': 'province_id required'}, status=400)
-        try:
-            districts = vtp.get_districts(province_id)
-            data = [{'id': d.get('DISTRICT_ID'), 'name': d.get('DISTRICT_NAME')} for d in districts]
+            provinces = vtp.get_provinces_v3()
+            data = [{'id': p.get('PROVINCE_ID'), 'name': p.get('PROVINCE_NAME')} for p in provinces]
             return Response(data)
         except Exception as e:
             return Response({'error': str(e)}, status=500)
@@ -287,12 +271,12 @@ class VTPWardListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        district_id = request.query_params.get('district_id')
-        if not district_id:
-            return Response({'error': 'district_id required'}, status=400)
+        province_id = request.query_params.get('province_id')
+        if not province_id:
+            return Response({'error': 'province_id required'}, status=400)
         try:
-            wards = vtp.get_wards(district_id)
-            data = [{'id': w.get('WARD_ID'), 'name': w.get('WARD_NAME')} for w in wards]
+            wards = vtp.get_wards_v3(province_id)
+            data = [{'id': w.get('WARDS_ID'), 'name': w.get('WARDS_NAME')} for w in wards]
             return Response(data)
         except Exception as e:
             return Response({'error': str(e)}, status=500)

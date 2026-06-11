@@ -32,42 +32,59 @@ interface AddressOption {
 export function DeliveryInfo() {
   const { register, setValue, watch, control, formState: { errors } } = useFormContext<CheckoutFormValues>();
   const deliveryMethod = watch('deliveryMethod');
+  const shippingCarrier = watch('shippingCarrier') || 'GHN';
   const selectedProvince = watch('city');
   const selectedDistrict = watch('district');
+
+  const isVTP = shippingCarrier === 'VTP'; // VTP V3 = 2-level (no district)
+  const provUrl = isVTP ? `${API_URL}/shipping/vtp/provinces/` : `${API_URL}/shipping/provinces/`;
+  const wardUrlBase = isVTP ? `${API_URL}/shipping/vtp/wards/?province_id=` : `${API_URL}/shipping/wards/?district_id=`;
+  const distUrl = (id: string) => `${API_URL}/shipping/districts/?province_id=${id}`;
 
   const [provinces, setProvinces] = useState<AddressOption[]>([]);
   const [districts, setDistricts] = useState<AddressOption[]>([]);
   const [wards, setWards] = useState<AddressOption[]>([]);
 
-  // Fetch provinces on mount
+  // Fetch provinces when carrier changes
   useEffect(() => {
-    fetch(`${API_URL}/shipping/provinces/`)
+    fetch(provUrl)
       .then(r => r.json())
       .then(data => setProvinces(Array.isArray(data) ? data : []))
       .catch(() => {});
-  }, []);
+  }, [provUrl]);
 
-  // Fetch districts when province changes
+  // Fetch districts when province changes (GHN only)
   useEffect(() => {
+    if (isVTP) { setDistricts([]); return; }
     if (!selectedProvince) { setDistricts([]); return; }
-    fetch(`${API_URL}/shipping/districts/?province_id=${selectedProvince}`)
+    fetch(distUrl(selectedProvince))
       .then(r => r.json())
       .then(data => setDistricts(Array.isArray(data) ? data : []))
       .catch(() => setDistricts([]));
-  }, [selectedProvince]);
+  }, [selectedProvince, isVTP]);
 
-  // Fetch wards when district changes
+  // Fetch wards
   useEffect(() => {
-    if (!selectedDistrict) { setWards([]); return; }
-    fetch(`${API_URL}/shipping/wards/?district_id=${selectedDistrict}`)
-      .then(r => r.json())
-      .then(data => setWards(Array.isArray(data) ? data : []))
-      .catch(() => setWards([]));
-  }, [selectedDistrict]);
+    if (isVTP) {
+      // VTP V3: wards by province directly
+      if (!selectedProvince) { setWards([]); return; }
+      fetch(`${wardUrlBase}${selectedProvince}`)
+        .then(r => r.json())
+        .then(data => setWards(Array.isArray(data) ? data : []))
+        .catch(() => setWards([]));
+    } else {
+      // GHN: wards by district
+      if (!selectedDistrict) { setWards([]); return; }
+      fetch(`${wardUrlBase}${selectedDistrict}`)
+        .then(r => r.json())
+        .then(data => setWards(Array.isArray(data) ? data : []))
+        .catch(() => setWards([]));
+    }
+  }, [selectedProvince, selectedDistrict, isVTP]);
 
-  // Reset downstream when upstream changes
-  useEffect(() => { setValue('district', ''); setValue('ward', ''); }, [selectedProvince, setValue]);
-  useEffect(() => { setValue('ward', ''); }, [selectedDistrict, setValue]);
+  // Reset downstream
+  useEffect(() => { setValue('district', ''); setValue('ward', ''); }, [selectedProvince, shippingCarrier, setValue]);
+  useEffect(() => { if (!isVTP) setValue('ward', ''); }, [selectedDistrict, setValue]);
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -77,7 +94,7 @@ export function DeliveryInfo() {
         onValueChange={(val) => setValue('deliveryMethod', val as 'shipping' | 'pickup')}
         className="w-full"
       >
-        <TabsList className="w-full grid w-full grid-cols-2 mb-6 h-12 p-1 bg-gray-50 rounded-lg">
+        <TabsList className="w-full grid grid-cols-2 mb-6 h-12 p-1 bg-gray-50 rounded-lg">
           <TabsTrigger value="shipping" className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium transition-all">
             Giao tại nhà
           </TabsTrigger>
@@ -104,7 +121,7 @@ export function DeliveryInfo() {
                  <div className="space-y-2">
                     <Label className="text-gray-600 font-medium">Địa chỉ <span className="text-red-500">*</span></Label>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                    <div className={`grid gap-3 mb-3 ${isVTP ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-3'}`}>
                          {/* Province */}
                          <FormField
                             control={control}
@@ -128,7 +145,8 @@ export function DeliveryInfo() {
                             )}
                          />
 
-                         {/* District */}
+                         {/* District — GHN only */}
+                         {!isVTP && (
                          <FormField
                             control={control}
                             name="district"
@@ -150,6 +168,7 @@ export function DeliveryInfo() {
                                 </FormItem>
                             )}
                          />
+                         )}
 
                          {/* Ward */}
                          <FormField
@@ -160,7 +179,7 @@ export function DeliveryInfo() {
                                     <Select
                                         onValueChange={field.onChange}
                                         value={field.value || ''}
-                                        disabled={!selectedDistrict}
+                                        disabled={isVTP ? !selectedProvince : !selectedDistrict}
                                     >
                                         <FormControl>
                                             <SelectTrigger className="bg-white">
@@ -169,7 +188,7 @@ export function DeliveryInfo() {
                                         </FormControl>
                                         <SelectContent position="popper">
                                             {wards.map((w: any) => (
-                                                <SelectItem key={w.code} value={String(w.code)}>{w.name}</SelectItem>
+                                                <SelectItem key={w.id || w.code} value={String(w.id || w.code)}>{w.name}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
