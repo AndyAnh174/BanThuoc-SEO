@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -21,28 +21,59 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import locationData from '@/src/data/db.json';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
+interface AddressOption {
+  id?: number;
+  code?: number | string;
+  name: string;
+}
 
 export function DeliveryInfo() {
   const { register, setValue, watch, control, formState: { errors } } = useFormContext<CheckoutFormValues>();
   const deliveryMethod = watch('deliveryMethod');
-  const selectedCity = watch('city'); 
-  
-  const availableWards = React.useMemo(() => {
-     if (!selectedCity) return [];
-     return locationData.commune.filter((c: any) => c.idProvince === selectedCity);
-  }, [selectedCity]);
+  const selectedProvince = watch('city');
+  const selectedDistrict = watch('district');
 
-  // Reset ward when city changes
-  React.useEffect(() => {
-      setValue('ward', '');
-  }, [selectedCity, setValue]);
+  const [provinces, setProvinces] = useState<AddressOption[]>([]);
+  const [districts, setDistricts] = useState<AddressOption[]>([]);
+  const [wards, setWards] = useState<AddressOption[]>([]);
+
+  // Fetch provinces on mount
+  useEffect(() => {
+    fetch(`${API_URL}/shipping/provinces/`)
+      .then(r => r.json())
+      .then(data => setProvinces(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, []);
+
+  // Fetch districts when province changes
+  useEffect(() => {
+    if (!selectedProvince) { setDistricts([]); return; }
+    fetch(`${API_URL}/shipping/districts/?province_id=${selectedProvince}`)
+      .then(r => r.json())
+      .then(data => setDistricts(Array.isArray(data) ? data : []))
+      .catch(() => setDistricts([]));
+  }, [selectedProvince]);
+
+  // Fetch wards when district changes
+  useEffect(() => {
+    if (!selectedDistrict) { setWards([]); return; }
+    fetch(`${API_URL}/shipping/wards/?district_id=${selectedDistrict}`)
+      .then(r => r.json())
+      .then(data => setWards(Array.isArray(data) ? data : []))
+      .catch(() => setWards([]));
+  }, [selectedDistrict]);
+
+  // Reset downstream when upstream changes
+  useEffect(() => { setValue('district', ''); setValue('ward', ''); }, [selectedProvince, setValue]);
+  useEffect(() => { setValue('ward', ''); }, [selectedDistrict, setValue]);
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <Tabs 
-        defaultValue="shipping" 
-        value={deliveryMethod} 
+      <Tabs
+        defaultValue="shipping"
+        value={deliveryMethod}
         onValueChange={(val) => setValue('deliveryMethod', val as 'shipping' | 'pickup')}
         className="w-full"
       >
@@ -56,7 +87,6 @@ export function DeliveryInfo() {
         </TabsList>
 
         <div className="space-y-4">
-             {/* Common Fields */}
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="fullName" className="text-gray-600 font-medium">Tên người nhận <span className="text-red-500">*</span></Label>
@@ -73,23 +103,23 @@ export function DeliveryInfo() {
              <TabsContent value="shipping" className="space-y-4 mt-0 animate-in fade-in slide-in-from-left-2">
                  <div className="space-y-2">
                     <Label className="text-gray-600 font-medium">Địa chỉ <span className="text-red-500">*</span></Label>
-                    
-                    {/* Address Selectors using shadcn Select */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                         {/* Province */}
                          <FormField
                             control={control}
                             name="city"
                             render={({ field }) => (
                                 <FormItem>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value || ''}>
                                         <FormControl>
                                             <SelectTrigger className="bg-white">
-                                                <SelectValue placeholder="Chọn Tỉnh/Thành" />
+                                                <SelectValue placeholder="Tỉnh/Thành" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent position="popper">
-                                            {locationData.province.map((p: any) => (
-                                                <SelectItem key={p.idProvince} value={p.idProvince}>{p.name}</SelectItem>
+                                            {provinces.map((p: any) => (
+                                                <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
@@ -97,26 +127,49 @@ export function DeliveryInfo() {
                                 </FormItem>
                             )}
                          />
-                         
+
+                         {/* District */}
+                         <FormField
+                            control={control}
+                            name="district"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <Select onValueChange={field.onChange} value={field.value || ''} disabled={!selectedProvince}>
+                                        <FormControl>
+                                            <SelectTrigger className="bg-white">
+                                                <SelectValue placeholder="Quận/Huyện" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent position="popper">
+                                            {districts.map((d: any) => (
+                                                <SelectItem key={d.id} value={String(d.id)}>{d.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                         />
+
+                         {/* Ward */}
                          <FormField
                             control={control}
                             name="ward"
                             render={({ field }) => (
                                 <FormItem>
-                                    <Select 
-                                        onValueChange={field.onChange} 
-                                        defaultValue={field.value} 
-                                        value={field.value}
-                                        disabled={!selectedCity}
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value || ''}
+                                        disabled={!selectedDistrict}
                                     >
                                         <FormControl>
                                             <SelectTrigger className="bg-white">
-                                                <SelectValue placeholder="Chọn Phường/Xã" />
+                                                <SelectValue placeholder="Phường/Xã" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent position="popper">
-                                            {availableWards.map((w: any) => (
-                                                <SelectItem key={w.idCommune} value={w.idCommune}>{w.name}</SelectItem>
+                                            {wards.map((w: any) => (
+                                                <SelectItem key={w.code} value={String(w.code)}>{w.name}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>

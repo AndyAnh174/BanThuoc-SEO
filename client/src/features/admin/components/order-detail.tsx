@@ -17,7 +17,7 @@ import {
     TableHeader, 
     TableRow 
 } from "@/components/ui/table";
-import { ArrowLeft, FileText, Truck, MapPin, User as UserIcon, Calendar, CreditCard } from "lucide-react";
+import { ArrowLeft, FileText, Truck, MapPin, User as UserIcon, Calendar, CreditCard, Printer, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
@@ -34,6 +34,55 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
     const [order, setOrder] = useState<Order | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isUpdating, setIsUpdating] = useState(false);
+    const [isCreatingShipment, setIsCreatingShipment] = useState(false);
+    const [isPrinting, setIsPrinting] = useState(false);
+
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
+    const handleCreateGHNShipment = async () => {
+        if (!order) return;
+        setIsCreatingShipment(true);
+        try {
+            const token = localStorage.getItem('accessToken');
+            const res = await fetch(`${API_URL}/shipping/orders/${order.id}/create-shipment/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            if (res.ok) {
+                toast.success(`Tạo đơn GHN thành công! Mã: ${data.order_code}`);
+                setOrder({ ...order, ghn_order_code: data.order_code, ghn_status: 'ready_to_pick' });
+            } else {
+                toast.error(data.error || 'Lỗi tạo đơn GHN');
+            }
+        } catch {
+            toast.error('Không thể kết nối đến GHN');
+        } finally {
+            setIsCreatingShipment(false);
+        }
+    };
+
+    const handlePrintGHN = async () => {
+        if (!order) return;
+        setIsPrinting(true);
+        try {
+            const token = localStorage.getItem('accessToken');
+            const res = await fetch(`${API_URL}/shipping/orders/${order.id}/print-token/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            if (res.ok && data.print_url) {
+                window.open(data.print_url, '_blank');
+            } else {
+                toast.error(data.error || 'Lỗi lấy token in');
+            }
+        } catch {
+            toast.error('Không thể lấy token in');
+        } finally {
+            setIsPrinting(false);
+        }
+    };
 
     useEffect(() => {
         const fetchOrder = async () => {
@@ -99,11 +148,26 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
+                    {/* GHN buttons */}
+                    {!order.ghn_order_code && (
+                        <Button variant="outline" onClick={handleCreateGHNShipment} disabled={isCreatingShipment}
+                            className="border-orange-600 text-orange-700 hover:bg-orange-50">
+                            <Send className="w-4 h-4 mr-2" />
+                            {isCreatingShipment ? 'Đang tạo...' : 'Tạo đơn GHN'}
+                        </Button>
+                    )}
+                    {order.ghn_order_code && (
+                        <Button variant="outline" onClick={handlePrintGHN} disabled={isPrinting}
+                            className="border-blue-600 text-blue-700 hover:bg-blue-50">
+                            <Printer className="w-4 h-4 mr-2" />
+                            In vận đơn
+                        </Button>
+                    )}
                     <Button variant="outline" onClick={handleDownloadInvoice}>
                         <FileText className="w-4 h-4 mr-2" />
                         Xuất hóa đơn
                     </Button>
-                    <Select 
+                    <Select
                         value={order.status} 
                         onValueChange={handleStatusChange} 
                         disabled={isUpdating}
@@ -249,6 +313,20 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                                         "{order.note}"
                                     </div>
                                 </div>
+                            )}
+                            {order.ghn_order_code && (
+                                <>
+                                    <Separator />
+                                    <div className="space-y-2">
+                                        <span className="text-sm font-semibold text-orange-600">GHN Tracking</span>
+                                        <div><span className="text-xs text-gray-500 block">Mã đơn GHN</span>
+                                            <span className="font-mono font-medium text-sm">{order.ghn_order_code}</span></div>
+                                        {order.ghn_status && <div><span className="text-xs text-gray-500 block">Trạng thái</span>
+                                            <Badge variant="outline" className="text-xs">{order.ghn_status}</Badge></div>}
+                                        {order.ghn_expected_delivery_time && <div><span className="text-xs text-gray-500 block">Dự kiến giao</span>
+                                            <span className="text-sm">{format(new Date(order.ghn_expected_delivery_time), "dd/MM/yyyy HH:mm", { locale: vi })}</span></div>}
+                                    </div>
+                                </>
                             )}
                         </CardContent>
                     </Card>

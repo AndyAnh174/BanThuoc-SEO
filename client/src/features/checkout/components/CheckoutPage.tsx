@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import { ChevronRight } from 'lucide-react';
 
 import { checkoutSchema, CheckoutFormValues } from '../schema/checkout.schema';
-import locationData from '@/src/data/db.json';
 import { DeliveryInfo } from './DeliveryInfo';
 import { OrderSummary } from './OrderSummary';
 import { CheckoutItem } from './CheckoutItem';
@@ -95,36 +94,62 @@ export function CheckoutPage() {
       toast.info("Đã gỡ bỏ mã giảm giá");
   };
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
+  const resolveName = async (url: string, id: string): Promise<string> => {
+    try {
+      const r = await fetch(`${API_URL}${url}`);
+      const items = await r.json();
+      const found = (Array.isArray(items) ? items : []).find(
+        (item: any) => String(item.id || item.code) === String(id)
+      );
+      return found?.name || id;
+    } catch { return id; }
+  };
+
   const onSubmit = async (data: CheckoutFormValues) => {
     if (!cart || cart.items.length === 0) return;
 
-      
-    // Map IDs to Names
-    const cityId = data.city;
-    const wardId = data.ward;
-    
-    // Import json dynamically or assume it's available. To be safe, let's use the one we imported.
-    // Or simpler: We need to import it here too to look up names.
-    // Let's rely on importing it at top level
-    
-    const provinceName = (locationData.province as any[]).find(p => p.idProvince === cityId)?.name || cityId;
-    const wardName = (locationData.commune as any[]).find(w => w.idCommune === wardId)?.name || wardId;
+    // Resolve IDs to names via GHN API
+    const provinceName = data.city ? await resolveName('/shipping/provinces/', data.city) : '';
+    const districtName = data.district ? await resolveName('/shipping/districts/?province_id=' + data.city, data.district) : '';
+    const wardName = data.ward ? await resolveName('/shipping/wards/?district_id=' + data.district, data.ward) : '';
+
+    // Calculate real shipping fee via GHN
+    let shippingFee = 30000; // default
+    if (data.deliveryMethod === 'shipping' && data.district && data.ward) {
+      try {
+        const feeRes = await fetch(`${API_URL}/shipping/calculate-fee/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to_district_id: data.district,
+            to_ward_code: data.ward,
+            weight: 500,
+            cod_value: data.paymentMethod === 'COD' ? Math.round(Number(cart.total_price) || 0) : 0,
+          }),
+        });
+        const feeData = await feeRes.json();
+        shippingFee = feeData.total || shippingFee;
+      } catch { /* keep default */ }
+    } else if (data.deliveryMethod === 'pickup') {
+      shippingFee = 0;
+    }
 
     try {
         const cartTotal = cart.items.reduce((total, item) => total + (item.product.sale_price ?? item.product.price) * item.quantity, 0);
-        const shippingFee = cartTotal >= 1000000 ? 0 : 30000;
 
         const orderData = {
-            // Map 'shipping_address' to 'address' as required by backend
             address: data.deliveryMethod === 'pickup'
                 ? 'Nhận tại cửa hàng'
-                : `${data.streetAddress}, ${wardName}, ${provinceName}`,
+                : `${data.streetAddress}, ${wardName}, ${districtName}, ${provinceName}`,
             province: provinceName,
+            district: districtName,
             ward: wardName,
             full_name: data.fullName,
             phone_number: data.phoneNumber,
-            payment_method: data.paymentMethod, // Ensure this matches backend choices or map it
-            shipping_fee: data.deliveryMethod === 'pickup' ? 0 : shippingFee,
+            payment_method: data.paymentMethod,
+            shipping_fee: shippingFee,
             items_input: cart.items.map(item => ({
                 product: item.product.id,
                 quantity: item.quantity,

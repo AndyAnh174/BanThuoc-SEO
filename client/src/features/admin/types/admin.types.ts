@@ -66,6 +66,10 @@ export interface Order {
     final_amount: number;
     note?: string;
     created_at: string;
+    tracking_number?: string;
+    ghn_order_code?: string;
+    ghn_status?: string;
+    ghn_expected_delivery_time?: string;
     items: OrderItem[];
 }
 

@@ -53,7 +53,12 @@ class Order(models.Model):
     
     expected_delivery_date = models.DateField(null=True, blank=True)
     tracking_number = models.CharField(max_length=50, blank=True, null=True)
-    
+
+    # GHN integration fields
+    ghn_order_code = models.CharField(max_length=50, blank=True, default='', verbose_name='GHN Order Code')
+    ghn_status = models.CharField(max_length=30, blank=True, default='', verbose_name='GHN Status')
+    ghn_expected_delivery_time = models.DateTimeField(null=True, blank=True, verbose_name='GHN Expected Delivery')
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

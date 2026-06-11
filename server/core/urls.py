@@ -57,6 +57,7 @@ urlpatterns = [
     path('api/', include('audit.urls')),
     path('api/', include('bugreport.urls')),
     path('api/blog/', include('blog.urls')),
+    path('api/shipping/', include('shipping.urls')),
     path('', include('django_prometheus.urls')),
 ]
 

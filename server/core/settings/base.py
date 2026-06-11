@@ -264,6 +264,12 @@ SWAGGER_SETTINGS = {
     'PERSIST_AUTH': True,
 }
 
+# GHN (Giao Hang Nhanh) Configuration
+GHN_TOKEN = env('GHN_TOKEN', default='')
+GHN_SHOP_ID = env('GHN_SHOP_ID', default='')
+GHN_BASE_URL = 'https://online-gateway.ghn.vn/shiip/public-api/v2'
+GHN_TEST_MODE = env('GHN_TEST_MODE', default='true').lower() == 'true'
+
 # Elasticsearch DSL Configuration
 ELASTICSEARCH_DSL = {
     'default': {

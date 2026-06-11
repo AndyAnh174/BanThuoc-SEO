@@ -9,20 +9,21 @@ export const checkoutSchema = z.object({
   
   // Address (Required if shipping)
   city: z.string().default(''),
+  district: z.string().default(''),
   ward: z.string().default(''),
   streetAddress: z.string().default(''),
-  
+
   // Note
   orderNote: z.string().optional(),
-  
+
   // Payment
   paymentMethod: z.string().default('COD'),
 }).superRefine((data, ctx) => {
   if (data.deliveryMethod === 'shipping') {
-    if (!data.city || !data.ward || !data.streetAddress) {
+    if (!data.city || !data.district || !data.ward || !data.streetAddress) {
       if (!data.city) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Vui lòng chọn Tỉnh/Thành", path: ['city'] });
+      if (!data.district) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Vui lòng chọn Quận/Huyện", path: ['district'] });
       if (!data.ward) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Vui lòng chọn Phường/Xã", path: ['ward'] });
-      // We can add more specific issues, but simplified validation logic here
       if (!data.streetAddress) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Vui lòng nhập địa chỉ cụ thể", path: ['streetAddress'] });
     }
   }
