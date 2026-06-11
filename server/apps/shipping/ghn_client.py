@@ -13,11 +13,17 @@ class GHNClient:
     def __init__(self):
         self.token = settings.GHN_TOKEN
         self.shop_id = settings.GHN_SHOP_ID
-        self.base_url = settings.GHN_BASE_URL
+        self.base_url = settings.GHN_BASE_URL  # v2 API
+        # master-data APIs are NOT under /v2/ — they use a different base
+        self.md_base = self.base_url.rsplit('/v2', 1)[0]  # strip /v2
         self.test_mode = getattr(settings, 'GHN_TEST_MODE', True)
 
     def _url(self, path):
         return f"{self.base_url}/{path}"
+
+    def _md_url(self, path):
+        """URL for master-data endpoints (no /v2 prefix)"""
+        return f"{self.md_base}/{path}"
 
     def _headers(self, with_shop=False):
         h = {
@@ -48,7 +54,9 @@ class GHNClient:
         cached = cache.get(cache_key)
         if cached:
             return cached
-        data = self._get('master-data/province')
+        r = requests.get(self._md_url('master-data/province'), headers=self._headers(), timeout=15)
+        r.raise_for_status()
+        data = r.json()
         result = data.get('data', [])
         cache.set(cache_key, result, 86400)
         return result
@@ -58,7 +66,9 @@ class GHNClient:
         cached = cache.get(cache_key)
         if cached:
             return cached
-        data = self._post('master-data/district', {'province_id': int(province_id)}, with_shop=False)
+        r = requests.post(self._md_url('master-data/district'), headers=self._headers(), json={'province_id': int(province_id)}, timeout=15)
+        r.raise_for_status()
+        data = r.json()
         result = data.get('data', [])
         cache.set(cache_key, result, 86400)
         return result
@@ -68,7 +78,9 @@ class GHNClient:
         cached = cache.get(cache_key)
         if cached:
             return cached
-        data = self._post('master-data/ward', {'district_id': int(district_id)}, with_shop=False)
+        r = requests.post(self._md_url('master-data/ward'), headers=self._headers(), json={'district_id': int(district_id)}, timeout=15)
+        r.raise_for_status()
+        data = r.json()
         result = data.get('data', [])
         cache.set(cache_key, result, 86400)
         return result
