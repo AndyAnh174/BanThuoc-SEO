@@ -273,16 +273,16 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                                 <ChevronDown className={`w-3.5 h-3.5 ml-2 transition-transform duration-300 ${isCategoryMenuOpen ? 'rotate-180' : ''}`} />
                             </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="w-[92vw] max-w-[1100px] p-0 rounded-2xl shadow-2xl border-gray-100 flex items-start min-h-[280px] max-h-[75vh] overflow-hidden mt-3 animate-in fade-in-0 zoom-in-95" sideOffset={8}>
+                            <DropdownMenuContent align="start" className="w-[92vw] max-w-[1300px] p-0 rounded-2xl shadow-2xl border-gray-100 flex items-start min-h-[380px] max-h-[80vh] overflow-hidden mt-3 animate-in fade-in-0 zoom-in-95" sideOffset={8}>
                              {/* Left Side: Category List */}
-                             <div className="w-[260px] border-r border-gray-100 bg-gray-50/80 backdrop-blur-sm py-2 shrink-0 h-full flex flex-col gap-0.5 overflow-y-auto">
+                             <div className="w-[320px] border-r border-gray-100 bg-gray-50/80 backdrop-blur-sm py-3 shrink-0 h-full flex flex-col gap-1 overflow-y-auto">
                                 <Link
                                     href="/products"
-                                    className="group flex items-center gap-2.5 px-4 py-2 mx-2 rounded-lg cursor-pointer font-medium hover:bg-white hover:text-primary hover:shadow-sm transition-all text-gray-700 mb-1 text-sm"
+                                    className="group flex items-center gap-3 px-5 py-3 mx-2 rounded-lg cursor-pointer font-semibold hover:bg-white hover:text-primary hover:shadow-sm transition-all text-gray-700 mb-1 text-[15px]"
                                     onMouseEnter={() => setActiveCategory(null)}
                                 >
-                                    <div className="w-7 h-7 rounded-full bg-white border border-gray-100 shadow-xs flex items-center justify-center shrink-0 group-hover:border-primary/30 group-hover:scale-105 transition-all">
-                                        <Menu className="w-3.5 h-3.5 text-gray-400 group-hover:text-primary" />
+                                    <div className="w-9 h-9 rounded-full bg-white border border-gray-100 shadow-xs flex items-center justify-center shrink-0 group-hover:border-primary/30 group-hover:scale-105 transition-all">
+                                        <Menu className="w-4 h-4 text-gray-400 group-hover:text-primary" />
                                     </div>
                                     <span className="flex-1">Tất cả sản phẩm</span>
                                 </Link>
@@ -291,15 +291,15 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                                 <Link
                                     key={cat.slug}
                                     href={`/products?category=${cat.slug}`}
-                                    className={`group flex items-center gap-2.5 px-4 py-1.5 mx-2 rounded-lg cursor-pointer transition-all text-sm ${activeCategory?.slug === cat.slug ? 'bg-white text-primary shadow-sm ring-1 ring-primary/10' : 'text-gray-600 hover:bg-white hover:text-primary hover:shadow-xs'}`}
+                                    className={`group flex items-center gap-3 px-5 py-3 mx-2 rounded-lg cursor-pointer transition-all text-[15px] font-medium ${activeCategory?.slug === cat.slug ? 'bg-white text-primary shadow-sm ring-1 ring-primary/10' : 'text-gray-600 hover:bg-white hover:text-primary hover:shadow-xs'}`}
                                     onMouseEnter={() => setActiveCategory(cat)}
                                 >
-                                    <div className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 overflow-hidden transition-all bg-white relative ${activeCategory?.slug === cat.slug ? 'border-primary scale-105 shadow-sm' : 'border-gray-100 group-hover:border-primary/30'}`}>
+                                    <div className={`w-9 h-9 rounded-full border flex items-center justify-center shrink-0 overflow-hidden transition-all bg-white relative ${activeCategory?.slug === cat.slug ? 'border-primary scale-105 shadow-sm' : 'border-gray-100 group-hover:border-primary/30'}`}>
                                         {cat.image ? (
                                             <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
                                         ) : (() => {
                                             const CatIcon = getCategoryIcon(cat.slug);
-                                            return <CatIcon className={`w-3.5 h-3.5 ${activeCategory?.slug === cat.slug ? 'text-primary' : 'text-gray-300 group-hover:text-primary/70'}`} />;
+                                            return <CatIcon className={`w-4 h-4 ${activeCategory?.slug === cat.slug ? 'text-primary' : 'text-gray-300 group-hover:text-primary/70'}`} />;
                                         })()}
                                     </div>
                                     <span className="truncate flex-1 font-medium">{cat.name}</span>
@@ -349,8 +349,8 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                                                 className="group relative rounded-xl hover:shadow-md transition-all duration-300 border border-transparent hover:border-gray-100 overflow-hidden"
                                             >
                                                 <Card className="h-full border-0 shadow-none bg-gray-100 group-hover:bg-gray-200">
-                                                    <CardContent className="p-2 flex items-center gap-3">
-                                                         <div className="w-10 h-10 rounded-lg bg-white shadow-xs flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-110 transition-transform duration-300">
+                                                    <CardContent className="p-3 flex items-center gap-3">
+                                                         <div className="w-11 h-11 rounded-lg bg-white shadow-xs flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-110 transition-transform duration-300">
                                                             {child.image ? (
                                                             <img src={child.image} alt={child.name} className="w-full h-full object-cover" />
                                                             ) : (() => {
