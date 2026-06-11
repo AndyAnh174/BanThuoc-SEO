@@ -4,35 +4,13 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getCategories } from '@/src/features/products';
-import { Pill, Apple, Stethoscope, Sparkles, Brain, Bone, Activity, Droplet, ChevronRight, Bath, ShieldBan, BugOff, ScanFace, Bandage, Wind, Microscope, FlaskConical, Utensils, LeafyGreen } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { getCategoryIcon } from '@/src/features/products/utils/category-icons';
 
 interface Category {
   id: string; name: string; slug: string; description?: string;
   productCount?: number; product_count?: number; icon?: string;
 }
-
-const categoryIcons: Record<string, React.ReactNode> = {
-  // Root categories (level 0)
-  'chăm-sóc-cá-nhân': <Bath className="w-6 h-6" />,
-  'dược-mỹ-phẩm': <Sparkles className="w-6 h-6" />,
-  'thiết-bị-y-tế': <Stethoscope className="w-6 h-6" />,
-  'thuốc': <Pill className="w-6 h-6" />,
-  'thực-phẩm-chức-năng': <LeafyGreen className="w-6 h-6" />,
-  // Sub-categories (level 1)
-  'chống-dị-ứng': <ShieldBan className="w-6 h-6" />,
-  'chống-ký-sinh-trùng': <BugOff className="w-6 h-6" />,
-  'cơ-xương-khớp': <Bone className="w-6 h-6" />,
-  'da-liễu': <ScanFace className="w-6 h-6" />,
-  'giảm-đau-kháng-viêm': <Bandage className="w-6 h-6" />,
-  'hô-hấp': <Wind className="w-6 h-6" />,
-  'kháng-sinh-virus-và-nấm': <Microscope className="w-6 h-6" />,
-  'nội-tiết': <FlaskConical className="w-6 h-6" />,
-  'thần-kinh': <Brain className="w-6 h-6" />,
-  'tim-mạch': <Activity className="w-6 h-6" />,
-  'tiêu-hóa': <Utensils className="w-6 h-6" />,
-  'tiết-niệu': <Droplet className="w-6 h-6" />,
-  'vitamin-và-khoáng-chất': <Apple className="w-6 h-6" />,
-};
 
 export function CategoryShowcase() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -79,13 +57,13 @@ export function CategoryShowcase() {
 
         <div className="relative grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-3">
           {categories.map(cat => {
-            const icon = categoryIcons[cat.slug] || <Pill className="w-6 h-6" />;
+            const CatIcon = getCategoryIcon(cat.slug);
             const count = cat.productCount ?? cat.product_count;
             return (
               <Link key={cat.id} href={`/products?category=${cat.slug}`}
                 className="group flex flex-col items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-transparent hover:border-teal-300/50 hover:-translate-y-0.5">
                 <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-teal-100 transition-all">
-                  <span className="text-teal-600">{icon}</span>
+                  <CatIcon className="w-6 h-6 text-teal-600" />
                 </div>
                 <h3 className="text-xs font-semibold text-center text-gray-800 line-clamp-2 leading-tight min-h-[2.5em]">{cat.name}</h3>
                 <span className="text-xs text-gray-400 mt-1">{count ? `${count} SP` : ''}</span>

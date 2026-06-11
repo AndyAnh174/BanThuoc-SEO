@@ -33,6 +33,7 @@ import { useCartStore } from '@/src/features/cart/stores/cart.store';
 import { useAuthStore } from '@/src/features/auth/stores/auth.store';
 import { UserDropdownMenu } from './UserDropdownMenu';
 import { CartHoverContent } from '@/src/features/cart/components/CartHoverContent';
+import { getCategoryIcon } from '@/src/features/products/utils/category-icons';
 
 interface HeaderProps {
   cartItemCount?: number; // Kept for backward compat but preferred store
@@ -296,9 +297,10 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                                     <div className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 overflow-hidden transition-all bg-white relative ${activeCategory?.slug === cat.slug ? 'border-primary scale-105 shadow-sm' : 'border-gray-100 group-hover:border-primary/30'}`}>
                                         {cat.image ? (
                                             <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
-                                        ) : (
-                                            <Pill className={`w-3.5 h-3.5 ${activeCategory?.slug === cat.slug ? 'text-primary' : 'text-gray-300 group-hover:text-primary/70'}`} />
-                                        )}
+                                        ) : (() => {
+                                            const CatIcon = getCategoryIcon(cat.slug);
+                                            return <CatIcon className={`w-3.5 h-3.5 ${activeCategory?.slug === cat.slug ? 'text-primary' : 'text-gray-300 group-hover:text-primary/70'}`} />;
+                                        })()}
                                     </div>
                                     <span className="truncate flex-1 font-medium">{cat.name}</span>
                                     {cat.children && cat.children.length > 0 && (
@@ -351,9 +353,10 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                                                          <div className="w-10 h-10 rounded-lg bg-white shadow-xs flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-110 transition-transform duration-300">
                                                             {child.image ? (
                                                             <img src={child.image} alt={child.name} className="w-full h-full object-cover" />
-                                                            ) : (
-                                                            <Pill className="w-5 h-5 text-gray-300 group-hover:text-primary transition-colors" />
-                                                            )}
+                                                            ) : (() => {
+                                                                const ChildIcon = getCategoryIcon(child.slug);
+                                                                return <ChildIcon className="w-5 h-5 text-gray-300 group-hover:text-primary transition-colors" />;
+                                                            })()}
                                                          </div>
                                                          <span className="font-semibold text-sm text-gray-600 group-hover:text-primary line-clamp-2 leading-tight transition-colors">
                                                              {child.name}
@@ -434,9 +437,10 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                      <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
                          {cat.image ? (
                              <img src={cat.image} alt={cat.name} className="w-full h-full object-cover rounded-full" />
-                         ) : (
-                             <Pill className="w-4 h-4 text-gray-400" />
-                         )}
+                         ) : (() => {
+                             const MIcon = getCategoryIcon(cat.slug);
+                             return <MIcon className="w-4 h-4 text-gray-400" />;
+                         })()}
                      </div>
                     {cat.name}
                   </Link>

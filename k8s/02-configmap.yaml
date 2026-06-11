@@ -27,3 +27,5 @@ data:
   NEXT_PUBLIC_FRONTEND_URL: "https://banthuocsi.vn"
   VNPAY_SANDBOX: "true"
   VNPAY_HOST: "https://sandbox.vnpayment.vn"
+  GHN_SHOP_ID: "5367471"
+  GHN_TEST_MODE: "true"
