@@ -41,10 +41,10 @@ class GHNClient:
 
     def _post(self, path, body, with_shop=False):
         r = requests.post(self._url(path), headers=self._headers(with_shop), json=body, timeout=15)
-        r.raise_for_status()
         data = r.json()
         if data.get('code') != 200:
-            raise GHNError(data.get('code', 999), data.get('message', 'Unknown error'))
+            raise GHNError(data.get('code', r.status_code),
+                          data.get('message', '') + ' | ' + data.get('code_message_value', ''))
         return data
 
     # ---- Address APIs (cached 24h) ----
