@@ -19,20 +19,22 @@ class GHNClient:
     def _url(self, path):
         return f"{self.base_url}/{path}"
 
-    def _headers(self):
-        return {
+    def _headers(self, with_shop=False):
+        h = {
             'Content-Type': 'application/json',
             'Token': self.token,
-            'ShopId': str(self.shop_id),
         }
+        if with_shop:
+            h['ShopId'] = str(self.shop_id)
+        return h
 
     def _get(self, path, params=None):
         r = requests.get(self._url(path), headers=self._headers(), params=params, timeout=15)
         r.raise_for_status()
         return r.json()
 
-    def _post(self, path, body):
-        r = requests.post(self._url(path), headers=self._headers(), json=body, timeout=15)
+    def _post(self, path, body, with_shop=False):
+        r = requests.post(self._url(path), headers=self._headers(with_shop), json=body, timeout=15)
         r.raise_for_status()
         data = r.json()
         if data.get('code') != 200:
@@ -56,7 +58,7 @@ class GHNClient:
         cached = cache.get(cache_key)
         if cached:
             return cached
-        data = self._post('master-data/district', {'province_id': int(province_id)})
+        data = self._post('master-data/district', {'province_id': int(province_id)}, with_shop=False)
         result = data.get('data', [])
         cache.set(cache_key, result, 86400)
         return result
@@ -66,7 +68,7 @@ class GHNClient:
         cached = cache.get(cache_key)
         if cached:
             return cached
-        data = self._post('master-data/ward', {'district_id': int(district_id)})
+        data = self._post('master-data/ward', {'district_id': int(district_id)}, with_shop=False)
         result = data.get('data', [])
         cache.set(cache_key, result, 86400)
         return result
@@ -89,14 +91,14 @@ class GHNClient:
         }
         if items:
             body['items'] = items
-        return self._post('shipping-order/fee', body)
+        return self._post('shipping-order/fee', body, with_shop=True)
 
     def get_services(self, from_district_id, to_district_id):
         return self._post('shipping-order/available-services', {
             'shop_id': int(self.shop_id),
             'from_district': int(from_district_id),
             'to_district': int(to_district_id),
-        })
+        }, with_shop=True)
 
     # ---- Order APIs ----
 
@@ -107,18 +109,18 @@ class GHNClient:
         to_ward_code, to_district_id, service_type_id, payment_type_id,
         required_note, weight, length, width, height, cod_amount, content, items
         """
-        return self._post('shipping-order/create', order_data)
+        return self._post('shipping-order/create', order_data, with_shop=True)
 
     def get_order(self, order_code):
-        return self._post('shipping-order/detail', {'order_code': order_code})
+        return self._post('shipping-order/detail', {'order_code': order_code}, with_shop=True)
 
     def cancel_order(self, order_codes):
-        return self._post('switch-status/cancel', {'order_codes': order_codes})
+        return self._post('switch-status/cancel', {'order_codes': order_codes}, with_shop=True)
 
     # ---- Print ----
 
     def print_token(self, order_codes):
-        return self._post('a5/gen-token', {'order_codes': order_codes})
+        return self._post('a5/gen-token', {'order_codes': order_codes}, with_shop=True)
 
     # ---- Pick shift ----
 
