@@ -72,6 +72,20 @@ class OrderViewSet(viewsets.ModelViewSet):
             except Exception:
                 pass  # Voucher restoration is best-effort
 
+        # Cancel shipment on GHN / VTP (best-effort)
+        if order.ghn_order_code:
+            try:
+                from apps.shipping.ghn_client import ghn
+                ghn.cancel_order([order.ghn_order_code])
+            except Exception as e:
+                print(f"GHN cancel failed for order {order.id}: {e}")
+        if order.vtp_order_code:
+            try:
+                from apps.shipping.viettelpost_client import vtp
+                vtp.cancel_order(order.vtp_order_code)
+            except Exception as e:
+                print(f"VTP cancel failed for order {order.id}: {e}")
+
         order.status = Order.Status.CANCELLED
         order.save()
 
