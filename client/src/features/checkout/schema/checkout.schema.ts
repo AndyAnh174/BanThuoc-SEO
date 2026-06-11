@@ -23,9 +23,10 @@ export const checkoutSchema = z.object({
   paymentMethod: z.string().default('COD'),
 }).superRefine((data, ctx) => {
   if (data.deliveryMethod === 'shipping') {
-    if (!data.city || !data.district || !data.ward || !data.streetAddress) {
+    const needDistrict = data.shippingCarrier !== 'VTP'; // VTP V3 has no district
+    if (!data.city || (needDistrict && !data.district) || !data.ward || !data.streetAddress) {
       if (!data.city) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Vui lòng chọn Tỉnh/Thành", path: ['city'] });
-      if (!data.district) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Vui lòng chọn Quận/Huyện", path: ['district'] });
+      if (needDistrict && !data.district) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Vui lòng chọn Quận/Huyện", path: ['district'] });
       if (!data.ward) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Vui lòng chọn Phường/Xã", path: ['ward'] });
       if (!data.streetAddress) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Vui lòng nhập địa chỉ cụ thể", path: ['streetAddress'] });
     }
