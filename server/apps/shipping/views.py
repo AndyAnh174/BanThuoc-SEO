@@ -246,3 +246,120 @@ def _get_ward_name(ward_input):
             pass
     # Return as-is (it might be a name already)
     return str(ward_input)
+
+
+# ============================================================
+# ViettelPost Views
+# ============================================================
+
+from .viettelpost_client import vtp, VTPError
+
+
+class VTPProvinceListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            provinces = vtp.get_provinces()
+            data = [{'id': p.get('PROVINCE_ID'), 'name': p.get('PROVINCE_NAME'),
+                     'code': p.get('PROVINCE_CODE')} for p in provinces]
+            return Response(data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
+
+class VTPDistrictListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        province_id = request.query_params.get('province_id')
+        if not province_id:
+            return Response({'error': 'province_id required'}, status=400)
+        try:
+            districts = vtp.get_districts(province_id)
+            data = [{'id': d.get('DISTRICT_ID'), 'name': d.get('DISTRICT_NAME')} for d in districts]
+            return Response(data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
+
+class VTPWardListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        district_id = request.query_params.get('district_id')
+        if not district_id:
+            return Response({'error': 'district_id required'}, status=400)
+        try:
+            wards = vtp.get_wards(district_id)
+            data = [{'id': w.get('WARD_ID'), 'name': w.get('WARD_NAME')} for w in wards]
+            return Response(data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
+
+class VTPCalculateFeeView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        try:
+            result = vtp.calculate_fee(
+                sender_province=request.data.get('sender_province', 1),
+                sender_district=request.data.get('sender_district', 1),
+                sender_ward=request.data.get('sender_ward', 1),
+                receiver_province=request.data.get('receiver_province'),
+                receiver_district=request.data.get('receiver_district'),
+                receiver_ward=request.data.get('receiver_ward'),
+                weight=request.data.get('weight', 500),
+                money_collection=request.data.get('money_collection', 0),
+            )
+            return Response(result.get('data', {}))
+        except VTPError as e:
+            return Response({'error': e.message}, status=400)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
+
+class VTPCreateShipmentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, order_id):
+        order = get_object_or_404(Order, pk=order_id)
+        if request.user.role != 'ADMIN':
+            return Response({'error': 'Admin only'}, status=403)
+
+        try:
+            result = vtp.create_order({
+                'ORDER_NUMBER': str(order.id),
+                'PRODUCT_NAME': f'Don hang #{order.id}',
+                'PRODUCT_TYPE': 'HH',
+                'PRODUCT_WEIGHT': 500,
+                'PRODUCT_QUANTITY': 1,
+                'PRODUCT_PRICE': int(order.total_amount),
+                'ORDER_PAYMENT': 1,
+                'MONEY_COLLECTION': int(order.final_amount) if order.payment_method == 'COD' else 0,
+                'ORDER_SERVICE': 'VHT',
+                'ORDER_NOTE': order.note or '',
+                'SENDER_FULLNAME': 'BanThuocSi NKN Pharma',
+                'SENDER_PHONE': '0967705287',
+                'SENDER_ADDRESS': '118/127C/27 Phan Huy Ich, P.Tan Son, TP.HCM',
+                'SENDER_PROVINCE': request.data.get('sender_province', 1),
+                'SENDER_DISTRICT': request.data.get('sender_district', 1),
+                'SENDER_WARD': request.data.get('sender_ward', 1),
+                'RECEIVER_FULLNAME': order.full_name,
+                'RECEIVER_PHONE': order.phone_number,
+                'RECEIVER_ADDRESS': order.address,
+                'RECEIVER_PROVINCE': request.data.get('receiver_province'),
+                'RECEIVER_DISTRICT': request.data.get('receiver_district'),
+                'RECEIVER_WARD': request.data.get('receiver_ward'),
+                'PRODUCT_LENGTH': 20, 'PRODUCT_WIDTH': 20, 'PRODUCT_HEIGHT': 10,
+            })
+            vtp_data = result.get('data', {})
+            order.vtp_order_code = vtp_data.get('ORDER_NUMBER', '')
+            order.shipping_carrier = 'VTP'
+            order.save(update_fields=['vtp_order_code', 'shipping_carrier'])
+            return Response({'order_number': order.vtp_order_code, 'fee': vtp_data.get('MONEY_TOTAL', 0)})
+        except VTPError as e:
+            return Response({'error': e.message}, status=400)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)

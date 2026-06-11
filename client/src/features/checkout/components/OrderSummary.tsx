@@ -12,6 +12,33 @@ import { Separator } from '@/components/ui/separator';
 import { useCartStore } from '@/src/features/cart/stores/cart.store';
 import { formatCurrency } from '@/lib/utils';
 import { CheckoutFormValues } from '../schema/checkout.schema';
+import Image from 'next/image';
+
+function ShippingCarrierSelector() {
+  const { register, watch } = useFormContext<CheckoutFormValues>();
+  const carrier = watch('shippingCarrier');
+
+  return (
+    <div className="flex gap-3">
+      <label className={`flex-1 flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${carrier === 'GHN' ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-gray-300'}`}>
+        <input type="radio" value="GHN" {...register('shippingCarrier')} className="sr-only" />
+        <Image src="/ghn.jpg" alt="GHN" width={40} height={40} className="rounded object-contain" />
+        <div>
+          <span className="font-medium text-sm">Giao Hàng Nhanh</span>
+          <p className="text-xs text-gray-500">Nhanh, rẻ, 63 tỉnh</p>
+        </div>
+      </label>
+      <label className={`flex-1 flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${carrier === 'VTP' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'}`}>
+        <input type="radio" value="VTP" {...register('shippingCarrier')} className="sr-only" />
+        <Image src="/viettel-post.png" alt="Viettel Post" width={40} height={40} className="rounded object-contain" />
+        <div>
+          <span className="font-medium text-sm">Viettel Post</span>
+          <p className="text-xs text-gray-500">Uy tín, toàn quốc</p>
+        </div>
+      </label>
+    </div>
+  );
+}
 
 interface OrderSummaryProps {
   voucherCode?: string;
@@ -83,6 +110,12 @@ export function OrderSummary({
                    </Button>
                </div>
            )}
+       </div>
+
+       {/* Shipping Carrier */}
+       <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+           <span className="font-medium text-gray-900 text-sm mb-3 block">Đơn vị vận chuyển</span>
+           <ShippingCarrierSelector />
        </div>
 
        {/* Payment Method */}

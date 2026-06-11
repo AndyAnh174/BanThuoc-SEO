@@ -29,6 +29,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'total_amount', 'shipping_fee', 'discount_amount', 'final_amount',
             'expected_delivery_date', 'tracking_number',
             'ghn_order_code', 'ghn_status', 'ghn_expected_delivery_time',
+            'vtp_order_code', 'shipping_carrier',
             'created_at', 'updated_at', 'items', 'items_input', 'voucher_code'
         ]
         read_only_fields = ['user', 'status', 'payment_status', 'tracking_number', 'created_at', 'update_at', 'final_amount', 'total_amount']

@@ -270,6 +270,10 @@ GHN_SHOP_ID = env('GHN_SHOP_ID', default='')
 GHN_BASE_URL = 'https://online-gateway.ghn.vn/shiip/public-api/v2'
 GHN_TEST_MODE = env('GHN_TEST_MODE', default='true').lower() == 'true'
 
+# ViettelPost Configuration
+VTP_TOKEN = env('VTP_TOKEN', default='')
+VTP_BASE_URL = 'https://partnerdev.viettelpost.vn'
+
 # Elasticsearch DSL Configuration
 ELASTICSEARCH_DSL = {
     'default': {

@@ -58,6 +58,8 @@ class Order(models.Model):
     ghn_order_code = models.CharField(max_length=50, blank=True, default='', verbose_name='GHN Order Code')
     ghn_status = models.CharField(max_length=30, blank=True, default='', verbose_name='GHN Status')
     ghn_expected_delivery_time = models.DateTimeField(null=True, blank=True, verbose_name='GHN Expected Delivery')
+    vtp_order_code = models.CharField(max_length=50, blank=True, default='', verbose_name='VTP Order Code')
+    shipping_carrier = models.CharField(max_length=20, blank=True, default='', verbose_name='Shipping Carrier')
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

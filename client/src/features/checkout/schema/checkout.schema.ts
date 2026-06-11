@@ -16,6 +16,9 @@ export const checkoutSchema = z.object({
   // Note
   orderNote: z.string().optional(),
 
+  // Shipping carrier
+  shippingCarrier: z.string().default('GHN'),
+
   // Payment
   paymentMethod: z.string().default('COD'),
 }).superRefine((data, ctx) => {

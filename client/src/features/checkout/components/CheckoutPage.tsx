@@ -149,6 +149,7 @@ export function CheckoutPage() {
             full_name: data.fullName,
             phone_number: data.phoneNumber,
             payment_method: data.paymentMethod,
+            shipping_carrier: data.shippingCarrier || 'GHN',
             shipping_fee: shippingFee,
             items_input: cart.items.map(item => ({
                 product: item.product.id,
