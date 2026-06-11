@@ -5,11 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getCategories } from '@/src/features/products';
-import {
-  Shield, Truck, Clock, Gift, ChevronRight, ChevronLeft,
-  Pill, Apple, Heart, Stethoscope, Sparkles, Baby, Brain, Ear, Bone, Activity, Droplet,
-  Leaf, Zap
-} from 'lucide-react';
+import { Shield, Truck, Clock, Gift, ChevronRight, ChevronLeft, Leaf, Zap } from 'lucide-react';
+import { getCategoryIcon } from '@/src/features/products/utils/category-icons';
 
 interface Banner {
   id: string; title: string; subtitle: string; image_url: string;
@@ -30,23 +27,6 @@ const defaultBanner: Banner = {
   image_url: '',
   link_url: '/products', link_text: 'Mua ngay',
   background_color: 'transparent', text_color: '#0f766e',
-};
-
-const categoryIcons: Record<string, React.ReactNode> = {
-  'thuoc-ke-don': <Pill className="w-5 h-5" />,
-  'thuoc-khong-ke-don': <Pill className="w-5 h-5" />,
-  'thuc-pham-chuc-nang': <Apple className="w-5 h-5" />,
-  'duoc-my-pham': <Sparkles className="w-5 h-5" />,
-  'thiet-bi-y-te': <Stethoscope className="w-5 h-5" />,
-  'cham-soc-ca-nhan': <Heart className="w-5 h-5" />,
-  'san-pham-me-be': <Baby className="w-5 h-5" />,
-  'vitamin': <Apple className="w-5 h-5" />,
-  'tim-mach': <Activity className="w-5 h-5" />,
-  'nao-than-kinh': <Brain className="w-5 h-5" />,
-  'tai-mui-hong': <Ear className="w-5 h-5" />,
-  'co-xuong-khop': <Bone className="w-5 h-5" />,
-  'mau-huyet-hoc': <Droplet className="w-5 h-5" />,
-  'khang-vi-sinh-vat': <Shield className="w-5 h-5" />,
 };
 
 interface HeroSectionProps { initialBanners?: Banner[]; }
@@ -121,14 +101,14 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
             ) : (
               <ul className="py-1">
                 {categories.map(cat => {
-                  const icon = categoryIcons[cat.slug] || <Pill className="w-5 h-5" />;
+                  const CatIcon = getCategoryIcon(cat.slug);
                   const count = cat.productCount ?? cat.product_count;
                   return (
                     <li key={cat.id}>
                       <Link href={`/products?category=${cat.slug}`}
                         className="flex items-center gap-3 px-5 py-3 hover:bg-teal-50/60 transition-colors group/item">
                         <span className="w-9 h-9 bg-teal-50 rounded-lg flex items-center justify-center text-teal-600 shrink-0 group-hover/item:bg-teal-100 transition-colors">
-                          {icon}
+                          <CatIcon className="w-5 h-5" />
                         </span>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-gray-900 truncate">{cat.name}</p>
@@ -188,7 +168,7 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
           categories.slice(0, 8).map(cat => (
             <Link key={cat.id} href={`/products?category=${cat.slug}`}
               className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-700 hover:border-teal-300 hover:text-teal-700 hover:bg-teal-50 shrink-0 transition-colors">
-              <span className="text-teal-600">{categoryIcons[cat.slug] || <Pill className="w-3.5 h-3.5" />}</span>
+              {(() => { const MIcon = getCategoryIcon(cat.slug); return <MIcon className="w-3.5 h-3.5 text-teal-600" />; })()}
               {cat.name}
             </Link>
           ))}
