@@ -138,6 +138,7 @@ export function OrderSummary({
                     <span className="text-xs text-primary font-medium bg-white px-2 py-0.5 rounded-full border border-primary/20">Mặc định</span>
                 </label>
                 
+{/*
                 <label className={`flex items-center justify-between space-x-2 p-3 rounded-lg border cursor-pointer transition-all ${paymentMethod === 'VNPAY' ? 'border-primary bg-primary/5' : 'border-gray-200'}`}>
                     <div className="flex items-center space-x-3">
                         <input
@@ -158,6 +159,7 @@ export function OrderSummary({
                         <span className="text-xs text-primary font-medium bg-white px-2 py-0.5 rounded-full border border-primary/20 ml-1">Khuyên dùng</span>
                     </div>
                 </label>
+*/}
            </div>
        </div>
 

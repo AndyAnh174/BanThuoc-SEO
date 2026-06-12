@@ -62,6 +62,29 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
         }
     };
 
+    const handleCreateVTPShipment = async () => {
+        if (!order) return;
+        setIsCreatingShipment(true);
+        try {
+            const token = localStorage.getItem('accessToken');
+            const res = await fetch(`${API_URL}/shipping/vtp/orders/${order.id}/create/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            if (res.ok) {
+                toast.success(`Tạo đơn VTP thành công! Mã: ${data.order_number}`);
+                setOrder({ ...order, vtp_order_code: data.order_number });
+            } else {
+                toast.error(data.error || 'Lỗi tạo đơn VTP');
+            }
+        } catch {
+            toast.error('Không thể kết nối đến VTP');
+        } finally {
+            setIsCreatingShipment(false);
+        }
+    };
+
     const handlePrintGHN = async () => {
         if (!order) return;
         setIsPrinting(true);
@@ -149,18 +172,26 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                 </div>
                 <div className="flex items-center gap-2">
                     {/* GHN buttons */}
-                    {!order.ghn_order_code && (
+                    {order.shipping_carrier === 'GHN' && !order.ghn_order_code && (
                         <Button variant="outline" onClick={handleCreateGHNShipment} disabled={isCreatingShipment}
                             className="border-orange-600 text-orange-700 hover:bg-orange-50">
                             <Send className="w-4 h-4 mr-2" />
-                            {isCreatingShipment ? 'Đang tạo...' : 'Tạo đơn GHN'}
+                            {isCreatingShipment ? 'Đang tạo GHN...' : 'Tạo đơn GHN'}
                         </Button>
                     )}
                     {order.ghn_order_code && (
                         <Button variant="outline" onClick={handlePrintGHN} disabled={isPrinting}
                             className="border-blue-600 text-blue-700 hover:bg-blue-50">
                             <Printer className="w-4 h-4 mr-2" />
-                            In vận đơn
+                            In vận đơn GHN
+                        </Button>
+                    )}
+                    {/* VTP buttons */}
+                    {order.shipping_carrier === 'VTP' && !order.vtp_order_code && (
+                        <Button variant="outline" onClick={handleCreateVTPShipment} disabled={isCreatingShipment}
+                            className="border-red-600 text-red-700 hover:bg-red-50">
+                            <Send className="w-4 h-4 mr-2" />
+                            {isCreatingShipment ? 'Đang tạo VTP...' : 'Tạo đơn VTP'}
                         </Button>
                     )}
                     <Button variant="outline" onClick={handleDownloadInvoice}>
@@ -291,6 +322,11 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                             <CardTitle className="flex items-center gap-2">
                                 <Truck className="w-5 h-5 text-gray-500" />
                                 Giao hàng
+                                {order.shipping_carrier && (
+                                    <Badge variant="outline" className={`ml-auto text-xs ${order.shipping_carrier === 'VTP' ? 'border-red-300 text-red-600' : 'border-orange-300 text-orange-600'}`}>
+                                        {order.shipping_carrier === 'VTP' ? 'Viettel Post' : 'GHN'}
+                                    </Badge>
+                                )}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">

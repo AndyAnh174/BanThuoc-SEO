@@ -50,6 +50,10 @@ interface OrderDetail {
     final_amount: number;
     items: OrderItem[];
     note?: string;
+    shipping_carrier?: string;
+    tracking_number?: string;
+    ghn_order_code?: string;
+    vtp_order_code?: string;
 }
 
 interface OrderDetailProps {
@@ -405,6 +409,16 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                             <p className="text-sm text-gray-700 leading-relaxed">
                                 {order.shipping_address}
                             </p>
+                            {order.shipping_carrier && (
+                                <div className="text-xs text-gray-500 mt-2">
+                                    Đơn vị vận chuyển: <span className={`font-semibold ${order.shipping_carrier === 'VTP' ? 'text-red-600' : 'text-orange-600'}`}>
+                                        {order.shipping_carrier === 'VTP' ? 'Viettel Post' : order.shipping_carrier === 'GHN' ? 'Giao Hàng Nhanh' : order.shipping_carrier}
+                                    </span>
+                                    {order.tracking_number && <span className="ml-2">- Mã: {order.tracking_number}</span>}
+                                    {order.ghn_order_code && <span className="ml-2">- GHN: {order.ghn_order_code}</span>}
+                                    {order.vtp_order_code && <span className="ml-2">- VTP: {order.vtp_order_code}</span>}
+                                </div>
+                            )}
                             {order.note && (
                                 <div className="text-sm bg-yellow-50 p-3 rounded-md text-yellow-800 border border-yellow-100 mt-2">
                                     <span className="font-semibold block text-xs uppercase mb-1">Ghi chú:</span>

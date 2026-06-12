@@ -70,6 +70,8 @@ export interface Order {
     ghn_order_code?: string;
     ghn_status?: string;
     ghn_expected_delivery_time?: string;
+    vtp_order_code?: string;
+    shipping_carrier?: string;
     items: OrderItem[];
 }
 
