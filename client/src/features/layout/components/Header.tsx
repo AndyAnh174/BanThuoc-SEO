@@ -47,6 +47,24 @@ interface Category {
   children?: Category[];
 }
 
+// Sub-category color palette — vibrant colors for each drug subcategory
+const subCatColors: Record<string, { bg: string; icon: string; text: string }> = {
+  'chống-dị-ứng':           { bg: '#fef2f2', icon: 'text-red-500',      text: 'text-red-800' },
+  'chống-ký-sinh-trùng':    { bg: '#fff7ed', icon: 'text-orange-500',   text: 'text-orange-800' },
+  'cơ-xương-khớp':          { bg: '#fffbeb', icon: 'text-amber-500',    text: 'text-amber-800' },
+  'da-liễu':                { bg: '#fefce8', icon: 'text-yellow-500',   text: 'text-yellow-800' },
+  'giảm-đau-kháng-viêm':    { bg: '#f0fdf4', icon: 'text-green-500',    text: 'text-green-800' },
+  'hô-hấp':                 { bg: '#ecfeff', icon: 'text-cyan-500',     text: 'text-cyan-800' },
+  'kháng-sinh-virus-và-nấm':{ bg: '#eff6ff', icon: 'text-blue-500',     text: 'text-blue-800' },
+  'nội-tiết':               { bg: '#f5f3ff', icon: 'text-purple-500',   text: 'text-purple-800' },
+  'thần-kinh':              { bg: '#fdf4ff', icon: 'text-fuchsia-500',  text: 'text-fuchsia-800' },
+  'tim-mạch':               { bg: '#fff1f2', icon: 'text-rose-500',     text: 'text-rose-800' },
+  'tiêu-hóa':               { bg: '#f0fdf4', icon: 'text-emerald-500',  text: 'text-emerald-800' },
+  'tiết-niệu':              { bg: '#f0f9ff', icon: 'text-sky-500',      text: 'text-sky-800' },
+  'vitamin-và-khoáng-chất': { bg: '#fefce8', icon: 'text-lime-500',     text: 'text-lime-800' },
+  '_default':               { bg: '#f9fafb', icon: 'text-gray-500',     text: 'text-gray-700' },
+};
+
 export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
@@ -342,29 +360,32 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                                     
                                     {activeCategory.children && activeCategory.children.length > 0 ? (
                                     <div className="grid grid-cols-4 gap-4 pb-4">
-                                        {activeCategory.children.map((child) => (
-                                            <Link 
+                                        {activeCategory.children.map((child, idx) => {
+                                            const color = subCatColors[child.slug] || subCatColors._default;
+                                            return (
+                                            <Link
                                                 key={child.slug}
-                                                href={`/products?category=${child.slug}`} 
-                                                className="group relative rounded-xl hover:shadow-md transition-all duration-300 border border-transparent hover:border-gray-100 overflow-hidden"
+                                                href={`/products?category=${child.slug}`}
+                                                className="group relative rounded-xl hover:shadow-lg transition-all duration-300 border border-transparent hover:border-gray-100 overflow-hidden"
                                             >
-                                                <Card className="h-full border-0 shadow-none bg-gray-100 group-hover:bg-gray-200">
+                                                <Card className="h-full border-0 shadow-none transition-colors duration-300" style={{backgroundColor: color.bg}}>
                                                     <CardContent className="p-3 flex items-center gap-3">
-                                                         <div className="w-11 h-11 rounded-lg bg-white shadow-xs flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-110 transition-transform duration-300">
+                                                         <div className="w-11 h-11 rounded-lg bg-white/90 shadow-xs flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-110 transition-transform duration-300">
                                                             {child.image ? (
                                                             <img src={child.image} alt={child.name} className="w-full h-full object-cover" />
                                                             ) : (() => {
                                                                 const ChildIcon = getCategoryIcon(child.slug);
-                                                                return <ChildIcon className="w-5 h-5 text-gray-300 group-hover:text-primary transition-colors" />;
+                                                                return <ChildIcon className={`w-5 h-5 ${color.icon} transition-colors`} />;
                                                             })()}
                                                          </div>
-                                                         <span className="font-semibold text-sm text-gray-600 group-hover:text-primary line-clamp-2 leading-tight transition-colors">
+                                                         <span className={`font-semibold text-sm ${color.text} line-clamp-2 leading-tight transition-colors`}>
                                                              {child.name}
                                                          </span>
                                                     </CardContent>
                                                 </Card>
                                             </Link>
-                                        ))}
+                                        );
+                                        })}
                                     </div>
                                     ) : (
                                     <div className="flex flex-col items-center justify-center flex-1 text-gray-300">
