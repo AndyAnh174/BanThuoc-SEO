@@ -12,6 +12,15 @@ interface Category {
   productCount?: number; product_count?: number; icon?: string;
 }
 
+// Vibrant color per root category
+const catColors: Record<string, { bg: string; iconBg: string; icon: string }> = {
+  'chăm-sóc-cá-nhân':      { bg: 'hover:bg-sky-50',     iconBg: 'bg-sky-100',      icon: 'text-sky-600' },
+  'dược-mỹ-phẩm':          { bg: 'hover:bg-pink-50',     iconBg: 'bg-pink-100',     icon: 'text-pink-600' },
+  'thiết-bị-y-tế':         { bg: 'hover:bg-blue-50',     iconBg: 'bg-blue-100',     icon: 'text-blue-600' },
+  'thuốc':                 { bg: 'hover:bg-teal-50',     iconBg: 'bg-teal-100',     icon: 'text-teal-600' },
+  'thực-phẩm-chức-năng':   { bg: 'hover:bg-emerald-50',  iconBg: 'bg-emerald-100',  icon: 'text-emerald-600' },
+};
+
 export function CategoryShowcase() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,8 +40,8 @@ export function CategoryShowcase() {
       <section className="py-8">
         <div className="bg-gradient-to-br from-teal-50 via-teal-50/80 to-teal-50 rounded-2xl p-6">
           <Skeleton className="h-8 w-48 mb-6" />
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-3">
-            {[...Array(14)].map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
+          <div className="grid grid-cols-5 gap-4 max-w-4xl mx-auto">
+            {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}
           </div>
         </div>
       </section>
@@ -55,18 +64,19 @@ export function CategoryShowcase() {
           </Link>
         </div>
 
-        <div className="relative grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-3">
+        <div className="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 max-w-4xl mx-auto">
           {categories.map(cat => {
             const CatIcon = getCategoryIcon(cat.slug);
             const count = cat.productCount ?? cat.product_count;
+            const colors = catColors[cat.slug] || catColors['thuốc'];
             return (
               <Link key={cat.id} href={`/products?category=${cat.slug}`}
-                className="group flex flex-col items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-transparent hover:border-teal-300/50 hover:-translate-y-0.5">
-                <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-teal-100 transition-all">
-                  <CatIcon className="w-6 h-6 text-teal-600" />
+                className={`group flex flex-col items-center p-5 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-transparent hover:-translate-y-1 ${colors.bg}`}>
+                <div className={`w-16 h-16 ${colors.iconBg} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
+                  <CatIcon className={`w-7 h-7 ${colors.icon}`} />
                 </div>
-                <h3 className="text-xs font-semibold text-center text-gray-800 line-clamp-2 leading-tight min-h-[2.5em]">{cat.name}</h3>
-                <span className="text-xs text-gray-400 mt-1">{count ? `${count} SP` : ''}</span>
+                <h3 className="text-sm font-bold text-center text-gray-800 leading-tight">{cat.name}</h3>
+                <span className="text-xs text-gray-400 mt-1.5 font-medium">{count ? `${count} sản phẩm` : ''}</span>
               </Link>
             );
           })}
