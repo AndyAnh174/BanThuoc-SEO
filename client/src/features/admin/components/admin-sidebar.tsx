@@ -28,7 +28,8 @@ import {
     RotateCcw,
     History,
     Bug,
-    MonitorPlay
+    MonitorPlay,
+    TicketPercent
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -74,6 +75,7 @@ const sidebarSections: SidebarSection[] = [
         defaultOpen: true,
         items: [
             { label: "Flash Sale", href: "/admin/flash-sales", icon: Zap },
+            { label: "Voucher", href: "/admin/vouchers", icon: TicketPercent },
             { label: "Banner", href: "/admin/banners", icon: Image },
             { label: "Banner Mini", href: "/admin/banner-mini", icon: Layout },
             { label: "Popup Ads", href: "/admin/popup-ads", icon: MonitorPlay },
