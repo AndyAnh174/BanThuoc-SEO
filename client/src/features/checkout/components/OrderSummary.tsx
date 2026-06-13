@@ -20,15 +20,7 @@ function ShippingCarrierSelector() {
 
   return (
     <div className="flex gap-3">
-      <label className={`flex-1 flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${carrier === 'VTP' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'}`}>
-        <input type="radio" value="VTP" {...register('shippingCarrier')} className="sr-only" />
-        <Image src="/viettel-post.png" alt="Viettel Post" width={40} height={40} className="rounded object-contain" />
-        <div>
-          <span className="font-medium text-sm">Viettel Post</span>
-          <p className="text-xs text-gray-500">Uy tín, toàn quốc</p>
-        </div>
-        <span className="text-xs text-primary font-medium bg-white px-2 py-0.5 rounded-full border border-primary/20 ml-auto">Mặc định</span>
-      </label>
+      {/* VTP temporarily hidden */}
       <label className={`flex-1 flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${carrier === 'GHN' ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-gray-300'}`}>
         <input type="radio" value="GHN" {...register('shippingCarrier')} className="sr-only" />
         <Image src="/ghn.jpg" alt="GHN" width={40} height={40} className="rounded object-contain" />
@@ -36,6 +28,7 @@ function ShippingCarrierSelector() {
           <span className="font-medium text-sm">Giao Hàng Nhanh</span>
           <p className="text-xs text-gray-500">Nhanh, rẻ, 63 tỉnh</p>
         </div>
+        <span className="text-xs text-primary font-medium bg-white px-2 py-0.5 rounded-full border border-primary/20 ml-auto">Mặc định</span>
       </label>
     </div>
   );

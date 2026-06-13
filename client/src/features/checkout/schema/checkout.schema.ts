@@ -17,7 +17,7 @@ export const checkoutSchema = z.object({
   orderNote: z.string().optional(),
 
   // Shipping carrier
-  shippingCarrier: z.string().default('VTP'),
+  shippingCarrier: z.string().default('GHN'),
 
   // Payment
   paymentMethod: z.string().default('COD'),
