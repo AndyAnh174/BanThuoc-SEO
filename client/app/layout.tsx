@@ -117,9 +117,15 @@ export const metadata: Metadata = {
     },
   }),
   icons: {
-    icon: [{ url: "/logo-rm-phong.png", type: "image/png" }],
-    shortcut: "/logo-rm-phong.png",
-    apple: "/logo-rm-phong.png",
+    icon: [
+      { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+      { url: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      { url: "/logo-rm-phong.png", type: "image/png" },
+    ],
+    shortcut: ["/favicon.ico"],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180" },
+    ],
   },
   openGraph: {
     type: "website",
