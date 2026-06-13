@@ -65,6 +65,13 @@ export default function Home() {
         <BannerRow />
       </div>
 
+      {/* Flash Sale — moved right after hero for maximum visibility */}
+      <div className="bg-gradient-to-r from-red-50 via-rose-50 to-orange-50">
+        <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
+          <FlashSaleSection />
+        </div>
+      </div>
+
       {/* Trust Badges */}
       <div className="bg-white py-2">
         <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
@@ -76,13 +83,6 @@ export default function Home() {
       <div className="bg-white">
         <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
           <CategoryShowcase />
-        </div>
-      </div>
-
-      {/* Flash Sale — gradient background */}
-      <div className="bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
-          <FlashSaleSection />
         </div>
       </div>
 

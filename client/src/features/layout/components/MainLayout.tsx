@@ -2,6 +2,7 @@ import React from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { BackToTop } from './BackToTop';
+import { PromoMarquee } from './PromoMarquee';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ export function MainLayout({ children, cartItemCount = 0, fullWidth = false }: M
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header cartItemCount={cartItemCount} />
+      <PromoMarquee />
       <main className="flex-1">
         {fullWidth ? (
           children
