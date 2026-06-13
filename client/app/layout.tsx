@@ -80,7 +80,7 @@ export const metadata: Metadata = {
     // Trang chủ dùng default, các trang con dùng template: "Tên trang | BanThuocSi - NKN Pharma"
   },
   description:
-    "BanThuocSi.vn - Sàn dược phẩm sỉ B2B của Công ty Dược phẩm Ngọc Kim Ngân (NKN Pharma). Bán thuốc sỉ giá tốt, hơn 10.000+ sản phẩm chính hãng cho nhà thuốc, phòng khám toàn quốc. Giao nhanh, giá cạnh tranh.",
+    "Sàn dược phẩm sỉ B2B chính hãng. 10.000+ sản phẩm thuốc sỉ giá tốt cho nhà thuốc, phòng khám toàn quốc. Giao nhanh, chiết khấu cao.",
   keywords: [
     // Core B2B wholesale
     "bán thuốc sỉ",
