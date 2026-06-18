@@ -88,7 +88,7 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
     <section className="py-6">
       <div className="flex gap-4">
         {/* ── Left: Category Sidebar (desktop) ── */}
-        <aside className="hidden lg:flex flex-col w-[280px] shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden h-fit">
+        <aside className="hidden lg:flex flex-col w-[280px] shrink-0 bg-transparent overflow-hidden h-fit">
           <div className="px-5 py-4 border-b border-gray-50 bg-gradient-to-r from-teal-50 to-teal-50">
             <div className="flex items-center gap-2">
               <Leaf className="w-5 h-5 text-teal-600" />
