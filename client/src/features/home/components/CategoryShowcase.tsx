@@ -38,10 +38,14 @@ export function CategoryShowcase() {
   if (loading) {
     return (
       <section className="py-8">
-        <div className="bg-gradient-to-br from-teal-50 via-teal-50/80 to-teal-50 rounded-2xl p-6">
-          <Skeleton className="h-8 w-48 mb-6" />
-          <div className="grid grid-cols-5 gap-4 max-w-4xl mx-auto">
-            {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-teal-600 px-6 py-4">
+            <Skeleton className="h-8 w-48 bg-white/20" />
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-5 gap-4 max-w-4xl mx-auto">
+              {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}
+            </div>
           </div>
         </div>
       </section>
@@ -52,19 +56,28 @@ export function CategoryShowcase() {
 
   return (
     <section className="py-8">
-      <div className="relative bg-gradient-to-br from-teal-50 via-teal-50/80 to-teal-50 rounded-2xl p-6 overflow-hidden">
-        {/* Decorative blobs */}
-        <div className="absolute top-0 left-0 w-40 h-40 bg-teal-200/30 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl" />
-        <div className="absolute bottom-0 right-0 w-56 h-56 bg-teal-200/30 rounded-full translate-x-1/4 translate-y-1/4 blur-2xl" />
-
-        <div className="relative flex items-center justify-between mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900">Nhóm sản phẩm</h2>
-          <Link href="/products" className="inline-flex items-center gap-1 text-teal-700 font-semibold text-sm hover:underline">
-            Xem tất cả <ChevronRight className="w-4 h-4" />
-          </Link>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        {/* Mint green header — same style as New Products */}
+        <div className="bg-teal-600 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                  <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+              </div>
+              <h2 className="text-xl md:text-2xl font-bold text-white">Nhóm sản phẩm</h2>
+            </div>
+            <Link href="/products" className="inline-flex items-center gap-1 text-white/90 hover:text-white font-semibold text-sm bg-white/15 hover:bg-white/25 px-4 py-2 rounded-xl transition-all">
+              Xem tất cả <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
 
-        <div className="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 max-w-4xl mx-auto">
+        {/* Categories grid */}
+        <div className="p-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 max-w-4xl mx-auto">
           {categories.map(cat => {
             const CatIcon = getCategoryIcon(cat.slug);
             const count = cat.productCount ?? cat.product_count;
@@ -81,6 +94,7 @@ export function CategoryShowcase() {
             );
           })}
         </div>
+      </div>
       </div>
     </section>
   );
