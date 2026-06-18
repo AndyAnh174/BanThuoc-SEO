@@ -252,18 +252,18 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
 
           {/* Mobile search */}
           <div className={`mt-3 md:hidden overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out ${isMenuOpen || searchQuery ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'}`}>
-            <form onSubmit={handleSearch} className="relative">
+            <form onSubmit={handleSearch} className="flex items-center gap-2">
                 <Input
                 type="search"
                 placeholder="Tìm kiếm..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pr-12 rounded-full border-gray-200 bg-gray-50 focus:bg-white shadow-sm"
+                className="flex-1 rounded-full border-gray-200 bg-gray-50 focus:bg-white shadow-sm"
                 />
                 <Button
                 type="submit"
-                size="sm"
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full p-0"
+                size="icon"
+                className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 shadow-sm shrink-0"
                 >
                 <Search className="w-3.5 h-3.5" />
                 </Button>
