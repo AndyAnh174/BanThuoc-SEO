@@ -60,7 +60,7 @@ export function BannerRow() {
           <Link
             key={banner.id}
             href={banner.link_url || '#'}
-            className="relative rounded-2xl overflow-hidden h-40 sm:h-48 shadow-sm hover:shadow-md transition-shadow"
+            className="relative overflow-hidden h-40 sm:h-48"
           >
             {banner.image_url && (
               <Image
