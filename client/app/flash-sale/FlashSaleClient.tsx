@@ -276,7 +276,7 @@ export function FlashSaleClient({ initialData, serverTime }: Props) {
                                     {session.name}
                                 </h1>
                                 {session.description && (
-                                    <p className="text-sm md:text-base text-white/70 leading-relaxed max-w-lg line-clamp-2">
+                                    <p className="text-sm md:text-base text-white/70 leading-relaxed max-w-lg whitespace-pre-line">
                                         {session.description}
                                     </p>
                                 )}
