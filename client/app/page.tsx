@@ -59,8 +59,8 @@ export default function Home() {
       />
       <h1 className="sr-only">Bán Thuốc Sỉ - Ngọc Kim Ngân Pharma (NKN) - Sàn Dược Phẩm Sỉ B2B Chính Hãng</h1>
 
-      {/* Hero + Banner Row — full width */}
-      <div className="max-w-screen-2xl mx-auto px-4 lg:px-8">
+      {/* Hero + Banner Row — full width, no padding */}
+      <div className="max-w-screen-2xl mx-auto">
         <HeroSectionServer />
         <BannerRow />
       </div>

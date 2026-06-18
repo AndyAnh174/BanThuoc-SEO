@@ -129,7 +129,7 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
         </aside>
 
         {/* ── Right: Banner Carousel ── */}
-        <div className="flex-1 relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] bg-transparent shadow-sm border border-gray-100">
+        <div className="flex-1 relative overflow-hidden min-h-[320px] sm:min-h-[380px] lg:min-h-[420px]">
           <Link href={currentBanner.link_url || '#'} className="absolute inset-0 block">
             {currentBanner.image_url && (
               <Image src={currentBanner.image_url} alt={currentBanner.title} fill
