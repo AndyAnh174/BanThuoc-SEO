@@ -32,19 +32,19 @@ function CountdownTimer({ endTime, onEnd }: { endTime: string; onEnd?: () => voi
 
     const Segment = ({ value, label }: { value: number; label: string }) => (
         <div className="flex flex-col items-center">
-            <span className="bg-slate-800 text-white font-mono font-bold text-xl w-12 h-12 flex items-center justify-center rounded-lg tabular-nums">
+            <span className="bg-white/15 backdrop-blur-sm text-white font-mono font-bold text-xl w-12 h-12 flex items-center justify-center rounded-lg tabular-nums border border-white/20">
                 {String(value).padStart(2, '0')}
             </span>
-            <span className="text-[10px] font-medium text-gray-400 mt-1 tracking-widest uppercase">{label}</span>
+            <span className="text-[10px] font-medium text-white/50 mt-1 tracking-widest uppercase">{label}</span>
         </div>
     );
 
     return (
         <div className="flex items-end gap-1">
             <Segment value={timeLeft.hours} label="Giờ" />
-            <span className="text-slate-400 font-bold text-xl mb-3.5 leading-none">:</span>
+            <span className="text-white/40 font-bold text-xl mb-3 leading-none">:</span>
             <Segment value={timeLeft.minutes} label="Phút" />
-            <span className="text-slate-400 font-bold text-xl mb-3.5 leading-none">:</span>
+            <span className="text-white/40 font-bold text-xl mb-3 leading-none">:</span>
             <Segment value={timeLeft.seconds} label="Giây" />
         </div>
     );
@@ -174,11 +174,11 @@ export function FlashSaleClient({ initialData, serverTime }: Props) {
         return (
             <MainLayout>
                 <div className="min-h-screen bg-gray-50">
-                    <div className="bg-white border-b border-gray-100">
-                        <div className="max-w-6xl mx-auto px-4 py-8">
-                            <Skeleton className="h-6 w-32 mb-3" />
-                            <Skeleton className="h-9 w-64 mb-2" />
-                            <Skeleton className="h-4 w-96" />
+                    <div className="bg-gradient-to-br from-red-800 via-red-600 to-orange-600">
+                        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+                            <Skeleton className="h-5 w-32 mb-6 bg-white/20" />
+                            <Skeleton className="h-9 w-80 mb-3 bg-white/20" />
+                            <Skeleton className="h-4 w-96 bg-white/20" />
                         </div>
                     </div>
                     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -230,46 +230,61 @@ export function FlashSaleClient({ initialData, serverTime }: Props) {
         <MainLayout>
             <div className="min-h-screen bg-gray-50">
 
-                <div className="bg-white border-b border-gray-100">
-                    <div className="max-w-6xl mx-auto px-4 py-7">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                {/* Flash Sale Hero Banner */}
+                <section className="relative overflow-hidden bg-gradient-to-br from-red-800 via-red-600 to-orange-600">
+                    {/* Lightning glow effects */}
+                    <div className="absolute inset-0 opacity-20">
+                        <div className="absolute top-10 left-1/4 w-96 h-96 bg-yellow-400 rounded-full blur-[128px]" />
+                        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-orange-300 rounded-full blur-[100px]" />
+                    </div>
+                    {/* Diagonal light streaks */}
+                    <div className="absolute inset-0 opacity-10">
+                        <div className="absolute top-0 left-1/3 w-[2px] h-full bg-white rotate-12 origin-top" />
+                        <div className="absolute top-0 left-2/3 w-[1px] h-full bg-white rotate-12 origin-top" />
+                    </div>
 
-                            <div className="flex items-start gap-4">
-                                <div className="w-1 self-stretch bg-red-600 rounded-full shrink-0" />
-                                <div>
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <span className="inline-flex items-center gap-1.5 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
-                                            <Zap className="h-3 w-3" />
-                                            FLASH SALE
+                    <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16 lg:py-20">
+                        {/* Breadcrumb */}
+                        <nav className="flex items-center gap-1.5 text-xs text-white/60 mb-6">
+                            <Link href="/" className="hover:text-white/90 transition-colors">Trang chủ</Link>
+                            <ChevronRight className="h-3 w-3" />
+                            <span className="text-white/80">Flash Sale</span>
+                        </nav>
+
+                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+                            {/* Left: Title + Badge + Description */}
+                            <div className="max-w-xl">
+                                <div className="flex items-center gap-3 mb-4 flex-wrap">
+                                    <span className="inline-flex items-center gap-1.5 bg-red-600/50 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full border border-red-400/30">
+                                        <Zap className="h-3 w-3 fill-yellow-300 text-yellow-300" />
+                                        FLASH SALE
+                                    </span>
+                                    {isActive ? (
+                                        <span className="inline-flex items-center gap-1.5 bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.5)] animate-pulse">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                                            ĐANG DIỄN RA
                                         </span>
-                                        {isActive ? (
-                                            <span className="inline-flex items-center gap-1 bg-teal-50 text-teal-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-teal-200">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
-                                                ĐANG DIỄN RA
-                                            </span>
-                                        ) : (
-                                            <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-amber-200">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                                                SẮP DIỄN RA
-                                            </span>
-                                        )}
-                                    </div>
-                                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
-                                        {session.name}
-                                    </h1>
-                                    {session.description && (
-                                        <p className="text-sm text-gray-500 mt-1">{session.description}</p>
+                                    ) : (
+                                        <span className="inline-flex items-center gap-1.5 bg-amber-500 text-white text-xs font-bold px-3 py-1.5 rounded-full">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                                            SẮP DIỄN RA
+                                        </span>
                                     )}
-                                    <nav className="flex items-center gap-1 text-xs text-gray-400 mt-3">
-                                        <Link href="/" className="hover:text-gray-600 transition-colors">Trang chủ</Link>
-                                        <ChevronRight className="h-3 w-3" />
-                                        <span className="text-gray-600">Flash Sale</span>
-                                    </nav>
                                 </div>
+
+                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight mb-4">
+                                    {session.name}
+                                </h1>
+                                {session.description && (
+                                    <p className="text-sm md:text-base text-white/70 leading-relaxed max-w-lg line-clamp-2">
+                                        {session.description}
+                                    </p>
+                                )}
                             </div>
 
-                            <div className="flex flex-col items-start md:items-end gap-1.5">
-                                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            {/* Right: Countdown Timer */}
+                            <div className="flex flex-col items-start lg:items-end gap-2 shrink-0">
+                                <p className="text-xs font-semibold text-white/50 uppercase tracking-[0.2em]">
                                     {isActive ? 'Kết thúc sau' : 'Bắt đầu sau'}
                                 </p>
                                 <CountdownTimer
@@ -279,7 +294,7 @@ export function FlashSaleClient({ initialData, serverTime }: Props) {
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
                 <div className="max-w-6xl mx-auto px-4 py-8">
                     <div className="flex items-center justify-between mb-5">
