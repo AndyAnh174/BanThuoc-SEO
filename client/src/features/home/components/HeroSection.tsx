@@ -107,9 +107,7 @@ export function HeroSection({ initialBanners }: HeroSectionProps = {}) {
                     <li key={cat.id}>
                       <Link href={`/products?category=${cat.slug}`}
                         className="flex items-center gap-3 px-5 py-3 hover:bg-teal-50/60 transition-colors group/item">
-                        <span className="w-9 h-9 bg-teal-50 rounded-lg flex items-center justify-center text-teal-600 shrink-0 group-hover/item:bg-teal-100 transition-colors">
-                          <CatIcon className="w-5 h-5" />
-                        </span>
+                        <CatIcon className="w-5 h-5 text-teal-600 group-hover/item:text-teal-700 transition-colors shrink-0" />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-gray-900 truncate">{cat.name}</p>
                           <p className="text-xs text-gray-400 truncate">{count ? `${count} sản phẩm` : cat.description || ''}</p>
