@@ -232,6 +232,12 @@ export function FlashSaleClient({ initialData, serverTime }: Props) {
 
                 {/* Flash Sale Hero Banner */}
                 <section className="relative overflow-hidden bg-gradient-to-br from-red-800 via-red-600 to-orange-600">
+                    {/* Banner image overlay (if set) */}
+                    {session.banner_image && (
+                        <div className="absolute inset-0">
+                            <Image src={session.banner_image} alt={session.name} fill className="object-cover opacity-30" priority />
+                        </div>
+                    )}
                     {/* Lightning glow effects */}
                     <div className="absolute inset-0 opacity-20">
                         <div className="absolute top-10 left-1/4 w-96 h-96 bg-yellow-400 rounded-full blur-[128px]" />

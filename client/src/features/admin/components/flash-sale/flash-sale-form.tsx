@@ -8,12 +8,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { ImageUpload } from '../image-upload';
 import { useEffect } from 'react';
 import { FlashSaleSession } from '../../types/flash-sale.types';
 
 const flashSaleSchema = z.object({
     name: z.string().min(1, 'Tên là bắt buộc'),
     description: z.string().optional(),
+    banner_image: z.string().optional(),
     start_time: z.string().min(1, 'Thời gian bắt đầu là bắt buộc'),
     end_time: z.string().min(1, 'Thời gian kết thúc là bắt buộc'),
     is_active: z.boolean().default(true),
@@ -50,6 +52,7 @@ export const FlashSaleForm = ({ initialData, onSubmit, isSubmitting, onCancel }:
             reset({
                 name: initialData.name,
                 description: initialData.description || '',
+                banner_image: (initialData as any).banner_image || '',
                 start_time: formatDate(initialData.start_time),
                 end_time: formatDate(initialData.end_time),
                 is_active: initialData.is_active,
@@ -89,6 +92,21 @@ export const FlashSaleForm = ({ initialData, onSubmit, isSubmitting, onCancel }:
                 </div>
             </div>
             
+            <div className="space-y-2">
+                <Label>Ảnh banner (1200×400px)</Label>
+                <Controller
+                    control={control}
+                    name="banner_image"
+                    render={({ field }) => (
+                        <ImageUpload
+                            value={field.value || ''}
+                            onChange={field.onChange}
+                            folder="flash-sale"
+                        />
+                    )}
+                />
+            </div>
+
             <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
                     <Label>Bắt đầu *</Label>
