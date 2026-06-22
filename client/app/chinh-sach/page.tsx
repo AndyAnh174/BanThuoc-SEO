@@ -1,157 +1,274 @@
-import { Metadata } from 'next';
-import { MainLayout } from '@/src/features/layout';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Chính sách & Điều khoản | BanThuocSi - NKN Pharma',
-  description: 'Điều kiện giao dịch chung, chính sách mua hàng, giao nhận, thanh toán, bảo mật thông tin tại BanThuocSi.vn.',
-  alternates: { canonical: '/chinh-sach' },
-  robots: { index: true, follow: true },
-};
+import { useState } from 'react';
+import { MainLayout } from '@/src/features/layout';
+import { ChevronDown, ShieldCheck, Truck, CreditCard, RotateCcw, Lock, FileText, Phone, Ban, RefreshCw, AlertTriangle, UserCheck } from 'lucide-react';
+
+interface Section {
+  id: string;
+  icon: React.ReactNode;
+  title: string;
+  content: React.ReactNode;
+}
 
 export default function ChinhSachPage() {
+  const sections: Section[] = [
+    {
+      id: 'dieu-khoan',
+      icon: <FileText className="w-5 h-5" />,
+      title: 'Điều kiện giao dịch chung',
+      content: (
+        <div className="space-y-4 text-gray-600 leading-relaxed">
+          <p>Điều kiện giao dịch chung này được áp dụng đối với mọi giao dịch mua bán hàng hóa phát sinh giữa <strong>Công ty TNHH Ngọc Kim Ngân</strong> (banthuocsi.vn) và khách hàng thông qua website banthuocsi.vn. Việc khách hàng truy cập, đăng ký tài khoản hoặc đặt hàng trên website đồng nghĩa với việc khách hàng đã đọc, hiểu và đồng ý tuân thủ các điều kiện giao dịch được quy định.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'doi-tuong',
+      icon: <UserCheck className="w-5 h-5" />,
+      title: 'Đối tượng khách hàng',
+      content: (
+        <div className="space-y-3 text-gray-600 leading-relaxed">
+          <p>Website hoạt động theo mô hình <strong>phân phối sỉ</strong>, phục vụ các đối tượng:</p>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 ml-4">
+            {[
+              'Nhà thuốc có Giấy chứng nhận đủ điều kiện kinh doanh dược',
+              'Quầy thuốc hợp pháp',
+              'Phòng khám, cơ sở khám chữa bệnh',
+              'Doanh nghiệp kinh doanh dược',
+              'Cá nhân, tổ chức có nhu cầu mua sỉ',
+            ].map((item, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-500 mt-2 shrink-0" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ),
+    },
+    {
+      id: 'tai-khoan',
+      icon: <Lock className="w-5 h-5" />,
+      title: 'Đăng ký & Bảo mật tài khoản',
+      content: (
+        <div className="space-y-3 text-gray-600 leading-relaxed">
+          <p>Khách hàng đăng ký tài khoản bằng cách cung cấp: Họ tên người đại diện, Tên nhà thuốc/cơ sở kinh doanh, SĐT, Email, Địa chỉ kinh doanh, MST/GPKD (nếu có).</p>
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm">
+            <strong className="text-amber-800">Lưu ý:</strong> Khách hàng có trách nhiệm bảo mật thông tin đăng nhập. Mọi giao dịch phát sinh từ tài khoản đều được xem là do khách hàng thực hiện.
+          </div>
+          <p>banthuocsi.vn có quyền tạm đình chỉ hoặc chấm dứt tài khoản trong các trường hợp: cung cấp thông tin sai, vi phạm quy định thanh toán, gian lận, hoặc vi phạm pháp luật.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'dat-hang',
+      icon: <ShieldCheck className="w-5 h-5" />,
+      title: 'Chính sách đặt hàng',
+      content: (
+        <div className="space-y-3 text-gray-600 leading-relaxed">
+          <p>Khách hàng có thể đặt hàng trực tuyến <strong>24/7</strong>. Đơn hàng được xác nhận khi hoàn tất quy trình và nhận thông báo qua email/SMS.</p>
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
+            <strong className="text-red-800">Từ chối/Hủy đơn:</strong> banthuocsi.vn có quyền từ chối đơn trong trường hợp sản phẩm hết hàng, thông tin không chính xác, có dấu hiệu gian lận, hoặc sản phẩm bị thu hồi/cấm lưu hành.
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'thanh-toan',
+      icon: <CreditCard className="w-5 h-5" />,
+      title: 'Giá & Phương thức thanh toán',
+      content: (
+        <div className="space-y-3 text-gray-600 leading-relaxed">
+          <p>Tất cả giá đã bao gồm thuế GTGT, niêm yết bằng <strong>VNĐ</strong>. Giá có thể thay đổi theo thời điểm, giá áp dụng cho đơn đã xác nhận là giá tại thời điểm đặt hàng.</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {[
+              { icon: '💵', title: 'COD', desc: 'Trả tiền mặt khi nhận hàng' },
+              { icon: '🏦', title: 'Chuyển khoản', desc: 'Vietcombank - NGUYEN NGOC KIM NGAN\nSTK: 0071000921655' },
+              { icon: '📱', title: 'MoMo', desc: '096.770.5287\nNGUYEN NGOC KIM NGAN' },
+            ].map((pm, i) => (
+              <div key={i} className="bg-gray-50 rounded-xl p-4 text-center">
+                <div className="text-2xl mb-2">{pm.icon}</div>
+                <div className="font-semibold text-gray-800 text-sm">{pm.title}</div>
+                <div className="text-xs text-gray-500 mt-1 whitespace-pre-line">{pm.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'van-chuyen',
+      icon: <Truck className="w-5 h-5" />,
+      title: 'Giao hàng & Vận chuyển',
+      content: (
+        <div className="space-y-3 text-gray-600 leading-relaxed">
+          <p>Giao hàng <strong>toàn quốc</strong> qua các đơn vị vận chuyển liên kết.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              { label: 'TP.HCM', time: '2-4 giờ' },
+              { label: 'Miền Nam', time: '1-2 ngày' },
+              { label: 'Miền Trung', time: '2-3 ngày' },
+              { label: 'Miền Bắc', time: '3-5 ngày' },
+              { label: 'Phí ship', time: 'Miễn phí đơn ≥500K' },
+              { label: 'Kiểm hàng', time: 'Được kiểm trước khi nhận' },
+            ].map((item, i) => (
+              <div key={i} className="bg-blue-50 rounded-xl p-4 text-center">
+                <div className="text-xs text-blue-500 font-medium">{item.label}</div>
+                <div className="font-bold text-blue-800 mt-1">{item.time}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'huy-don',
+      icon: <Ban className="w-5 h-5" />,
+      title: 'Chính sách hủy đơn hàng',
+      content: (
+        <div className="space-y-3 text-gray-600 leading-relaxed">
+          <p>Khách hàng có thể yêu cầu hủy đơn trong các trường hợp:</p>
+          <ul className="space-y-2 ml-4">
+            <li className="flex items-start gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2 shrink-0" />
+              <span><strong>Chưa xác nhận</strong> (PENDING) — Hủy miễn phí</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 shrink-0" />
+              <span><strong>Đã xác nhận, chưa giao</strong> (CONFIRMED) — Phí xử lý 10.000đ/đơn</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 mt-2 shrink-0" />
+              <span><strong>Đã giao cho vận chuyển</strong> (SHIPPING) — Không thể hủy, từ chối khi nhận</span>
+            </li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      id: 'doi-tra',
+      icon: <RefreshCw className="w-5 h-5" />,
+      title: 'Đổi trả & Hoàn tiền',
+      content: (
+        <div className="space-y-3 text-gray-600 leading-relaxed">
+          <p><strong>Điều kiện:</strong> Đổi trả trong 7 ngày — sản phẩm còn nguyên tem, chưa sử dụng, bị lỗi SX, giao sai, hoặc cận date (dưới 6 tháng).</p>
+          <div className="bg-teal-50 border border-teal-200 rounded-xl p-4">
+            <strong className="text-teal-800">Quy trình:</strong>
+            <ol className="list-decimal ml-4 mt-1 space-y-1 text-sm">
+              <li>Gọi 096.770.5287 hoặc email ngockimnganpharm@gmail.com</li>
+              <li>Cung cấp mã đơn + hình ảnh + lý do</li>
+              <li>Gửi hàng về: 118/127C/27 Phan Huy Ích, P.Tân Sơn, TP.HCM</li>
+              <li>Hoàn tiền trong 5-7 ngày làm việc qua chuyển khoản</li>
+            </ol>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'bao-mat',
+      icon: <Lock className="w-5 h-5" />,
+      title: 'Bảo mật thông tin',
+      content: (
+        <div className="space-y-3 text-gray-600 leading-relaxed">
+          <p>Chúng tôi thu thập thông tin cần thiết để xử lý đơn hàng: họ tên, SĐT, email, địa chỉ. <strong>Không bán, chia sẻ</strong> thông tin cho bên thứ ba (trừ đối tác vận chuyển và cơ quan nhà nước có thẩm quyền).</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              { label: 'Lưu trữ', text: 'Suốt thời gian TK hoạt động + 2 năm sau GD cuối' },
+              { label: 'Cookies', text: 'Dùng để cải thiện trải nghiệm, có thể tắt trong trình duyệt' },
+              { label: 'Quyền KH', text: 'Truy cập, chỉnh sửa, xóa dữ liệu, từ chối quảng cáo' },
+              { label: 'Bảo vệ', text: 'Biện pháp kỹ thuật + tổ chức, SSL 256-bit' },
+            ].map((item, i) => (
+              <div key={i} className="bg-purple-50 rounded-xl p-4">
+                <div className="text-xs text-purple-500 font-medium">{item.label}</div>
+                <div className="text-sm text-purple-800 mt-1">{item.text}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'khieu-nai',
+      icon: <Phone className="w-5 h-5" />,
+      title: 'Khiếu nại & Liên hệ',
+      content: (
+        <div className="space-y-3 text-gray-600 leading-relaxed">
+          <p>Mọi khiếu nại được xử lý trong <strong>48 giờ</strong> làm việc qua:</p>
+          <div className="flex flex-wrap gap-4">
+            {[
+              { icon: '📞', label: 'Hotline', value: '096.770.5287' },
+              { icon: '📧', label: 'Email', value: 'ngockimnganpharm@gmail.com' },
+              { icon: '📍', label: 'Địa chỉ', value: '118/127C/27 Phan Huy Ích, P.Tân Sơn, TP.HCM' },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-3">
+                <span className="text-xl">{item.icon}</span>
+                <div>
+                  <div className="text-xs text-gray-400">{item.label}</div>
+                  <div className="font-semibold text-gray-800">{item.value}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <MainLayout fullWidth>
       <div className="min-h-screen bg-gray-50">
         {/* Hero */}
-        <div className="bg-gradient-to-r from-teal-700 to-teal-600 text-white">
-          <div className="container mx-auto px-4 py-12 md:py-16">
-            <h1 className="text-3xl md:text-4xl font-bold mb-3">Chính sách & Điều khoản</h1>
-            <p className="text-teal-100 max-w-2xl">Các quy định và điều kiện giao dịch tại BanThuocSi.vn</p>
+        <div className="bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 text-white">
+          <div className="container mx-auto px-4 py-14 md:py-20 text-center">
+            <div className="w-16 h-16 bg-white/15 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-5">
+              <ShieldCheck className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl md:text-5xl font-extrabold mb-3 tracking-tight">Chính sách & Điều khoản</h1>
+            <p className="text-teal-100 text-lg max-w-xl mx-auto">Minh bạch, rõ ràng — vì lợi ích của bạn</p>
           </div>
         </div>
 
         {/* Content */}
         <div className="container mx-auto px-4 py-10 max-w-4xl">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12">
-            <PolicyContent />
-            <p className="text-sm text-gray-400 mt-12 pt-6 border-t border-gray-100">
-              Cập nhật lần cuối: 21/06/2026
-            </p>
+          <div className="space-y-4">
+            {sections.map((section) => (
+              <AccordionItem key={section.id} section={section} defaultOpen={section.id === 'dieu-khoan'} />
+            ))}
           </div>
+          <p className="text-center text-sm text-gray-400 mt-8">
+            Cập nhật lần cuối: 21/06/2026
+          </p>
         </div>
       </div>
     </MainLayout>
   );
 }
 
-function PolicyContent() {
+function AccordionItem({ section, defaultOpen }: { section: Section; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen || false);
+
   return (
-    <div className="prose prose-teal max-w-none">
-      <h2>ĐIỀU KIỆN GIAO DỊCH CHUNG</h2>
-
-      <h3>1. Phạm vi áp dụng</h3>
-      <p>Điều kiện giao dịch chung này được áp dụng đối với mọi giao dịch mua bán hàng hóa phát sinh giữa Công ty TNHH Ngọc Kim Ngân (sau đây gọi là &quot;banthuocsi.vn&quot;) và khách hàng thông qua website banthuocsi.vn.</p>
-      <p>Việc khách hàng truy cập, đăng ký tài khoản hoặc đặt hàng trên website đồng nghĩa với việc khách hàng đã đọc, hiểu và đồng ý tuân thủ các điều kiện giao dịch được quy định dưới đây.</p>
-
-      <h3>2. Đối tượng khách hàng</h3>
-      <p>Website banthuocsi.vn hoạt động theo mô hình phân phối sỉ, phục vụ các đối tượng sau:</p>
-      <ul>
-        <li>Nhà thuốc đã được cấp Giấy chứng nhận đủ điều kiện kinh doanh dược;</li>
-        <li>Quầy thuốc hợp pháp;</li>
-        <li>Phòng khám, cơ sở khám chữa bệnh;</li>
-        <li>Doanh nghiệp kinh doanh dược;</li>
-        <li>Cá nhân, tổ chức có nhu cầu mua hàng với mục đích kinh doanh lại theo quy định pháp luật.</li>
-      </ul>
-      <p>Đối với các sản phẩm thuộc danh mục pháp luật quy định điều kiện kinh doanh, khách hàng có trách nhiệm cung cấp đầy đủ hồ sơ pháp lý theo yêu cầu trước khi giao dịch được thực hiện.</p>
-
-      <h3>3. Đăng ký và sử dụng tài khoản</h3>
-      <h4>3.1. Điều kiện đăng ký</h4>
-      <p>Khách hàng có thể đăng ký tài khoản bằng cách cung cấp các thông tin bao gồm: Họ và tên người đại diện; Tên nhà thuốc/cơ sở kinh doanh; Số điện thoại; Email; Địa chỉ kinh doanh; Mã số thuế/Giấy phép kinh doanh (nếu có).</p>
-      <p>Khách hàng cam kết thông tin cung cấp là chính xác, trung thực và tự chịu trách nhiệm về tính xác thực của thông tin đã cung cấp.</p>
-
-      <h4>3.2. Bảo mật tài khoản</h4>
-      <p>Khách hàng có trách nhiệm bảo mật thông tin đăng nhập và không chia sẻ tài khoản cho bên thứ ba. Mọi giao dịch phát sinh từ tài khoản của khách hàng đều được xem là do khách hàng thực hiện.</p>
-
-      <h4>3.3. Đình chỉ và chấm dứt tài khoản</h4>
-      <p>banthuocsi.vn có quyền tạm đình chỉ hoặc chấm dứt tài khoản của khách hàng trong các trường hợp: cung cấp thông tin không chính xác; vi phạm quy định mua hàng, thanh toán; có hành vi gian lận, lừa đảo; vi phạm pháp luật hoặc quy định của banthuocsi.vn.</p>
-
-      <h3>4. Chính sách đặt hàng</h3>
-      <p>Khách hàng có thể đặt hàng trực tuyến thông qua website banthuocsi.vn 24/7. Đơn hàng được xác nhận khi khách hàng hoàn tất quy trình đặt hàng và nhận được thông báo xác nhận qua email hoặc tin nhắn SMS.</p>
-      <p>banthuocsi.vn có quyền từ chối hoặc hủy bỏ đơn hàng trong các trường hợp: sản phẩm hết hàng; thông tin khách hàng không chính xác hoặc không đầy đủ; có dấu hiệu gian lận; sản phẩm bị thu hồi hoặc cấm lưu hành theo quy định pháp luật.</p>
-
-      <h3>5. Chính sách giá và thanh toán</h3>
-      <p>Tất cả giá sản phẩm hiển thị trên website đã bao gồm thuế GTGT (nếu có) và được niêm yết bằng Đồng Việt Nam (VNĐ). Giá sản phẩm có thể thay đổi theo từng thời điểm mà không cần báo trước. Đối với đơn hàng đã được xác nhận, giá áp dụng là giá tại thời điểm đặt hàng.</p>
-
-      <h4>5.1. Phương thức thanh toán</h4>
-      <ul>
-        <li>Thanh toán khi nhận hàng (COD) — áp dụng cho đơn hàng dưới 50 triệu đồng;</li>
-        <li>Chuyển khoản ngân hàng — Ngân hàng Vietcombank, chủ TK: NGUYEN NGOC KIM NGAN, số TK: 0071000921655;</li>
-        <li>Ví điện tử MoMo — SĐT: 096.770.5287, chủ TK: NGUYEN NGOC KIM NGAN.</li>
-      </ul>
-      <p>Đối với phương thức chuyển khoản, khách hàng vui lòng ghi rõ nội dung chuyển tiền là mã đơn hàng hoặc số điện thoại đặt hàng để được xử lý nhanh chóng.</p>
-
-      <h3>6. Chính sách giao hàng và vận chuyển</h3>
-      <p>banthuocsi.vn cung cấp dịch vụ giao hàng thông qua các đơn vị vận chuyển liên kết.</p>
-
-      <h4>6.1. Phạm vi giao hàng</h4>
-      <p>Giao hàng trên phạm vi toàn quốc. Thời gian giao hàng dự kiến: Nội thành TP.HCM 2-4 giờ; Miền Nam 1-2 ngày; Miền Trung 2-3 ngày; Miền Bắc 3-5 ngày.</p>
-
-      <h4>6.2. Phí vận chuyển</h4>
-      <p>Miễn phí vận chuyển cho đơn hàng từ 500.000 VNĐ. Đơn hàng dưới 500.000 VNĐ tính phí theo bảng giá đơn vị vận chuyển. Phí vận chuyển sẽ được hiển thị rõ ràng trước khi khách hàng xác nhận đặt hàng.</p>
-
-      <h4>6.3. Kiểm tra hàng khi nhận</h4>
-      <p>Khách hàng có quyền kiểm tra hàng hóa trước khi ký nhận. Nếu phát hiện sản phẩm bị hư hỏng, sai quy cách, hoặc không đúng chủng loại, khách hàng có quyền từ chối nhận hàng và yêu cầu đổi trả.</p>
-
-      <h3>7. Chính sách hủy đơn hàng</h3>
-      <p>Khách hàng có thể yêu cầu hủy đơn hàng trong các trường hợp sau: đơn hàng chưa được xác nhận (trạng thái PENDING) — hủy miễn phí; đơn hàng đã xác nhận nhưng chưa giao (CONFIRMED) — có thể yêu cầu hủy, phí xử lý 10.000 VNĐ/đơn (nếu có).</p>
-      <p>Sau khi đơn hàng đã được bàn giao cho đơn vị vận chuyển (SHIPPING), không thể hủy đơn. Khách hàng vui lòng từ chối nhận hàng khi shipper giao đến.</p>
-
-      <h3>8. Chính sách đổi trả và hoàn tiền</h3>
-      <h4>8.1. Điều kiện đổi trả</h4>
-      <p>Sản phẩm được đổi trả trong vòng 7 ngày kể từ ngày nhận hàng với điều kiện: sản phẩm còn nguyên vẹn, chưa qua sử dụng, còn nguyên tem niêm phong; sản phẩm bị lỗi từ nhà sản xuất; sản phẩm giao sai so với đơn đặt hàng; sản phẩm hết hạn sử dụng hoặc cận date (dưới 6 tháng).</p>
-
-      <h4>8.2. Quy trình đổi trả</h4>
-      <p>Khách hàng liên hệ hotline 096.770.5287 hoặc email ngockimnganpharm@gmail.com để thông báo yêu cầu đổi trả. Cung cấp thông tin đơn hàng, hình ảnh sản phẩm và lý do đổi trả. Sau khi xác nhận, khách hàng gửi sản phẩm về địa chỉ: 118/127C/27 Phan Huy Ích, Phường Tân Sơn, TP. Hồ Chí Minh. Chi phí vận chuyển đổi trả do lỗi từ banthuocsi.vn sẽ được chúng tôi thanh toán lại.</p>
-
-      <h4>8.3. Hoàn tiền</h4>
-      <p>Hoàn tiền được thực hiện bằng chuyển khoản ngân hàng trong vòng 5-7 ngày làm việc sau khi nhận được sản phẩm trả về và xác nhận đủ điều kiện hoàn tiền.</p>
-
-      <h3>9. Chính sách bảo mật thông tin</h3>
-      <h4>9.1. Thu thập thông tin</h4>
-      <p>banthuocsi.vn thu thập các thông tin cá nhân cần thiết phục vụ cho việc xử lý đơn hàng, giao hàng và hỗ trợ khách hàng. Thông tin thu thập bao gồm: họ tên, số điện thoại, email, địa chỉ giao hàng, thông tin doanh nghiệp (nếu có).</p>
-
-      <h4>9.2. Mục đích sử dụng thông tin</h4>
-      <p>Xử lý đơn hàng và giao hàng; liên lạc, hỗ trợ khách hàng; thông báo khuyến mãi, chương trình ưu đãi (nếu khách hàng đồng ý); tuân thủ các yêu cầu pháp luật.</p>
-
-      <h4>9.3. Bảo vệ thông tin</h4>
-      <p>Thông tin khách hàng được bảo vệ bằng các biện pháp kỹ thuật và tổ chức phù hợp. Chúng tôi không bán, chia sẻ hoặc trao đổi thông tin cá nhân của khách hàng cho bên thứ ba, trừ trường hợp: được khách hàng đồng ý; yêu cầu từ cơ quan nhà nước có thẩm quyền; đối tác vận chuyển (chỉ cung cấp thông tin cần thiết để giao hàng).</p>
-
-      <h3>10. Chính sách xử lý khiếu nại</h3>
-      <p>Mọi khiếu nại, thắc mắc của khách hàng sẽ được tiếp nhận và xử lý trong vòng 48 giờ làm việc. Khách hàng có thể gửi khiếu nại qua các kênh: Hotline 096.770.5287; Email ngockimnganpharm@gmail.com.</p>
-
-      <h3>11. Sở hữu trí tuệ</h3>
-      <p>Mọi nội dung trên website banthuocsi.vn bao gồm nhưng không giới hạn: hình ảnh, logo, văn bản, video, giao diện, mã nguồn... đều thuộc quyền sở hữu của Công ty TNHH Ngọc Kim Ngân hoặc các đối tác đã cấp phép. Nghiêm cấm sao chép, sử dụng hoặc phân phối dưới bất kỳ hình thức nào khi chưa có sự đồng ý bằng văn bản.</p>
-
-      <h3>12. Giới hạn trách nhiệm</h3>
-      <p>Công ty TNHH Ngọc Kim Ngân không chịu trách nhiệm đối với việc sử dụng sản phẩm không đúng hướng dẫn, chỉ định của nhà sản xuất hoặc không tuân thủ quy định về bảo quản. Chúng tôi không chịu trách nhiệm về tính liên tục của website trong các trường hợp bất khả kháng như thiên tai, hỏa hoạn, chiến tranh, sự cố kỹ thuật ngoài tầm kiểm soát.</p>
-
-      <h3>13. Điều khoản chung</h3>
-      <p>banthuocsi.vn có quyền sửa đổi, bổ sung các điều khoản này bất kỳ lúc nào. Phiên bản cập nhật sẽ được đăng tải trên website và có hiệu lực ngay khi đăng tải. Trong trường hợp có tranh chấp phát sinh, hai bên sẽ ưu tiên giải quyết thông qua thương lượng, hòa giải. Trường hợp không thể giải quyết, vụ việc sẽ được đưa ra Tòa án nhân dân có thẩm quyền tại TP. Hồ Chí Minh.</p>
-
-      <hr className="my-8" />
-
-      <h2>CHÍNH SÁCH BẢO MẬT</h2>
-      <p>Chính sách bảo mật này mô tả cách banthuocsi.vn thu thập, sử dụng, lưu trữ và bảo vệ thông tin cá nhân của khách hàng khi truy cập và sử dụng website.</p>
-
-      <h3>Các loại thông tin thu thập</h3>
-      <ul>
-        <li>Thông tin cá nhân: họ tên, số điện thoại, email, địa chỉ giao hàng;</li>
-        <li>Thông tin doanh nghiệp: tên doanh nghiệp, mã số thuế, giấy phép kinh doanh;</li>
-        <li>Thông tin giao dịch: lịch sử đặt hàng, sản phẩm đã mua, phương thức thanh toán;</li>
-        <li>Thông tin kỹ thuật: địa chỉ IP, loại trình duyệt, thời gian truy cập.</li>
-      </ul>
-
-      <h3>Thời gian lưu trữ</h3>
-      <p>Thông tin cá nhân của khách hàng được lưu trữ trong suốt thời gian tài khoản hoạt động và ít nhất 2 năm sau lần giao dịch cuối cùng, trừ khi có yêu cầu khác từ cơ quan nhà nước có thẩm quyền.</p>
-
-      <h3>Quyền của khách hàng</h3>
-      <p>Khách hàng có quyền: yêu cầu truy cập và chỉnh sửa thông tin cá nhân; yêu cầu xóa tài khoản và dữ liệu liên quan; từ chối nhận thông tin quảng cáo, khuyến mãi; khiếu nại về việc xử lý dữ liệu cá nhân.</p>
-
-      <h3>Cookies và theo dõi</h3>
-      <p>Website có thể sử dụng cookies để cải thiện trải nghiệm người dùng và phân tích lưu lượng truy cập. Khách hàng có thể tắt cookies trong cài đặt trình duyệt, tuy nhiên một số tính năng của website có thể không hoạt động đầy đủ.</p>
-
-      <h3>Liên hệ</h3>
-      <p>Mọi thắc mắc về chính sách bảo mật, vui lòng liên hệ: Hotline 096.770.5287; Email ngockimnganpharm@gmail.com; Địa chỉ 118/127C/27 Phan Huy Ích, Phường Tân Sơn, TP. Hồ Chí Minh.</p>
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-200">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-4 px-6 py-5 text-left hover:bg-gray-50/50 transition-colors"
+      >
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${open ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-500'}`}>
+          {section.icon}
+        </div>
+        <h3 className={`text-lg font-bold flex-1 transition-colors ${open ? 'text-teal-700' : 'text-gray-800'}`}>
+          {section.title}
+        </h3>
+        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      <div className={`overflow-hidden transition-all duration-300 ${open ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className="px-6 pb-6 pt-0">
+          <div className="pt-4 border-t border-gray-100">
+            {section.content}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
