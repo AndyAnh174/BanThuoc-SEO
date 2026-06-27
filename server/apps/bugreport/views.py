@@ -141,7 +141,7 @@ class SubmitBugReportView(APIView):
                     subject=f'[Bug Report] {title}',
                     body=html_message,
                     from_email=settings.DEFAULT_FROM_EMAIL,
-                    to=['hovietanh147@gmail.com'],
+                    to=['banthuocsi.vn@gmail.com'],
                 )
                 email.content_subtype = 'html'
                 email.send(fail_silently=False)

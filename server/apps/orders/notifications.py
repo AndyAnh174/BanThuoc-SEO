@@ -9,11 +9,9 @@ from django.utils.html import strip_tags
 
 
 def send_order_confirmation(order):
-    """Send order confirmation email after successful order creation."""
-    if not order.email and not (order.user and order.user.email):
-        return
-
-    recipient = order.email or order.user.email
+    """Send order confirmation email to customer + admin notification."""
+    admin_email = getattr(settings, 'ADMIN_EMAIL', 'banthuocsi.vn@gmail.com')
+    recipient = order.email or (order.user.email if order.user else None)
 
     def _send():
         try:
@@ -21,13 +19,25 @@ def send_order_confirmation(order):
             html_message = render_to_string('emails/order_confirmation.html', context)
             plain_message = strip_tags(html_message)
 
+            # Send to customer
+            if recipient:
+                send_mail(
+                    subject=f"BanThuoc - Xac nhan don hang #{order.id}",
+                    message=plain_message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[recipient],
+                    html_message=html_message,
+                    fail_silently=False,
+                )
+
+            # Send admin notification
             send_mail(
-                subject=f"BanThuoc - Xac nhan don hang #{order.id}",
+                subject=f"[Admin] Don hang moi #{order.id} - {order.full_name} - {order.phone_number}",
                 message=plain_message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[recipient],
+                recipient_list=[admin_email],
                 html_message=html_message,
-                fail_silently=False,
+                fail_silently=True,
             )
         except Exception as e:
             print(f"Failed to send order confirmation email: {e}")
