@@ -85,7 +85,7 @@ class AdminUserCreateSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'email', 'password', 'password_confirm', 'full_name', 'phone', 'role', 'status']
         extra_kwargs = {
-            'email': {'required': True},
+            'email': {'required': False, 'allow_blank': True},
             'role': {'required': True},
             'status': {'required': False, 'default': User.Status.ACTIVE},
         }
@@ -96,6 +96,8 @@ class AdminUserCreateSerializer(serializers.ModelSerializer):
         return data
     
     def validate_email(self, value):
+        if not value:
+            return value
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("Email đã được sử dụng.")
         return value
@@ -108,11 +110,17 @@ class AdminUserCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password_confirm')
         password = validated_data.pop('password')
-        
+
+        # Use phone as username if email is empty
+        if not validated_data.get('email'):
+            validated_data['email'] = ''
+        if not validated_data.get('username'):
+            validated_data['username'] = validated_data.get('phone') or validated_data.get('email', 'user')
+
         # Set default status to ACTIVE for admin-created users
         if 'status' not in validated_data:
             validated_data['status'] = User.Status.ACTIVE
-        
+
         # Set is_active based on status
         validated_data['is_active'] = validated_data.get('status') == User.Status.ACTIVE
 
@@ -139,6 +147,8 @@ class AdminUserUpdateSerializer(serializers.ModelSerializer):
         }
     
     def validate_email(self, value):
+        if not value:
+            return value
         user = self.instance
         if User.objects.filter(email=value).exclude(id=user.id).exists():
             raise serializers.ValidationError("Email đã được sử dụng.")

@@ -17,7 +17,7 @@ class RegisterB2BSerializer(serializers.Serializer):
     # User fields
     full_name = serializers.CharField(max_length=255)
     phone = serializers.CharField(max_length=20)
-    email = serializers.EmailField()
+    email = serializers.EmailField(required=False, allow_blank=True)
     password = serializers.CharField(write_only=True, style={'input_type': 'password'})
     confirm_password = serializers.CharField(write_only=True, style={'input_type': 'password'})
 
@@ -43,6 +43,8 @@ class RegisterB2BSerializer(serializers.Serializer):
         return value
 
     def validate_email(self, value):
+        if not value:
+            return value
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("This email is already registered.")
         return value
@@ -68,9 +70,10 @@ class RegisterB2BSerializer(serializers.Serializer):
         validated_data.pop('confirm_password')
         license_files = validated_data.pop('license_files', []) or []
 
+        username = validated_data['email'] if validated_data.get('email') else validated_data['phone']
         user_data = {
-            'username': validated_data['email'],
-            'email': validated_data['email'],
+            'username': username,
+            'email': validated_data.get('email', ''),
             'full_name': validated_data['full_name'],
             'phone': validated_data['phone'],
             'role': User.Role.CUSTOMER,
