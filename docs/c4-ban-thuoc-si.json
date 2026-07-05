@@ -1,0 +1,208 @@
+{
+  "title": "BanThuocSi - NKN Pharma",
+  "levels": [
+    {
+      "name": "System Context",
+      "elements": [
+        {
+          "id": "customer",
+          "type": "person",
+          "label": "Nhà thuốc / Phòng khám",
+          "desc": "Bác sĩ, dược sĩ, chủ nhà thuốc, doanh nghiệp dược"
+        },
+        {
+          "id": "admin",
+          "type": "person",
+          "label": "Quản trị viên",
+          "desc": "Nhân viên NKN Pharma quản lý hệ thống"
+        },
+        {
+          "id": "platform",
+          "type": "system",
+          "label": "BanThuocSi Platform",
+          "desc": "Sàn dược phẩm sỉ B2B",
+          "children": "Containers"
+        },
+        {
+          "id": "ghn",
+          "type": "external",
+          "label": "GHN",
+          "tech": "Giao Hàng Nhanh",
+          "desc": "Đơn vị vận chuyển"
+        },
+        {
+          "id": "vtp",
+          "type": "external",
+          "label": "Viettel Post",
+          "tech": "Viettel Post",
+          "desc": "Đơn vị vận chuyển"
+        },
+        {
+          "id": "email-sys",
+          "type": "external",
+          "label": "Email System",
+          "tech": "Gmail SMTP",
+          "desc": "Gửi email xác nhận đơn hàng, thông báo"
+        }
+      ],
+      "relations": [
+        {"from": "customer", "to": "platform", "label": "Duyệt web, đặt hàng"},
+        {"from": "admin", "to": "platform", "label": "Quản lý sản phẩm, đơn hàng, user"},
+        {"from": "platform", "to": "ghn", "label": "Tạo đơn giao hàng"},
+        {"from": "platform", "to": "vtp", "label": "Tạo đơn giao hàng"},
+        {"from": "platform", "to": "email-sys", "label": "Gửi email xác nhận"}
+      ]
+    },
+    {
+      "name": "Containers",
+      "elements": [
+        {
+          "id": "nginx",
+          "type": "container",
+          "label": "Nginx Reverse Proxy",
+          "tech": "Nginx 1.22",
+          "desc": "Route requests, SSL termination, static caching"
+        },
+        {
+          "id": "frontend",
+          "type": "container",
+          "label": "Next.js Frontend",
+          "tech": "Next.js 16 + TypeScript + Tailwind",
+          "desc": "Server-side rendering, SEO, admin dashboard, checkout flow"
+        },
+        {
+          "id": "backend",
+          "type": "container",
+          "label": "Django Backend API",
+          "tech": "Django 6 + DRF + Python 3.13",
+          "desc": "REST API, auth, business logic, shipping integration",
+          "children": "Components"
+        },
+        {
+          "id": "postgres",
+          "type": "database",
+          "label": "PostgreSQL",
+          "tech": "PostgreSQL 15",
+          "desc": "User data, products, orders, vouchers, blog posts"
+        },
+        {
+          "id": "redis",
+          "type": "database",
+          "label": "Redis",
+          "tech": "Redis 7",
+          "desc": "Session cache, rate limiting, task queue"
+        },
+        {
+          "id": "minio",
+          "type": "container",
+          "label": "MinIO Object Storage",
+          "tech": "MinIO S3-compatible",
+          "desc": "Product images, banners, business licenses"
+        },
+        {
+          "id": "elasticsearch",
+          "type": "container",
+          "label": "Elasticsearch",
+          "tech": "Elasticsearch",
+          "desc": "Full-text product search, suggestions"
+        }
+      ],
+      "relations": [
+        {"from": "nginx", "to": "frontend", "label": "Proxy /"},
+        {"from": "nginx", "to": "backend", "label": "Proxy /api/"},
+        {"from": "nginx", "to": "minio", "label": "Proxy /minio/"},
+        {"from": "frontend", "to": "backend", "label": "REST API calls"},
+        {"from": "backend", "to": "postgres", "label": "Read/Write"},
+        {"from": "backend", "to": "redis", "label": "Cache & Rate Limit"},
+        {"from": "backend", "to": "minio", "label": "Upload/Download files"},
+        {"from": "backend", "to": "elasticsearch", "label": "Index & Search"},
+        {"from": "frontend", "to": "minio", "label": "Direct image access"}
+      ]
+    },
+    {
+      "name": "Components",
+      "elements": [
+        {
+          "id": "comp-users",
+          "type": "component",
+          "label": "User Management",
+          "tech": "JWT SimpleJWT",
+          "desc": "Register, login, profile, addresses, loyalty points, email verify"
+        },
+        {
+          "id": "comp-products",
+          "type": "component",
+          "label": "Product Catalog",
+          "tech": "Django ORM + Elasticsearch",
+          "desc": "CRUD products, categories, manufacturers, product types, images, search"
+        },
+        {
+          "id": "comp-orders",
+          "type": "component",
+          "label": "Order Management",
+          "tech": "Transaction Atomic + Signals",
+          "desc": "Checkout, order lifecycle, cancel/return, invoice PDF, email notifications"
+        },
+        {
+          "id": "comp-shipping",
+          "type": "component",
+          "label": "Shipping Integration",
+          "tech": "GHN API + ViettelPost API",
+          "desc": "Address APIs, fee calculation, create shipment, cancel, print labels, webhook"
+        },
+        {
+          "id": "comp-vouchers",
+          "type": "component",
+          "label": "Voucher System",
+          "tech": "VoucherValidator",
+          "desc": "Create/apply vouchers (% or fixed), usage limits, min order, expiry"
+        },
+        {
+          "id": "comp-flashsale",
+          "type": "component",
+          "label": "Flash Sale Engine",
+          "tech": "Session + Items",
+          "desc": "Time-limited sales, pricing, stock tracking, countdown timer"
+        },
+        {
+          "id": "comp-blog",
+          "type": "component",
+          "label": "Blog / Content",
+          "tech": "EditorJS + OG Image Generator",
+          "desc": "Rich text blog posts, tags, views tracking, SEO JSON-LD, OG images"
+        },
+        {
+          "id": "comp-banners",
+          "type": "component",
+          "label": "Banner & Promo",
+          "tech": "Hero/Row/Promo/Popup",
+          "desc": "Homepage banners, popup ads, scheduling, image upload"
+        },
+        {
+          "id": "comp-reviews",
+          "type": "component",
+          "label": "Product Reviews",
+          "tech": "Star rating + moderation",
+          "desc": "Customer reviews, admin moderation, product stats"
+        },
+        {
+          "id": "comp-files",
+          "type": "component",
+          "label": "File Upload",
+          "tech": "MinIO presigned URLs",
+          "desc": "Upload business licenses, product images, banners"
+        }
+      ],
+      "relations": [
+        {"from": "comp-orders", "to": "comp-vouchers", "label": "Apply discount"},
+        {"from": "comp-orders", "to": "comp-shipping", "label": "Create shipment"},
+        {"from": "comp-products", "to": "comp-reviews", "label": "Product ratings"},
+        {"from": "comp-products", "to": "comp-flashsale", "label": "Flash sale products"},
+        {"from": "comp-users", "to": "comp-orders", "label": "User orders"},
+        {"from": "comp-users", "to": "comp-files", "label": "Upload documents"},
+        {"from": "comp-banners", "to": "comp-files", "label": "Upload images"},
+        {"from": "comp-blog", "to": "comp-files", "label": "OG image gen"}
+      ]
+    }
+  ]
+}
