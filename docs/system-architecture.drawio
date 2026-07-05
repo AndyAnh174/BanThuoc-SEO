@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" pages="1">
+  <diagram name="BanThuocSi System Architecture" id="arch">
+    <mxGraphModel dx="1600" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== EXTERNAL ZONE ===== -->
+        <mxCell id="zone-external" value="External / Internet" style="swimlane;startSize=25;html=1;whiteSpace=wrap;fontSize=13;fontStyle=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="320" height="820" as="geometry" />
+        </mxCell>
+
+        <!-- Users -->
+        <mxCell id="ext-users" value="" style="shape=mxgraph.c4.person2;html=1;whiteSpace=wrap;fontSize=11;fontColor=#ffffff;align=center;fillColor=#083F75;strokeColor=#06315C;" vertex="1" parent="zone-external">
+          <mxGeometry x="60" y="50" width="200" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="ext-users-label" value="Khách hàng&#xa;Nhà thuốc, Phòng khám" style="text;html=1;whiteSpace=wrap;fontSize=11;fontColor=#333333;align=center;" vertex="1" parent="zone-external">
+          <mxGeometry x="60" y="215" width="200" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Admin -->
+        <mxCell id="ext-admin" value="" style="shape=mxgraph.c4.person2;html=1;whiteSpace=wrap;fontSize=11;fontColor=#ffffff;align=center;fillColor=#083F75;strokeColor=#06315C;" vertex="1" parent="zone-external">
+          <mxGeometry x="60" y="270" width="200" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="ext-admin-label" value="Quản trị viên&#xa;NKN Pharma" style="text;html=1;whiteSpace=wrap;fontSize=11;fontColor=#333333;align=center;" vertex="1" parent="zone-external">
+          <mxGeometry x="60" y="435" width="200" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- GHN -->
+        <mxCell id="ext-ghn" value="" style="verticalLabelPosition=bottom;outlineConnect=0;align=center;dashed=0;html=1;verticalAlign=top;shape=mxgraph.pid.misc.box_truck;fillColor=#FF9800;strokeColor=#E65100;" vertex="1" parent="zone-external">
+          <mxGeometry x="100" y="520" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ext-ghn-label" value="GHN&#xa;Giao Hàng Nhanh" style="text;html=1;whiteSpace=wrap;fontSize=11;fontColor=#333333;align=center;" vertex="1" parent="zone-external">
+          <mxGeometry x="70" y="605" width="180" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- VTP -->
+        <mxCell id="ext-vtp" value="" style="verticalLabelPosition=bottom;outlineConnect=0;align=center;dashed=0;html=1;verticalAlign=top;shape=mxgraph.pid.misc.box_truck;fillColor=#E53935;strokeColor=#B71C1C;" vertex="1" parent="zone-external">
+          <mxGeometry x="100" y="660" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ext-vtp-label" value="Viettel Post" style="text;html=1;whiteSpace=wrap;fontSize=11;fontColor=#333333;align=center;" vertex="1" parent="zone-external">
+          <mxGeometry x="70" y="745" width="180" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- ===== K8s SERVER ZONE ===== -->
+        <mxCell id="zone-k8s" value="Kubernetes Cluster (k3s) — 222.253.80.30" style="swimlane;startSize=25;html=1;whiteSpace=wrap;fontSize=13;fontStyle=1;fillColor=#E3F2FD;strokeColor=#1976D2;" vertex="1" parent="1">
+          <mxGeometry x="400" y="40" width="860" height="820" as="geometry" />
+        </mxCell>
+
+        <!-- ===== NGINX ===== -->
+        <mxCell id="svc-nginx" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.web_server;fillColor=#66BB6A;gradientColor=none;" vertex="1" parent="zone-k8s">
+          <mxGeometry x="40" y="50" width="60" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-nginx-label" value="Nginx&#xa;:443/:30080&#xa;Reverse Proxy + SSL" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#333;align=center;" vertex="1" parent="zone-k8s">
+          <mxGeometry x="15" y="125" width="110" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- ===== FRONTEND ===== -->
+        <mxCell id="svc-fe" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.application;fillColor=#42A5F5;gradientColor=none;" vertex="1" parent="zone-k8s">
+          <mxGeometry x="180" y="50" width="60" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-fe-label" value="Next.js + TS + Tailwind&#xa;:3000&#xa;SSR · SEO · Admin · Checkout" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#333;align=center;" vertex="1" parent="zone-k8s">
+          <mxGeometry x="140" y="125" width="140" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- ===== BACKEND ===== -->
+        <mxCell id="svc-be" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.application;fillColor=#AB47BC;gradientColor=none;" vertex="1" parent="zone-k8s">
+          <mxGeometry x="350" y="50" width="60" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-be-label" value="Django 6 + DRF + Python 3.13&#xa;:8000&#xa;REST API · Auth · Business Logic" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#333;align=center;" vertex="1" parent="zone-k8s">
+          <mxGeometry x="300" y="125" width="170" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- ===== DATABASES ZONE ===== -->
+        <mxCell id="zone-data" value="Data Layer" style="swimlane;startSize=20;html=1;whiteSpace=wrap;fontSize=11;fontStyle=1;fillColor=#FFF3E0;strokeColor=#E65100;dashed=1;" vertex="1" parent="zone-k8s">
+          <mxGeometry x="30" y="200" width="790" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- PostgreSQL -->
+        <mxCell id="db-pg" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.postgre_sql_instance;fillColor=#2E73B8;gradientColor=none;" vertex="1" parent="zone-data">
+          <mxGeometry x="30" y="40" width="60" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="db-pg-label" value="PostgreSQL 15&#xa;Users · Products&#xa;Orders · Vouchers" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#333;align=center;" vertex="1" parent="zone-data">
+          <mxGeometry x="10" y="120" width="100" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Redis -->
+        <mxCell id="db-redis" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.elasticache_node;fillColor=#D32F2F;gradientColor=none;" vertex="1" parent="zone-data">
+          <mxGeometry x="180" y="40" width="60" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="db-redis-label" value="Redis 7&#xa;Cache · Rate Limit&#xa;Session · Queue" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#333;align=center;" vertex="1" parent="zone-data">
+          <mxGeometry x="160" y="120" width="100" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- MinIO -->
+        <mxCell id="db-minio" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#4CAF50;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.bucket_with_objects;" vertex="1" parent="zone-data">
+          <mxGeometry x="320" y="35" width="75" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="db-minio-label" value="MinIO (S3)&#xa;Images · Banners&#xa;Licenses · Files" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#333;align=center;" vertex="1" parent="zone-data">
+          <mxGeometry x="305" y="120" width="110" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Elasticsearch -->
+        <mxCell id="db-es" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.elasticsearch_service;fillColor=#FF9800;gradientColor=none;" vertex="1" parent="zone-data">
+          <mxGeometry x="480" y="40" width="60" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="db-es-label" value="Elasticsearch&#xa;Full-Text Search&#xa;Product Suggestions" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#333;align=center;" vertex="1" parent="zone-data">
+          <mxGeometry x="455" y="120" width="115" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- ===== BACKEND MODULES ZONE ===== -->
+        <mxCell id="zone-modules" value="Backend Modules (Django Apps)" style="swimlane;startSize=20;html=1;whiteSpace=wrap;fontSize=11;fontStyle=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;dashed=1;" vertex="1" parent="zone-k8s">
+          <mxGeometry x="30" y="440" width="790" height="170" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod-users" value="Users&#xa;Auth" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fontSize=9;fillColor=#CE93D8;strokeColor=#7B1FA2;fontColor=#333;" vertex="1" parent="zone-modules">
+          <mxGeometry x="15" y="40" width="70" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-products" value="Products&#xa;Catalog" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fontSize=9;fillColor=#CE93D8;strokeColor=#7B1FA2;fontColor=#333;" vertex="1" parent="zone-modules">
+          <mxGeometry x="100" y="40" width="75" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-orders" value="Orders&#xa;Cart" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fontSize=9;fillColor=#CE93D8;strokeColor=#7B1FA2;fontColor=#333;" vertex="1" parent="zone-modules">
+          <mxGeometry x="190" y="40" width="75" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-shipping" value="Shipping&#xa;GHN+VTP" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fontSize=9;fillColor=#CE93D8;strokeColor=#7B1FA2;fontColor=#333;" vertex="1" parent="zone-modules">
+          <mxGeometry x="280" y="40" width="75" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-voucher" value="Vouchers" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fontSize=9;fillColor=#CE93D8;strokeColor=#7B1FA2;fontColor=#333;" vertex="1" parent="zone-modules">
+          <mxGeometry x="370" y="40" width="65" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-flash" value="Flash&#xa;Sale" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fontSize=9;fillColor=#CE93D8;strokeColor=#7B1FA2;fontColor=#333;" vertex="1" parent="zone-modules">
+          <mxGeometry x="450" y="40" width="65" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-blog" value="Blog" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fontSize=9;fillColor=#CE93D8;strokeColor=#7B1FA2;fontColor=#333;" vertex="1" parent="zone-modules">
+          <mxGeometry x="530" y="40" width="55" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-banner" value="Banners" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fontSize=9;fillColor=#CE93D8;strokeColor=#7B1FA2;fontColor=#333;" vertex="1" parent="zone-modules">
+          <mxGeometry x="600" y="40" width="65" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-review" value="Reviews" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fontSize=9;fillColor=#CE93D8;strokeColor=#7B1FA2;fontColor=#333;" vertex="1" parent="zone-modules">
+          <mxGeometry x="680" y="40" width="60" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-files" value="Files" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fontSize=9;fillColor=#CE93D8;strokeColor=#7B1FA2;fontColor=#333;" vertex="1" parent="zone-modules">
+          <mxGeometry x="15" y="105" width="55" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- ===== DEVOPS ZONE ===== -->
+        <mxCell id="zone-devops" value="CI/CD &amp; Monitoring" style="swimlane;startSize=20;html=1;whiteSpace=wrap;fontSize=11;fontStyle=1;fillColor=#E8F5E9;strokeColor=#2E7D32;dashed=1;" vertex="1" parent="zone-k8s">
+          <mxGeometry x="30" y="650" width="790" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- Docker -->
+        <mxCell id="ops-docker" value="" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=#2196F3;strokeColor=none;shape=mxgraph.alibaba_cloud.container;" vertex="1" parent="zone-devops">
+          <mxGeometry x="30" y="40" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ops-docker-label" value="Docker&#xa;Build + Push" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#333;align=center;" vertex="1" parent="zone-devops">
+          <mxGeometry x="15" y="100" width="90" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Jenkins -->
+        <mxCell id="ops-jenkins" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#D32F2F;shape=mxgraph.mscae.enterprise.application_server2;" vertex="1" parent="zone-devops">
+          <mxGeometry x="170" y="40" width="55" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ops-jenkins-label" value="Jenkins&#xa;CI/CD Pipeline" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#333;align=center;" vertex="1" parent="zone-devops">
+          <mxGeometry x="145" y="100" width="105" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- K8s -->
+        <mxCell id="ops-k8s" value="" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=#FF6A00;strokeColor=none;shape=mxgraph.alibaba_cloud.ask_ack_container_service_for_kubernetes;" vertex="1" parent="zone-devops">
+          <mxGeometry x="310" y="40" width="55" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="ops-k8s-label" value="Kubernetes&#xa;k3s Cluster" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#333;align=center;" vertex="1" parent="zone-devops">
+          <mxGeometry x="290" y="100" width="95" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Prometheus -->
+        <mxCell id="ops-prom" value="" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=#FF6A00;strokeColor=none;shape=mxgraph.alibaba_cloud.prometheus;" vertex="1" parent="zone-devops">
+          <mxGeometry x="450" y="40" width="55" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="ops-prom-label" value="Prometheus&#xa;Metrics" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#333;align=center;" vertex="1" parent="zone-devops">
+          <mxGeometry x="435" y="100" width="85" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Grafana -->
+        <mxCell id="ops-graf" value="" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/other/Azure_Monitor_Dashboard.svg;" vertex="1" parent="zone-devops">
+          <mxGeometry x="570" y="38" width="65" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ops-graf-label" value="Grafana&#xa;Dashboards" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#333;align=center;" vertex="1" parent="zone-devops">
+          <mxGeometry x="555" y="100" width="95" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- GitHub -->
+        <mxCell id="ops-gh" value="" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fontSize=14;fontStyle=1;fillColor=#24292E;strokeColor=#1B1F23;fontColor=#ffffff;" vertex="1" parent="zone-devops">
+          <mxGeometry x="690" y="40" width="70" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ops-gh-label" value="GitHub&#xa;Source" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#333;align=center;" vertex="1" parent="zone-devops">
+          <mxGeometry x="680" y="100" width="90" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ===== RELATIONSHIPS ===== -->
+        <!-- External to Nginx -->
+        <mxCell id="r1" value="HTTPS" style="endArrow=blockThin;endFill=1;endSize=8;html=1;fontSize=10;fontColor=#333;strokeColor=#828282;strokeWidth=2;labelBackgroundColor=#ffffff;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360" y="120" as="sourcePoint" />
+            <mxPoint x="440" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Nginx to FE/BE -->
+        <mxCell id="r2" value="/*" style="endArrow=blockThin;endFill=1;endSize=8;html=1;fontSize=10;fontColor=#333;strokeColor=#828282;labelBackgroundColor=#ffffff;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="470" y="80" as="sourcePoint" />
+            <mxPoint x="580" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r3" value="/api/*" style="endArrow=blockThin;endFill=1;endSize=8;html=1;fontSize=10;fontColor=#333;strokeColor=#828282;labelBackgroundColor=#ffffff;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="470" y="110" as="sourcePoint" />
+            <mxPoint x="750" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- FE to BE -->
+        <mxCell id="r4" value="REST API" style="endArrow=blockThin;endFill=1;endSize=8;html=1;fontSize=10;fontColor=#333;strokeColor=#1565C0;strokeWidth=2;labelBackgroundColor=#ffffff;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="640" y="125" as="sourcePoint" />
+            <mxPoint x="750" y="125" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- BE to Data Layer -->
+        <mxCell id="r5" value="ORM" style="endArrow=blockThin;endFill=1;endSize=8;html=1;fontSize=10;fontColor=#333;strokeColor=#828282;labelBackgroundColor=#ffffff;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="750" y="170" as="sourcePoint" />
+            <mxPoint x="460" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- BE to BE -->
+        <mxCell id="r6" value="Cache" style="endArrow=blockThin;endFill=1;endSize=8;html=1;fontSize=10;fontColor=#333;strokeColor=#828282;labelBackgroundColor=#ffffff;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="780" y="170" as="sourcePoint" />
+            <mxPoint x="610" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- BE to MinIO -->
+        <mxCell id="r7" value="Upload" style="endArrow=blockThin;endFill=1;endSize=8;html=1;fontSize=10;fontColor=#333;strokeColor=#828282;labelBackgroundColor=#ffffff;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="780" y="200" as="sourcePoint" />
+            <mxPoint x="755" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- BE to ES -->
+        <mxCell id="r8" value="Index" style="endArrow=blockThin;endFill=1;endSize=8;html=1;fontSize=10;fontColor=#333;strokeColor=#828282;labelBackgroundColor=#ffffff;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="170" as="sourcePoint" />
+            <mxPoint x="920" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- BE to GHN/VTP -->
+        <mxCell id="r9" value="Create Shipment" style="endArrow=blockThin;endFill=1;endSize=8;html=1;fontSize=10;fontColor=#333;strokeColor=#FF5722;strokeWidth=2;labelBackgroundColor=#ffffff;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="820" y="120" as="sourcePoint" />
+            <mxPoint x="420" y="560" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="370" y="120" />
+              <mxPoint x="370" y="560" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Jenkins pipeline -->
+        <mxCell id="r10" value="Webhook → Build → Deploy" style="endArrow=blockThin;endFill=1;endSize=8;html=1;fontSize=10;fontColor=#333;strokeColor=#4CAF50;strokeWidth=2;labelBackgroundColor=#ffffff;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="690" as="sourcePoint" />
+            <mxPoint x="740" y="690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ===== LEGEND ===== -->
+        <mxCell id="legend-title" value="BanThuocSi.vn — System Architecture Diagram" style="text;html=1;whiteSpace=wrap;fontSize=22;fontStyle=1;fontColor=#1565C0;align=center;" vertex="1" parent="1">
+          <mxGeometry x="430" y="885" width="500" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
