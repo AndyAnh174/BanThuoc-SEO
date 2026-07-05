@@ -160,14 +160,13 @@ export function UserModal({ open, onClose, user }: UserModalProps) {
                     
                     {/* Email */}
                     <div className="space-y-2">
-                        <Label htmlFor="email">Email *</Label>
+                        <Label htmlFor="email">Email</Label>
                         <Input
                             id="email"
                             type="email"
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            required
-                            placeholder="Nhập email"
+                            placeholder="Nhập email (không bắt buộc)"
                         />
                     </div>
                     
