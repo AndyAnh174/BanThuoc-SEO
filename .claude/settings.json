@@ -17,6 +17,7 @@
     "iac-terraform@devops-skills": true,
     "engineering-skills@claude-code-skills": true,
     "claude-api@anthropic-agent-skills": true,
-    "engineering-advanced-skills@claude-code-skills": true
+    "engineering-advanced-skills@claude-code-skills": true,
+    "vibe-hnindex@vibe-hnindex-marketplace": true
   }
 }

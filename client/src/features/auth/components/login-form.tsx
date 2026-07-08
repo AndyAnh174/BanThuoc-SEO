@@ -103,6 +103,8 @@ export function LoginForm() {
 
                 <div className="relative z-10 text-center mt-8 md:mt-auto">
                     <p className="mb-4 text-green-100 font-medium">Chưa có tài khoản?</p>
+                    {/* Register temporarily hidden */}
+                    {/*
                     <Button
                         variant="outline"
                         className="w-full rounded-full border-2 border-white bg-transparent text-white hover:bg-white hover:text-green-700 h-12 text-base transition-all duration-300 font-semibold"
@@ -112,6 +114,8 @@ export function LoginForm() {
                             Đăng ký ngay
                         </Link>
                     </Button>
+                    */}
+                    <p className="text-green-200/70 text-sm text-center">Vui lòng liên hệ admin để được cấp tài khoản.</p>
                 </div>
             </div>
 

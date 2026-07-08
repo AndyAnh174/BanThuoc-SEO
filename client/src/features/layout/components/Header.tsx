@@ -1,26 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { getCategories } from '@/src/features/products';
+import { getCategories, searchProducts } from '@/src/features/products';
+import type { Product } from '@/src/features/products';
+import { formatCurrency } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Search,
-  ShoppingCart,
-  User,
   Menu,
   X,
   Phone,
@@ -29,10 +25,7 @@ import {
   Heart,
   Pill,
 } from 'lucide-react';
-import { useCartStore } from '@/src/features/cart/stores/cart.store';
 import { useAuthStore } from '@/src/features/auth/stores/auth.store';
-import { UserDropdownMenu } from './UserDropdownMenu';
-import { CartHoverContent } from '@/src/features/cart/components/CartHoverContent';
 import { getCategoryIcon } from '@/src/features/products/utils/category-icons';
 
 interface HeaderProps {
@@ -83,43 +76,76 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
 
   const maxVisibleCategories = isLargeScreen ? 8 : 5;
   
-  const { cart, fetchCart } = useCartStore();
   const { checkAuth } = useAuthStore();
-  const displayCount = cart ? cart.total_items : initialCount;
+
+  // Live search state
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Debounced live search
+  useEffect(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    if (!searchQuery || searchQuery.trim().length < 2) {
+      setSearchResults([]);
+      setShowResults(false);
+      return;
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const res = await searchProducts(searchQuery.trim(), { page_size: 8 });
+        if (res.data?.results) {
+          setSearchResults(res.data.results);
+          setShowResults(true);
+        }
+      } catch {
+        // Silently ignore search errors
+      } finally {
+        setIsSearching(false);
+      }
+    }, 350);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [searchQuery]);
+
+  // Click outside to close search results
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowResults(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   React.useEffect(() => {
     async function initData() {
         try {
             checkAuth();
-            await Promise.all([
-                // Fetch categories
-                (async () => {
-                   // ... logic ...
-                   const res = await getCategories({ active_only: true });
-                    if (res.data?.results) {
-                        setCategories(res.data.results);
-                    } else if (Array.isArray(res.data)) {
-                        setCategories(res.data);
-                    }
-                })(),
-                // Fetch cart only if authenticated
-                (async () => {
-                    const token = localStorage.getItem('accessToken');
-                    if (token) {
-                        try {
-                            await fetchCart();
-                        } catch (e) {
-                            // Ignore cart fetch error
-                        }
-                    }
-                })()
-            ]);
+            const res = await getCategories({ active_only: true });
+            if (res.data?.results) {
+                setCategories(res.data.results);
+            } else if (Array.isArray(res.data)) {
+                setCategories(res.data);
+            }
         } catch (error) {
             console.error("Failed to fetch initial data for header", error);
         }
     }
     initData();
-  }, [fetchCart, checkAuth]);
+  }, [checkAuth]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,17 +209,18 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
               </div>
             </Link>
 
-            {/* Search bar - Floating & Rounded */}
+            {/* Search bar - Floating & Rounded with Live Results */}
             <form
               onSubmit={handleSearch}
               className="hidden md:flex flex-1 max-w-2xl mx-auto"
             >
-              <div className="relative w-full group">
+              <div ref={searchRef} className="relative w-full group">
                 <Input
                   type="search"
                   placeholder="Tìm tên thuốc, bệnh lý, thực phẩm chức năng..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => { if (searchResults.length > 0) setShowResults(true); }}
                   className="w-full pr-14 pl-5 h-12 rounded-full border-gray-200 bg-gray-50/50 hover:bg-white hover:shadow-md hover:border-primary/30 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-300 text-sm"
                 />
                 <Button
@@ -203,6 +230,68 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                 >
                   <Search className="w-4 h-4 text-white" />
                 </Button>
+
+                {/* Live Search Results Dropdown */}
+                {showResults && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    {isSearching ? (
+                      <div className="flex items-center justify-center gap-2 py-8 text-gray-400">
+                        <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                        <span className="text-sm">Đang tìm kiếm...</span>
+                      </div>
+                    ) : searchResults.length > 0 ? (
+                      <>
+                        <div className="py-2 max-h-[420px] overflow-y-auto">
+                          {searchResults.map((product) => (
+                            <Link
+                              key={product.id}
+                              href={`/products/${product.slug}`}
+                              onClick={() => { setShowResults(false); setSearchQuery(''); }}
+                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50/80 transition-colors group/item"
+                            >
+                              <div className="w-12 h-12 rounded-lg border border-gray-100 bg-white flex items-center justify-center overflow-hidden shrink-0">
+                                {product.imageUrl ? (
+                                  <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain p-1" />
+                                ) : (
+                                  <Pill className="w-5 h-5 text-gray-300" />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 truncate group-hover/item:text-primary transition-colors">
+                                  {product.name}
+                                </p>
+                                <div className="flex items-center gap-2 mt-0.5">
+                                  <span className="text-sm font-bold text-primary">
+                                    {formatCurrency(Number(product.price))}
+                                  </span>
+                                  {product.salePrice && Number(product.salePrice) < Number(product.price) && (
+                                    <span className="text-xs text-gray-400 line-through">
+                                      {formatCurrency(Number(product.salePrice))}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <ChevronDown className="w-4 h-4 text-gray-300 -rotate-90 group-hover/item:text-primary group-hover/item:translate-x-0.5 transition-all shrink-0" />
+                            </Link>
+                          ))}
+                        </div>
+                        <Link
+                          href={`/products?search=${encodeURIComponent(searchQuery)}`}
+                          onClick={() => setShowResults(false)}
+                          className="flex items-center justify-center gap-2 py-3 text-sm font-semibold text-primary bg-primary/5 hover:bg-primary/10 border-t border-gray-100 transition-colors"
+                        >
+                          Xem tất cả kết quả cho &quot;{searchQuery}&quot;
+                          <Search className="w-3.5 h-3.5" />
+                        </Link>
+                      </>
+                    ) : (
+                      <div className="py-8 text-center text-sm text-gray-400">
+                        <Pill className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                        Không tìm thấy sản phẩm nào
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </form>
 
@@ -215,9 +304,8 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                 </Link>
               </Button>
 
-              {/* Cart */}
-              {/* Cart */}
-              <div className="relative group z-50">
+              {/* Cart - temporarily hidden */}
+              {/* <div className="relative group z-50">
                   <Button variant="ghost" size="icon" className="relative rounded-full w-10 h-10 hover:bg-primary/10 hover:text-primary transition-colors" asChild>
                     <Link href="/cart" className="relative">
                       <ShoppingCart className="w-5 h-5" />
@@ -228,15 +316,13 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                       )}
                     </Link>
                   </Button>
-
-                  {/* Hover Content */}
                   <div className="absolute top-full right-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right translate-y-2 group-hover:translate-y-0">
                       <CartHoverContent />
                   </div>
-              </div>
+              </div> */}
 
-              {/* User menu */}
-              <UserDropdownMenu />
+              {/* User menu - temporarily hidden */}
+              {/* <UserDropdownMenu /> */}
 
               {/* Mobile menu toggle */}
               <Button
@@ -509,9 +595,10 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                  <Link href="/auth/login" className="flex items-center justify-center h-10 rounded-lg border border-gray-200 font-medium text-sm text-gray-700">
                     Đăng nhập
                  </Link>
-                 <Link href="/auth/register" className="flex items-center justify-center h-10 rounded-lg bg-primary font-medium text-sm text-white">
+                 {/* Register temporarily hidden */}
+                 {/* <Link href="/auth/register" className="flex items-center justify-center h-10 rounded-lg bg-primary font-medium text-sm text-white">
                     Đăng ký
-                 </Link>
+                 </Link> */}
               </div>
             </ul>
           </nav>
