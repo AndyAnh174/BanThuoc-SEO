@@ -98,6 +98,10 @@ export const useAuthStore = create<AuthState>((set) => ({
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('accessToken', access);
                     localStorage.setItem('refreshToken', refresh);
+
+                    // Also set cookie so middleware can read it
+                    const maxAge = 86400; // 1 day
+                    document.cookie = `accessToken=${access}; path=/; max-age=${maxAge}; SameSite=Lax`;
                 }
 
                 toast.success("Đăng nhập thành công!");
@@ -130,6 +134,8 @@ export const useAuthStore = create<AuthState>((set) => ({
         if (typeof window !== 'undefined') {
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
+            // Clear cookie too
+            document.cookie = 'accessToken=; path=/; max-age=0';
         }
         set({ isAuthenticated: false });
         toast.info("Đã đăng xuất");

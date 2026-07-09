@@ -10,14 +10,41 @@ export const http = axios.create({
     withCredentials: true,
 });
 
+/** Get token — try cookie first (set by middleware/auth), fallback to localStorage */
+function getAccessToken(): string | null {
+    if (typeof window === 'undefined') return null;
+    // Try cookie (set by auth store on login, readable by middleware)
+    const match = document.cookie.match(/(?:^|;\s*)accessToken=([^;]*)/);
+    if (match) return match[1];
+    // Fallback to localStorage
+    return localStorage.getItem('accessToken');
+}
+
+function getRefreshToken(): string | null {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('refreshToken');
+}
+
+/** Store token in both localStorage and cookie */
+function storeAccessToken(token: string) {
+    localStorage.setItem('accessToken', token);
+    document.cookie = `accessToken=${token}; path=/; max-age=86400; SameSite=Lax`;
+}
+
+/** Clear all auth data */
+function clearAuth() {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    document.cookie = 'accessToken=; path=/; max-age=0';
+}
+
 // Attach access token to every request
 http.interceptors.request.use(
     (config) => {
-        if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('accessToken');
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
-            }
+        const token = getAccessToken();
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
     },
@@ -38,13 +65,8 @@ function addRefreshSubscriber(cb: (token: string) => void) {
 }
 
 function clearAuthAndRedirect() {
-    // Check if user was logged in BEFORE clearing tokens
-    const wasLoggedIn = !!(localStorage.getItem('accessToken') || localStorage.getItem('refreshToken'));
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-    // Only redirect users who were actually logged in (expired session)
-    // Guest users on public pages should not be redirected to login
+    const wasLoggedIn = !!(getAccessToken() || getRefreshToken());
+    clearAuth();
     if (wasLoggedIn && !window.location.pathname.startsWith('/auth')) {
         window.location.href = '/auth/login';
     }
@@ -63,7 +85,7 @@ http.interceptors.response.use(
             return Promise.reject(error);
         }
 
-        const refreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = getRefreshToken();
 
         // No refresh token -> go to login
         if (!refreshToken) {
@@ -92,7 +114,7 @@ http.interceptors.response.use(
             });
 
             const newAccess = data.access;
-            localStorage.setItem('accessToken', newAccess);
+            storeAccessToken(newAccess);
 
             // If backend rotates refresh tokens, save new one
             if (data.refresh) {
