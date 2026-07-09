@@ -16,11 +16,14 @@ title = "BanThuoc Gitleaks Config"
   paths = [
     '''Jenkinsfile''',
     '''CLAUDE.md''',
-    '''server/core/settings/.env.example''',
-    '''(?i)\.(?:jpg|gif|png|svg|ico|woff2?|ttf|eot)$'''
+    '''.env.example''',
+    '''k8s/01-secrets.yaml''',
+    '''server/staticfiles/''',
+    '''\.agent/skills/''',
+    '''(?i)\.(?:jpg|gif|png|svg|ico|woff2?|ttf|eot|min\.js)$'''
   ]
 
-  # Regex patterns to ignore (common test/example placeholders)
+  # Regex patterns to ignore
   regexes = [
     '''(?i)(example|test|sample|demo|placeholder|changeme|replace)'''
   ]
