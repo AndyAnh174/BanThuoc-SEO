@@ -14,6 +14,54 @@ BanThuoc-SEO is a B2B pharmaceutical e-commerce platform (banthuocsi.vn) for who
 - **Monitoring**: Prometheus + Grafana + kube-state-metrics
 - **Domain**: banthuocsi.vn (SSL via Let's Encrypt)
 
+## Coding Conventions (MUST FOLLOW)
+
+1. **Split files by domain** — mỗi domain/module 1 file riêng. Không dồn hết vào 1 file dài.
+   - ✅ `apis/auth.ts`, `apis/products.ts`, `apis/orders.ts` — mỗi file ~50-100 dòng
+   - ❌ 1 file `all-apis.ts` 1500 dòng
+2. **Feature-based structure** — code nằm trong `src/features/<ten-feature>/` gồm: `components/`, `api/`, `stores/`, `types/`, `utils/`
+3. **TypeScript type riêng** — `types/<domain>.types.ts`, không để type lẫn trong component
+4. **Giữ file ngắn** — nếu file > 300 dòng thì cân nhắc tách nhỏ
+
+## Development Tools
+
+### vibe-hnindex — Codebase Index & Search (MUST USE)
+Project is indexed at `banthuoc-client` (`D:\Freelance\BanThuoc-SEO\client`). After any file change, the watcher auto-reindexes.
+
+**🚫 BANNED for this project (use MCP tools instead):**
+| ❌ BANNED | ✅ MCP Tool |
+|---|---|
+| `grep` / `rg` / `git grep` | `search(query, project_name="banthuoc-client", stream=true)` |
+| `cat` / `Read` / `View` | `smart_context(project_name="banthuoc-client", file_path=...)` or `code_session(project_name="banthuoc-client", task=...)` |
+| `Glob` / `ls` / `find` | `search(project_name="banthuoc-client", file_pattern="src/**")` |
+| Multi-step manual `Edit` | `code_session(...)` → `code_apply(project_name="banthuoc-client", edits=[...], verify=true)` |
+
+**Key workflows:**
+- **Understand code**: `smart_context(project_name="banthuoc-client", file_path=..., task=...)`
+- **Make changes**: `code_session(project_name="banthuoc-client", task=...)` → gather context, then `code_apply(project_name="banthuoc-client", session_id=..., edits=[...])`
+- **Find by concept**: `search(query="...", project_name="banthuoc-client", mode="hybrid", stream=true)`
+- **Check impact**: `impact_analysis(project_name="banthuoc-client", file_path=..., depth=3)`
+
+### BanThuoc API MCP Server — API Tra Cứu Cho AI (`mcp/banthuoc-api-server/`)
+
+MCP server local (~125 endpoints từ Django backend) cho phép AI tra cứu API không cần Swagger.
+
+**Cài đặt (1 lần):**
+```bash
+cd mcp/banthuoc-api-server && npm install && npm run build
+```
+
+**Tools:**
+| Tool | Dùng khi |
+|------|----------|
+| `list_endpoints(tag?, method?)` | Muốn xem tất cả API, filter theo nhóm |
+| `get_endpoint(path, method?)` | Cần chi tiết params/body/response của 1 endpoint |
+| `search_api(query)` | Tìm API bằng keyword (vd: "login", "order", "voucher") |
+
+**Cấu trúc code:** `src/apis/` chia 14 file theo domain (auth.ts, products.ts, orders.ts, cart.ts, vouchers.ts, flash-sale.ts, blog.ts, shipping.ts, banners.ts, admin.ts, search.ts, reviews.ts, users.ts, files.ts). Khi backend thay đổi API → sửa file tương ứng → `npm run build`.
+
+**Đã config trong `.mcp.json`** — AI agent tự động load được.
+
 ## Infrastructure Architecture
 ```
 Internet -> Nginx (222.253.80.30:443) -> K8s Nginx Pod (192.168.1.76:30080) -> Services
