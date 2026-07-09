@@ -42,6 +42,21 @@ Project is indexed at `banthuoc-client` (`D:\Freelance\BanThuoc-SEO\client`). Af
 - **Find by concept**: `search(query="...", project_name="banthuoc-client", mode="hybrid", stream=true)`
 - **Check impact**: `impact_analysis(project_name="banthuoc-client", file_path=..., depth=3)`
 
+### Tavily — Web Search MCP (MUST USE for unknown knowledge)
+
+Khi gặp kiến thức, công nghệ, library, API bên thứ 3 không biết rõ → **dùng Tavily MCP để search web** thay vì đoán.
+
+**Tools:**
+| Tool | Dùng khi |
+|------|----------|
+| `tavily_search(query)` | Tìm nhanh thông tin, tin tức, docs |
+| `tavily_extract(urls)` | Lấy nội dung chi tiết từ URL cụ thể |
+| `tavily_crawl(url)` | Crawl toàn bộ site/docs |
+| `tavily_research(input)` | Nghiên cứu sâu, có citations |
+
+> 🚫 **Không đoán** khi không chắc về API bên thứ 3, cú pháp library, best practice mới.
+> ✅ **Tavily search** trước → đọc kết quả → code dựa trên thông tin thực tế.
+
 ### BanThuoc API MCP Server — API Tra Cứu Cho AI (`mcp/banthuoc-api-server/`)
 
 MCP server local (~125 endpoints từ Django backend) cho phép AI tra cứu API không cần Swagger.
