@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+// Fake test key for gitleaks CI test — xoá sau khi test xong
+// API_KEY=sk_test_banthuoc_ci_test_key_12345_abcdef
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export const http = axios.create({
