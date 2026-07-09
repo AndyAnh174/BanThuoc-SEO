@@ -18,6 +18,43 @@ pipeline {
             }
         }
 
+        stage('Gitleaks — Secret Scan') {
+            steps {
+                script {
+                    // Run gitleaks to detect leaked secrets, API keys, tokens
+                    def gitleaksResult = sh(
+                        script: """
+                            docker run --rm -v \${WORKSPACE}:/scan zricethezav/gitleaks:latest \\
+                                detect --source=/scan \\
+                                --config=/scan/.gitleaks.toml \\
+                                --report-format=json \\
+                                --report-path=/scan/gitleaks-report.json \\
+                                --verbose 2>&1
+                        """,
+                        returnStatus: true
+                    )
+
+                    // Always show report for visibility
+                    if (fileExists('gitleaks-report.json')) {
+                        def report = readJSON file: 'gitleaks-report.json'
+                        if (report.size() > 0) {
+                            echo "⚠️  Gitleaks found ${report.size()} potential secret(s):"
+                            report.each { leak ->
+                                echo "  - Rule: ${leak.RuleID} | File: ${leak.File}:${leak.StartLine} | Secret: ${leak.Secret.take(15)}..."
+                            }
+                        } else {
+                            echo "✅ Gitleaks: No secrets found!"
+                        }
+                    }
+
+                    // Fail if secrets found (exit code 1)
+                    if (gitleaksResult != 0) {
+                        error("❌ Gitleaks detected leaked secrets! Check gitleaks-report.json for details.")
+                    }
+                }
+            }
+        }
+
         stage('Create GitHub Deployment') {
             steps {
                 script {
@@ -47,51 +84,100 @@ pipeline {
             }
         }
 
-        stage('Build Frontend Image') {
+        stage('Detect Changes') {
             steps {
-                sh """
-                    docker build \\
-                        --build-arg NEXT_PUBLIC_API_URL=https://banthuocsi.vn/api \\
-                        --build-arg NEXT_PUBLIC_GA_ID=G-C15DTPFV53 \\
-                        --build-arg NEXT_PUBLIC_GSC_VERIFICATION=YAfyyFnIquB2iMXK_mof7cCmNotd75OJZhg9E6sn4oY \\
-                        -t ${FRONTEND_IMAGE}:${IMAGE_TAG} \\
-                        -t ${FRONTEND_IMAGE}:latest \\
-                        ./client
-                """
+                script {
+                    // Detect which parts changed to skip unnecessary builds
+                    def prevCommit = sh(script: 'git rev-parse HEAD^ 2>/dev/null || git rev-parse HEAD', returnStdout: true).trim()
+                    def changedFiles = sh(script: "git diff --name-only ${prevCommit} HEAD 2>/dev/null || echo 'ALL'", returnStdout: true).trim()
+                    env.CHANGED_FILES = changedFiles
+
+                    env.BUILD_FRONTEND = (changedFiles.contains('client/') || changedFiles == 'ALL') ? 'true' : 'false'
+                    env.BUILD_BACKEND = (changedFiles.contains('server/') || changedFiles == 'ALL') ? 'true' : 'false'
+
+                    echo "Changed files:\n${changedFiles}"
+                    echo "Build frontend: ${env.BUILD_FRONTEND}"
+                    echo "Build backend: ${env.BUILD_BACKEND}"
+                }
             }
         }
 
-        stage('Build Backend Image') {
-            steps {
-                sh """
-                    docker build \\
-                        -t ${BACKEND_IMAGE}:${IMAGE_TAG} \\
-                        -t ${BACKEND_IMAGE}:latest \\
-                        ./server
-                """
+        stage('Build Images') {
+            parallel {
+                stage('Build Frontend') {
+                    when { expression { env.BUILD_FRONTEND == 'true' } }
+                    steps {
+                        sh """
+                            DOCKER_BUILDKIT=1 docker build \\
+                                --cache-from ${FRONTEND_IMAGE}:buildcache \\
+                                --build-arg NEXT_PUBLIC_API_URL=https://banthuocsi.vn/api \\
+                                --build-arg NEXT_PUBLIC_GA_ID=G-C15DTPFV53 \\
+                                --build-arg NEXT_PUBLIC_GSC_VERIFICATION=YAfyyFnIquB2iMXK_mof7cCmNotd75OJZhg9E6sn4oY \\
+                                -t ${FRONTEND_IMAGE}:${IMAGE_TAG} \\
+                                -t ${FRONTEND_IMAGE}:latest \\
+                                -t ${FRONTEND_IMAGE}:buildcache \\
+                                ./client
+                        """
+                    }
+                }
+
+                stage('Build Backend') {
+                    when { expression { env.BUILD_BACKEND == 'true' } }
+                    steps {
+                        sh """
+                            DOCKER_BUILDKIT=1 docker build \\
+                                --cache-from ${BACKEND_IMAGE}:buildcache \\
+                                -t ${BACKEND_IMAGE}:${IMAGE_TAG} \\
+                                -t ${BACKEND_IMAGE}:latest \\
+                                -t ${BACKEND_IMAGE}:buildcache \\
+                                ./server
+                        """
+                    }
+                }
             }
         }
 
         stage('Push to DockerHub') {
             steps {
-                sh """
-                    docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}
-                    docker push ${FRONTEND_IMAGE}:latest
-                    docker push ${BACKEND_IMAGE}:${IMAGE_TAG}
-                    docker push ${BACKEND_IMAGE}:latest
-                """
+                script {
+                    if (env.BUILD_FRONTEND == 'true') {
+                        sh "docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}"
+                        sh "docker push ${FRONTEND_IMAGE}:latest"
+                        sh "docker push ${FRONTEND_IMAGE}:buildcache"
+                    } else {
+                        echo '⏭️  Skipping frontend push (no changes)'
+                    }
+                    if (env.BUILD_BACKEND == 'true') {
+                        sh "docker push ${BACKEND_IMAGE}:${IMAGE_TAG}"
+                        sh "docker push ${BACKEND_IMAGE}:latest"
+                        sh "docker push ${BACKEND_IMAGE}:buildcache"
+                    } else {
+                        echo '⏭️  Skipping backend push (no changes)'
+                    }
+                }
             }
         }
 
         stage('Deploy to K8s') {
             steps {
-                sh """
-                    kubectl apply -f k8s/
-                    kubectl set image deployment/frontend frontend=${FRONTEND_IMAGE}:${IMAGE_TAG} -n banthuoc
-                    kubectl set image deployment/backend backend=${BACKEND_IMAGE}:${IMAGE_TAG} -n banthuoc
-                    kubectl rollout status deployment/frontend -n banthuoc --timeout=600s
-                    kubectl rollout status deployment/backend -n banthuoc --timeout=600s
-                """
+                script {
+                    // Apply K8s configs (only if k8s/ changed or first deploy)
+                    if (env.CHANGED_FILES.contains('k8s/') || env.CHANGED_FILES == 'ALL') {
+                        sh 'kubectl apply -f k8s/'
+                    } else {
+                        echo '⏭️  Skipping kubectl apply (k8s/ unchanged)'
+                    }
+
+                    // Update images for changed services
+                    if (env.BUILD_FRONTEND == 'true') {
+                        sh "kubectl set image deployment/frontend frontend=${FRONTEND_IMAGE}:${IMAGE_TAG} -n banthuoc"
+                        sh "kubectl rollout status deployment/frontend -n banthuoc --timeout=600s"
+                    }
+                    if (env.BUILD_BACKEND == 'true') {
+                        sh "kubectl set image deployment/backend backend=${BACKEND_IMAGE}:${IMAGE_TAG} -n banthuoc"
+                        sh "kubectl rollout status deployment/backend -n banthuoc --timeout=600s"
+                    }
+                }
             }
         }
     }

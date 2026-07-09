@@ -23,20 +23,13 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-ENV NEXT_TELEMETRY_DISABLED 1
-
-# If using pnpm, we need to ensure it's available in this stage too if build script uses it,
-# but usually 'next build' is directly callable or via npm run.
-# However, if we use 'pnpm run build', we need pnpm.
-RUN corepack enable pnpm
-
-# Prevent pnpm from prompting for TTY in CI
+ENV NEXT_TELEMETRY_DISABLED=1
 ENV CI=true
 
-# Pass environment variable at build time
+# Pin pnpm version via corepack (avoids downloading latest each time)
+RUN corepack enable pnpm && corepack prepare pnpm@9.15.4 --activate
+
+# Pass environment variables at build time
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_GA_ID
@@ -44,13 +37,16 @@ ENV NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID
 ARG NEXT_PUBLIC_GSC_VERIFICATION
 ENV NEXT_PUBLIC_GSC_VERIFICATION=$NEXT_PUBLIC_GSC_VERIFICATION
 
-RUN pnpm run build
+# Build with Next.js cache persisted via BuildKit mount
+# --mount=type=cache keeps .next/cache between builds → huge speedup
+RUN --mount=type=cache,target=/app/.next/cache,id=nextjs-cache \
+    pnpm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
@@ -72,8 +68,7 @@ USER nextjs
 
 EXPOSE 3000
 
-ENV PORT 3000
-# set hostname to localhost
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 CMD ["node", "server.js"]
