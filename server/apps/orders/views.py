@@ -15,10 +15,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     ordering = ['-created_at']
 
-    def get_permissions(self):
-        if self.action in ('create', 'mark_paid'):
-            return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated()]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user

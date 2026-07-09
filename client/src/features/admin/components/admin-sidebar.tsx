@@ -34,6 +34,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useAuthStore } from "@/src/features/auth/stores/auth.store";
 
 // Define sidebar structure with grouped sections
 interface SidebarItem {
@@ -219,16 +220,10 @@ export function AdminSidebar() {
         }));
     };
 
+    const { logout } = useAuthStore();
+
     const handleLogout = () => {
-        // Clear all auth tokens
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('user');
-
-        toast.success('Đăng xuất thành công');
-
-        // Redirect to login page
-        router.push('/auth/login');
+        logout(); // Use auth store's logout which clears correct keys + resets state
     };
 
     return (

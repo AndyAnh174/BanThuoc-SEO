@@ -21,7 +21,8 @@ class BannerViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['list', 'retrieve', 'visible', 'row', 'promo', 'popup']:
             return [AllowAny()]
-        return [IsAuthenticated()]
+        # create, update, partial_update, destroy require admin
+        return [IsAdminUser()]
     
     def get_serializer_class(self):
         if self.request and self.request.user.is_authenticated:

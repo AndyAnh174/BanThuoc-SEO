@@ -42,9 +42,12 @@ Project is indexed at `banthuoc-client` (`D:\Freelance\BanThuoc-SEO\client`). Af
 - **Find by concept**: `search(query="...", project_name="banthuoc-client", mode="hybrid", stream=true)`
 - **Check impact**: `impact_analysis(project_name="banthuoc-client", file_path=..., depth=3)`
 
-### Tavily — Web Search MCP (MUST USE for unknown knowledge)
+### Tavily — Web Search MCP (MUST USE)
 
-Khi gặp kiến thức, công nghệ, library, API bên thứ 3 không biết rõ → **dùng Tavily MCP để search web** thay vì đoán.
+Dùng Tavily để search web khi:
+1. **Kiến thức chưa biết** — công nghệ, library, API bên thứ 3 không rõ
+2. **Kiến thức có thể outdated** — version mới, breaking changes, best practice đã thay đổi
+3. **Cần thông tin real-time** — news, releases, security advisories mới nhất
 
 **Tools:**
 | Tool | Dùng khi |
@@ -54,8 +57,7 @@ Khi gặp kiến thức, công nghệ, library, API bên thứ 3 không biết r
 | `tavily_crawl(url)` | Crawl toàn bộ site/docs |
 | `tavily_research(input)` | Nghiên cứu sâu, có citations |
 
-> 🚫 **Không đoán** khi không chắc về API bên thứ 3, cú pháp library, best practice mới.
-> ✅ **Tavily search** trước → đọc kết quả → code dựa trên thông tin thực tế.
+> 🚫 **Không đoán** — đặc biệt khi knowledge cutoff có thể đã cũ (API version, security, pricing).
 
 ### BanThuoc API MCP Server — API Tra Cứu Cho AI (`mcp/banthuoc-api-server/`)
 

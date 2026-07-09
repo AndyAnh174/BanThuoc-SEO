@@ -8,6 +8,7 @@ from rest_framework.generics import ListAPIView
 from django.db.models import Avg
 from products.models import Review, Product
 from orders.models import Order, OrderItem
+from orders.views_dashboard import IsAdmin
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -124,11 +125,9 @@ class AdminReviewListView(ListAPIView):
     List all reviews for admin moderation.
     """
     serializer_class = ReviewSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdmin]
 
     def get_queryset(self):
-        if self.request.user.role != 'ADMIN':
-            return Review.objects.none()
         qs = Review.objects.all()
         status_filter = self.request.query_params.get('status')
         if status_filter == 'pending':
@@ -144,11 +143,9 @@ class AdminReviewModerateView(APIView):
     Approve or reject a review.
     Body: { "action": "approve" | "reject" }
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdmin]
 
     def post(self, request, review_id):
-        if request.user.role != 'ADMIN':
-            return Response({"error": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
 
         try:
             review = Review.objects.get(pk=review_id)

@@ -310,7 +310,7 @@ class AdminVoucherViewSet(viewsets.ModelViewSet):
     """
     queryset = Voucher.objects.all()
     serializer_class = VoucherSerializer
-    permission_classes = [permissions.IsAuthenticated] # Should be IsAdminUser eventually
+    permission_classes = [permissions.IsAdminUser]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['status', 'discount_type']
     search_fields = ['code', 'name']

@@ -11,6 +11,7 @@ from rest_framework.response import Response
 
 from .models import Order
 from .models_return import ReturnRequest
+from .views_dashboard import IsAdmin
 
 
 class ReturnRequestSerializer(serializers.ModelSerializer):
@@ -93,11 +94,9 @@ class AdminReturnRequestListView(ListAPIView):
     List all return requests for admin.
     """
     serializer_class = ReturnRequestSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdmin]
 
     def get_queryset(self):
-        if self.request.user.role != 'ADMIN':
-            return ReturnRequest.objects.none()
         qs = ReturnRequest.objects.all()
         status_filter = self.request.query_params.get('status')
         if status_filter:
@@ -111,11 +110,9 @@ class AdminReturnRequestActionView(APIView):
     Approve or reject a return request.
     Body: { "action": "approve" | "reject", "admin_notes": "..." }
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdmin]
 
     def post(self, request, return_id):
-        if request.user.role != 'ADMIN':
-            return Response({"error": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
 
         try:
             return_req = ReturnRequest.objects.get(pk=return_id)
