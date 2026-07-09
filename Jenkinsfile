@@ -9,6 +9,8 @@ pipeline {
         KUBECONFIG = '/var/lib/jenkins/.kube/config'
         GITHUB_TOKEN = credentials('github-pat')
         GITHUB_REPO = 'AndyAnh174/BanThuoc-SEO'
+        // Email recipients for gitleaks alerts
+        GITLEAKS_ALERT_EMAIL = 'hovietanh147@gmail.com'
     }
 
     stages {
@@ -21,7 +23,6 @@ pipeline {
         stage('Gitleaks — Secret Scan') {
             steps {
                 script {
-                    // Run gitleaks to detect leaked secrets, API keys, tokens
                     def gitleaksResult = sh(
                         script: """
                             docker run --rm -v \${WORKSPACE}:/scan zricethezav/gitleaks:latest \\
@@ -34,23 +35,34 @@ pipeline {
                         returnStatus: true
                     )
 
-                    // Always show report for visibility
                     if (fileExists('gitleaks-report.json')) {
                         def report = readJSON file: 'gitleaks-report.json'
+                        env.GITLEAKS_FOUND = report.size().toString()
+
                         if (report.size() > 0) {
-                            echo "⚠️  Gitleaks found ${report.size()} potential secret(s):"
+                            // Build summary for email
+                            def summary = ""
+                            def countsByRule = [:].withDefault { 0 }
                             report.each { leak ->
-                                echo "  - Rule: ${leak.RuleID} | File: ${leak.File}:${leak.StartLine} | Secret: ${leak.Secret.take(15)}..."
+                                def rule = leak.RuleID ?: leak.ruleID ?: 'Unknown'
+                                countsByRule[rule] = countsByRule[rule] + 1
+                                summary += "  - Rule: ${rule} | File: ${leak.File ?: leak.file}:${leak.StartLine ?: leak.startLine} | Secret: ${(leak.Secret ?: leak.secret ?: '').take(20)}...\n"
                             }
+                            env.GITLEAKS_SUMMARY = summary
+                            env.GITLEAKS_COUNTS = countsByRule.collect { k, v -> "${v}x ${k}" }.join(", ")
+
+                            echo "⚠️  Gitleaks found ${report.size()} potential secret(s): ${env.GITLEAKS_COUNTS}"
+
+                            // Fail the pipeline
+                            error("❌ Gitleaks detected ${report.size()} leaked secrets! Check gitleaks-report.json or email for details.")
                         } else {
+                            env.GITLEAKS_FOUND = '0'
                             echo "✅ Gitleaks: No secrets found!"
                         }
                     }
 
-                    // Fail if secrets found (exit code 1)
-                    if (gitleaksResult != 0) {
-                        error("❌ Gitleaks detected leaked secrets! Check gitleaks-report.json for details.")
-                    }
+                    // Archive report for download from Jenkins UI
+                    archiveArtifacts artifacts: 'gitleaks-report.json', fingerprint: true
                 }
             }
         }
@@ -183,6 +195,35 @@ pipeline {
     }
 
     post {
+        // Send email if gitleaks found secrets (runs even on failure)
+        unsuccessful {
+            script {
+                if (env.GITLEAKS_FOUND?.toInteger() > 0) {
+                    def emailBody = """
+                        ⚠️ Gitleaks Secret Alert — Build #${BUILD_NUMBER}
+
+                        Found ${env.GITLEAKS_FOUND} potential secret(s):
+                        ${env.GITLEAKS_COUNTS}
+
+                        Details:
+                        ${env.GITLEAKS_SUMMARY}
+
+                        Jenkins: ${BUILD_URL}console
+                        Report: ${BUILD_URL}artifact/gitleaks-report.json
+
+                        Action required: Rotate exposed secrets immediately.
+                    """.stripIndent()
+
+                    emailext(
+                        subject: "⚠️ [SECURITY] Gitleaks found secrets in banthuoc-seo #${BUILD_NUMBER}",
+                        body: emailBody,
+                        to: env.GITLEAKS_ALERT_EMAIL,
+                        attachLog: false
+                    )
+                }
+            }
+        }
+
         success {
             script {
                 sh """
