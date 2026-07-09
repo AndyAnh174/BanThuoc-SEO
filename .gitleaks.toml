@@ -1,41 +1,26 @@
 # Gitleaks Configuration for BanThuoc-SEO
 # Scans for leaked secrets, API keys, tokens before CI/CD deploy
+# Docs: https://github.com/gitleaks/gitleaks
 
 title = "BanThuoc Gitleaks Config"
 
-# Allowlist — known false positives that are NOT real secrets
+# Extend default ruleset (all built-in rules still active)
+[extend]
+  useDefault = true
+
+# Global allowlist — exceptions on top of default rules
 [allowlist]
   description = "Known safe patterns"
 
-  # Jenkinsfile build args (public GA/GSC IDs — not secrets)
-  [[allowlist.paths]]
-    path = '''Jenkinsfile'''
-    description = "GA_ID and GSC_VERIFICATION are public IDs, not secrets"
+  # Files to skip (glob patterns)
+  paths = [
+    '''Jenkinsfile''',
+    '''CLAUDE.md''',
+    '''server/core/settings/.env.example''',
+    '''(?i)\.(?:jpg|gif|png|svg|ico|woff2?|ttf|eot)$'''
+  ]
 
-  # Documentation with example credentials (replace with real secrets info)
-  [[allowlist.paths]]
-    path = '''CLAUDE.md'''
-    description = "Docs contain example credentials — will be cleaned up"
-
-  # Git history contains old commits that can't be changed
-  [[allowlist.paths]]
-    path = '''server/core/settings/.env.example'''
-    description = "Example env file with placeholder values"
-
-  # Allow common test/example patterns
-  [[allowlist.regexes]]
-    regex = '''(?i)(example|test|sample|demo|placeholder|changeme|replace)'''
-    description = "Ignore example/placeholder values"
-
-# Custom rules — additional patterns to detect
-[[rules]]
-  id = "vietnamese-phone"
-  description = "Vietnamese phone numbers"
-  regex = '''(0[3|5|7|8|9])[0-9]{8}'''
-  tags = ["phone", "pii"]
-
-[[rules]]
-  id = "jenkins-credential-reference"
-  description = "Jenkins credential references (should use credentials() function)"
-  regex = '''credentials\(['"]\w+'''
-  tags = ["jenkins", "safe"]
+  # Regex patterns to ignore (common test/example placeholders)
+  regexes = [
+    '''(?i)(example|test|sample|demo|placeholder|changeme|replace)'''
+  ]
