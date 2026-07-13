@@ -1,0 +1,18 @@
+{
+  "app": {
+    "title": "Ngọc Kim Ngân Pharmacy",
+    "headerTitle": "Ngọc Kim Ngân",
+    "headerColor": "#0d9488",
+    "textColor": {
+      "light": "black",
+      "dark": "white"
+    },
+    "statusBar": "transparent",
+    "actionBarHidden": true,
+    "hideIOSSafeAreaBottom": true,
+    "hideAndroidBottomNavigationBar": false
+  },
+  "listCSS": [],
+  "listSyncJS": [],
+  "listAsyncJS": []
+}
