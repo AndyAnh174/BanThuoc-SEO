@@ -19,8 +19,11 @@ export default function ProfilePage() {
   const tierColor = tc[user.membershipTier] || "#9ca3af";
 
   return (
-    <Box style={{ padding: 0, background: "#f9fafb", minHeight: "100vh" }}>
-      <Box style={{ padding: "24px 16px 32px", background: "#0d9488", borderBottomLeftRadius: 16, borderBottomRightRadius: 16, textAlign: "center" }}>
+    <Box style={{ padding: 0, paddingBottom: 80, background: "#f9fafb", minHeight: "100vh" }}>
+      <Box style={{ padding: "50px 16px 32px", background: "#0d9488", borderBottomLeftRadius: 16, borderBottomRightRadius: 16, textAlign: "center", position: "relative" }}>
+        <Box onClick={() => window.location.hash = "#/"} style={{ position: "absolute", left: 16, top: 50, width: 36, height: 36, borderRadius: 12, background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Icon icon="zi-chevron-left" style={{ color: "white" }} size={22} />
+        </Box>
         <Box style={{ width: 64, height: 64, background: "rgba(255,255,255,0.2)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px", color: "white", fontSize: 28, fontWeight: 700 }}>{user.name.charAt(0)}</Box>
         <Text.Title className="text-white">{user.name}</Text.Title>
         <span className="text-teal-100 text-sm">{user.phone || "Chưa có SĐT"}</span>

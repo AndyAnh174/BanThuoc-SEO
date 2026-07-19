@@ -61,6 +61,8 @@ INSTALLED_APPS = [
     "audit",
     "bugreport",
     "blog",
+    "shipping",
+    "miniapp",
 ]
 
 MIDDLEWARE = [

@@ -2,41 +2,90 @@ import React from "react";
 import { Box, Text, Icon, useNavigate } from "zmp-ui";
 
 const CATS = [
-  { name: "Thuoc OTC", icon: "zi-home", subs: ["Giam dau khang viem","Chong di ung","Co xuong khop","Tim mach","Tieu hoa","Ho hap","Than kinh","Noi tiet","Da lieu","Tiet nieu","Chong ky sinh trung"] },
-  { name: "Thuc pham chuc nang", icon: "zi-heart", subs: ["Bo nao","Tieu hoa","Mien dich","Xuong khop","Tim mach"] },
-  { name: "Vitamin & Khoang chat", icon: "zi-star", subs: ["Vitamin C","Vitamin D","Vitamin E","Vitamin B","Da vitamin","Khoang chat"] },
-  { name: "Duoc my pham", icon: "zi-calendar", subs: ["Cham soc da mat","Cham soc co the","Cham soc toc","Khac"] },
-  { name: "Thiet bi y te", icon: "zi-location", subs: ["May do","Dung cu","Vat tu y te"] },
-  { name: "Me va be", icon: "zi-heart", subs: ["Bau & Sau sinh","Dinh duong be","Cham soc be"] },
-  { name: "Combo", icon: "zi-star", subs: ["Combo suc khoe","Combo lam dep","Combo gia dinh"] },
-  { name: "Khac", icon: "zi-list-1", subs: ["Cham soc ca nhan","Dung cu"] },
+  { n: "Thuoc\nOTC", i: "zi-home", c: "#0d9488", g: "linear-gradient(135deg, #0d9488, #14b8a6)", s: 11 },
+  { n: "TPCN", i: "zi-heart", c: "#f97316", g: "linear-gradient(135deg, #f97316, #fb923c)", s: 5 },
+  { n: "Vitamin", i: "zi-star", c: "#eab308", g: "linear-gradient(135deg, #eab308, #facc15)", s: 6 },
+  { n: "Duoc\nMy Pham", i: "zi-calendar", c: "#ec4899", g: "linear-gradient(135deg, #ec4899, #f472b6)", s: 4 },
+  { n: "TB Y Te", i: "zi-location", c: "#6366f1", g: "linear-gradient(135deg, #6366f1, #818cf8)", s: 3 },
+  { n: "Me & Be", i: "zi-heart", c: "#ef4444", g: "linear-gradient(135deg, #ef4444, #f87171)", s: 3 },
+  { n: "Combo", i: "zi-star", c: "#14b8a6", g: "linear-gradient(135deg, #14b8a6, #2dd4bf)", s: 3 },
+  { n: "Khac", i: "zi-list-1", c: "#6b7280", g: "linear-gradient(135deg, #6b7280, #9ca3af)", s: 2 },
 ];
 
 export default function CategoryPage() {
   const nav = useNavigate();
+
   return (
-    <Box className="bg-gray-50 min-h-screen">
-      <Box className="bg-teal-600 p-4 pt-8 pb-4 rounded-b-2xl">
-        <Text.Title className="text-white text-lg">Danh muc san pham</Text.Title>
+    <Box style={{ background: "#f3f4f6", minHeight: "100vh", paddingBottom: 80 }}>
+      {/* Top bar with back */}
+      <Box style={{ padding: "14px 16px", paddingTop: 50, background: "white", display: "flex", alignItems: "center", gap: 12 }}>
+        <Box onClick={() => nav("/")} style={{ width: 36, height: 36, borderRadius: 12, background: "#f3f4f6", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Icon icon="zi-chevron-left" style={{ color: "#4b5563" }} size={22} />
+        </Box>
+        <Box>
+          <Text.Title style={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>Kham pha</Text.Title>
+          <Text style={{ fontSize: 12, color: "#9ca3af" }}>8 nhom — {CATS.reduce((a, c) => a + c.s, 0)} danh muc</Text>
+        </Box>
       </Box>
-      <Box className="p-4 space-y-3">
-        {CATS.map((cat, i) => (
-          <Box key={i} className="bg-white rounded-xl p-4" onClick={() => nav("search")}>
-            <Box flex alignItems="center" className="mb-2 space-x-3">
-              <Box className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center">
-                <Icon icon={cat.icon as any} className="text-teal-600" size={20} />
+
+      {/* 2-column masonry-like grid */}
+      <Box style={{ padding: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        {CATS.map((cat, i) => {
+          // First item spans full width
+          const isFull = i === 0;
+          const gridColumn = isFull ? "1 / -1" : undefined;
+
+          // Random-height feel: alternate card heights
+          const h = isFull ? 130 : i % 3 === 0 ? 180 : 140;
+
+          return (
+            <Box
+              key={i}
+              onClick={() => nav("/search")}
+              style={{
+                gridColumn,
+                height: h,
+                background: cat.g,
+                borderRadius: 20,
+                padding: 20,
+                display: "flex",
+                flexDirection: isFull ? "row" : "column",
+                justifyContent: isFull ? "space-between" : "space-between",
+                alignItems: isFull ? "center" : "stretch",
+                position: "relative",
+                overflow: "hidden",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              }}
+            >
+              {/* Decorative circle */}
+              <Box style={{ position: "absolute", right: -20, top: -20, width: 100, height: 100, borderRadius: 50, background: "rgba(255,255,255,0.12)" }} />
+
+              {/* Icon */}
+              <Box style={{ width: isFull ? 56 : 48, height: isFull ? 56 : 48, borderRadius: 16, background: "rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1 }}>
+                <Icon icon={cat.i as any} style={{ color: "white" }} size={isFull ? 28 : 24} />
               </Box>
-              <Text.Title className="text-base">{cat.name}</Text.Title>
+
+              {/* Text */}
+              <Box style={{ zIndex: 1 }}>
+                <Text style={{ color: "white", fontSize: isFull ? 18 : 16, fontWeight: 700, whiteSpace: "pre-line", lineHeight: 1.3 }}>{cat.n}</Text>
+                <Box flex alignItems="center" style={{ gap: 6, marginTop: 6 }}>
+                  <Box style={{ background: "rgba(255,255,255,0.25)", padding: "2px 10px", borderRadius: 50 }}>
+                    <Text style={{ color: "white", fontSize: 12, fontWeight: 600 }}>{cat.s} muc</Text>
+                  </Box>
+                  {i === 0 && <Icon icon="zi-chevron-right" style={{ color: "white" }} size={16} />}
+                </Box>
+              </Box>
+
+              {/* Decorative dots pattern */}
+              {!isFull && (
+                <Box style={{ display: "flex", gap: 4, opacity: 0.3 }}>
+                  {[1, 2, 3].map(d => <Box key={d} style={{ width: 4, height: 4, borderRadius: 2, background: "white" }} />)}
+                </Box>
+              )}
             </Box>
-            <Box flex className="flex-wrap gap-1.5 ml-13 pl-1">
-              {cat.subs.map((sub, j) => (
-                <span key={j} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">{sub}</span>
-              ))}
-            </Box>
-          </Box>
-        ))}
+          );
+        })}
       </Box>
-      <Box className="h-4" />
     </Box>
   );
 }

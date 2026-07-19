@@ -12,10 +12,13 @@ export default function SearchPage() {
     : [];
 
   return (
-    <Box className="bg-gray-50 min-h-screen">
-      <Box className="bg-teal-600 p-4 pt-8 pb-4 rounded-b-2xl">
+    <Box style={{ background: "#f3f4f6", minHeight: "100vh", paddingBottom: 80 }}>
+      <Box style={{ padding: "14px 16px", paddingTop: 50, background: "white", display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+        <Box onClick={() => nav("/")} style={{ width: 36, height: 36, borderRadius: 12, background: "#f3f4f6", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Icon icon="zi-chevron-left" style={{ color: "#4b5563" }} size={22} />
+        </Box>
         <Input
-          placeholder="Tìm tên thuốc, bệnh lý, thực phẩm chức năng..."
+          placeholder="Tim ten thuoc, benh ly..."
           value={query}
           onChange={(e) => setQuery((e.target as any).value)}
           autoFocus

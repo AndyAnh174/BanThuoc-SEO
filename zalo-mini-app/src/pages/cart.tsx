@@ -8,16 +8,19 @@ export default function CartPage() {
   const total = cartTotal();
 
   return (
-    <Box className="bg-gray-50 min-h-screen">
-      <Box className="bg-teal-600 p-4 pt-8 pb-4 rounded-b-2xl">
-        <Text.Title className="text-white text-lg">Giỏ hàng ({cartCount()} SP)</Text.Title>
+    <Box style={{ background: "#f3f4f6", minHeight: "100vh", paddingBottom: 80 }}>
+      <Box style={{ padding: "14px 16px", paddingTop: 50, background: "white", display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+        <Box onClick={() => nav("/")} style={{ width: 36, height: 36, borderRadius: 12, background: "#f3f4f6", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Icon icon="zi-chevron-left" style={{ color: "#4b5563" }} size={22} />
+        </Box>
+        <Text.Title style={{ fontSize: 20, fontWeight: 700 }}>Gio hang ({cartCount()} SP)</Text.Title>
       </Box>
 
       {cart.length === 0 ? (
         <Box className="flex flex-col items-center justify-center py-20 text-gray-400">
           <Icon icon="zi-cart" size={60} className="mb-4 opacity-30" />
           <Text.Title className="text-gray-400 mb-2">Giỏ hàng trống</Text.Title>
-          <Button variant="primary" onClick={() => nav("home")}>Tiếp tục mua sắm</Button>
+          <Button variant="primary" onClick={() => nav("/")}>Tiếp tục mua sắm</Button>
         </Box>
       ) : (
         <>
@@ -52,7 +55,7 @@ export default function CartPage() {
           </Box>
 
           <Box className="px-4 space-y-2 mb-4">
-            <Button variant="primary" size="large" className="w-full" onClick={() => nav("home")}>Thanh toán</Button>
+            <Button variant="primary" size="large" className="w-full" onClick={() => nav("/")}>Thanh toán</Button>
             <Button variant="secondary" size="small" className="w-full text-gray-400" onClick={clearCart}>Xóa toàn bộ</Button>
           </Box>
         </>
