@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Box, Text, Icon, Button, Header, useNavigate, useParams } from "zmp-ui";
-import { MOCK_PRODUCTS, useAppStore, formatPrice } from "@/stores/app.store";
+import { useAppStore, formatPrice } from "@/stores/app.store";
 
 const STOCK_STYLE = (q: number) => q > 20 ? { color: "#16a34a", bg: "#dcfce7" } : q > 0 ? { color: "#ea580c", bg: "#fff7ed" } : { color: "#dc2626", bg: "#fef2f2" };
 const STOCK_LABEL = (q: number) => q > 20 ? `Con ${q} sp` : q > 0 ? `Sap het - con ${q}` : "Het hang";
@@ -9,8 +9,8 @@ const IMG_PLACEHOLDERS = [1, 2, 3, 4]; // Simulated multiple images
 export default function ProductDetailPage() {
   const { slug } = useParams();
   const nav = useNavigate();
-  const product = MOCK_PRODUCTS.find(p => p.slug === slug);
-  const { addToCart, cart } = useAppStore();
+  const product = products.find(p => p.slug === slug);
+  const { addToCart, products } = useAppStore();
   const [quantity, setQuantity] = useState(1);
   const [liked, setLiked] = useState(false);
   const [curImg, setCurImg] = useState(0);
@@ -45,7 +45,7 @@ export default function ProductDetailPage() {
   const dp = product.salePrice ? Math.round((1 - product.salePrice / product.price) * 100) : 0;
   const cp = product.salePrice ?? product.price;
   const st = STOCK_STYLE(product.stockQuantity);
-  const related = MOCK_PRODUCTS.filter(p => p.category.slug === product.category.slug && p.id !== product.id).slice(0, 4);
+  const related = products.filter(p => p.category.slug === product.category.slug && p.id !== product.id).slice(0, 4);
 
   return (
     <Box style={{ background: "#f3f4f6", minHeight: "100vh", paddingBottom: 140 }}>

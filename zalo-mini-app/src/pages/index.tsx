@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Box, Text, Icon, useNavigate } from "zmp-ui";
-import { useAppStore, formatPrice, MOCK_PRODUCTS } from "@/stores/app.store";
+import { useAppStore, formatPrice } from "@/stores/app.store";
 
 const B = [
   { g: "linear-gradient(135deg, #0d9488, #14b8a6)", t: "Flash Sale He 2026", s: "Giam den 50% - Mua ngay keo lo" },
@@ -38,9 +38,11 @@ function useAutoScroll(n: number, ms: number) {
 
 export default function HomePage() {
   const nav = useNavigate();
-  const { isAuthenticated, user } = useAppStore();
+  const { isAuthenticated, user, products, loadProducts } = useAppStore();
   const bS = useAutoScroll(3, 3000);
   const fS = useAutoScroll(5, 2500);
+
+  useEffect(() => { loadProducts(); }, []);
 
   const tierColors: Record<string, string> = { SILVER: "#9ca3af", GOLD: "#f59e0b", PLATINUM: "#6366f1", DIAMOND: "#06b6d4" };
   const tierLabels: Record<string, string> = { SILVER: "Silver", GOLD: "Gold", PLATINUM: "Bach Kim", DIAMOND: "Kim Cuong" };
@@ -155,7 +157,7 @@ export default function HomePage() {
           </Box>
         </Box>
         <Box ref={fS.r} style={{ display: "flex", gap: 10, overflowX: "hidden", scrollBehavior: "smooth" }}>
-          {MOCK_PRODUCTS.slice(0, 5).map((p, k) => (
+          {products.slice(0, 5).map((p, k) => (
             <Box key={k} onClick={() => nav("/product/" + p.slug)} style={{ background: "white", borderRadius: 12, padding: 10, minWidth: 140, flexShrink: 0 }}>
               <Box style={{ height: 56, background: "#f3f4f6", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
                 <Icon icon="zi-home" style={{ color: "#0d9488" }} size={28} />
@@ -175,7 +177,7 @@ export default function HomePage() {
         <Text style={{ fontSize: 18, fontWeight: 700, marginBottom: 4, color: "#111827" }}>Goi y cho ban</Text>
         <Text style={{ fontSize: 12, color: "#9ca3af", marginBottom: 12 }}>(*) Cac san pham ban co the thich</Text>
         <Box style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-          {MOCK_PRODUCTS.slice(0, 6).map((p, k) => {
+          {products.slice(0, 6).map((p, k) => {
             const st = ST(p.stockQuantity);
             return (
               <Box key={k} onClick={() => nav("/product/" + p.slug)} style={{ background: "white", borderRadius: 14, overflow: "hidden", border: "1px solid #f3f4f6", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>

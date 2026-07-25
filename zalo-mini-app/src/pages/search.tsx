@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Box, Text, Input, Icon, useNavigate } from "zmp-ui";
-import { MOCK_PRODUCTS, formatPrice } from "@/stores/app.store";
+import { useAppStore, formatPrice } from "@/stores/app.store";
 
 const HOT_KEYS = ["Paracetamol","Vitamin C","Panadol","Ginkgo","Siro ho"];
 
 export default function SearchPage() {
   const nav = useNavigate();
+  const { products } = useAppStore();
   const [query, setQuery] = useState("");
   const results = query.trim().length >= 2
-    ? MOCK_PRODUCTS.filter(p => p.name.toLowerCase().includes(query.toLowerCase()))
+    ? products.filter(p => p.name.toLowerCase().includes(query.toLowerCase()))
     : [];
 
   return (
