@@ -8,7 +8,7 @@ import uuid
 class Migration(migrations.Migration):
     initial = True
     dependencies = [
-        ("products", "0013_remove_product_likes_product_is_liked_and_more"),
+        ("products", "0013_banner_promo_position"),
     ]
 
     operations = [
