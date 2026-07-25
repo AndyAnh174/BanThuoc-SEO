@@ -12,6 +12,11 @@ title = "BanThuoc Gitleaks Config"
 [allowlist]
   description = "Known safe patterns"
 
+  # Known test commits (intentionally added fake keys for CI testing)
+  commits = [
+    "212d863", "47f6098", "6e90496", "fcb047d",
+  ]
+
   # Files to skip (glob patterns)
   paths = [
     '''Jenkinsfile''',
