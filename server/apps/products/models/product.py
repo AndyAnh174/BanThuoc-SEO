@@ -27,8 +27,9 @@ class Product(models.Model):
     short_description = models.CharField(max_length=500, blank=True, help_text=_("Short product description"))
     
     # Pricing
-    price = models.DecimalField(max_digits=12, decimal_places=0, help_text=_("Regular price in VND"))
-    sale_price = models.DecimalField(max_digits=12, decimal_places=0, null=True, blank=True, help_text=_("Sale price in VND"))
+    price = models.DecimalField(max_digits=12, decimal_places=0, help_text=_("B2B wholesale price in VND"))
+    sale_price = models.DecimalField(max_digits=12, decimal_places=0, null=True, blank=True, help_text=_("Sale/promotion price in VND"))
+    retail_price = models.DecimalField(max_digits=12, decimal_places=0, null=True, blank=True, help_text=_("B2C retail price for Mini App"))
     
     # Relationships
     category = models.ForeignKey(
@@ -78,6 +79,7 @@ class Product(models.Model):
     requires_prescription = models.BooleanField(default=False, help_text=_("Requires prescription to purchase"))
     is_featured = models.BooleanField(default=False, help_text=_("Featured product"))
     is_best_selling = models.BooleanField(default=False, help_text=_("Best selling product"))
+    show_on_miniapp = models.BooleanField(default=False, help_text=_("Show on Mini App (B2C retail)"))
     
     # SEO
     meta_title = models.CharField(max_length=200, blank=True, help_text=_("SEO title"))

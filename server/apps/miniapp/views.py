@@ -152,7 +152,7 @@ class ProductListView(ListAPIView):
     serializer_class = ProductListSerializer
 
     def get_queryset(self):
-        qs = Product.objects.filter(status="ACTIVE").select_related("category", "manufacturer").prefetch_related("images")
+        qs = Product.objects.filter(status="ACTIVE", show_on_miniapp=True).select_related("category", "manufacturer").prefetch_related("images")
         cat = self.request.query_params.get("category")
         if cat:
             qs = qs.filter(category__slug=cat)
@@ -166,7 +166,7 @@ class ProductListView(ListAPIView):
 class ProductDetailView(RetrieveAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = ProductDetailSerializer
-    queryset = Product.objects.filter(status="ACTIVE")
+    queryset = Product.objects.filter(status="ACTIVE", show_on_miniapp=True)
     lookup_field = "slug"
 
 
@@ -238,7 +238,7 @@ class OrderListCreateView(APIView):
             qty = item["quantity"]
             if product.stock_quantity < qty:
                 return Response({"error": f"{product.name} only {product.stock_quantity} left"}, status=400)
-            price = product.sale_price or product.price
+            price = product.retail_price or product.sale_price or product.price
             order_items.append({"product": product, "quantity": qty, "price": price})
             subtotal += price * qty
 
@@ -400,7 +400,7 @@ class SearchView(ListAPIView):
     serializer_class = ProductListSerializer
     def get_queryset(self):
         q = self.request.query_params.get("q", "")
-        return Product.objects.filter(status="ACTIVE").filter(Q(name__icontains=q) | Q(sku__icontains=q))
+        return Product.objects.filter(status="ACTIVE", show_on_miniapp=True).filter(Q(name__icontains=q) | Q(sku__icontains=q))
 
 
 class SearchSuggestView(APIView):
