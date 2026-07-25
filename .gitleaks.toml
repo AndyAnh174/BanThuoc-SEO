@@ -14,7 +14,10 @@ title = "BanThuoc Gitleaks Config"
 
   # Known test commits (intentionally added fake keys for CI testing)
   commits = [
-    "212d863", "47f6098", "6e90496", "fcb047d",
+    "6e904960c3f1a021955488b558830f279b90a543",
+    "212d863c443952d940d3213524558324b7d79d4a",
+    "47f60986b19d4dea626563bb6cf4bf25c3c57092",
+    "4414716a6195dac00ec44b2e37ff0cb091bd3d9e",
   ]
 
   # Files to skip (glob patterns)
