@@ -1,0 +1,185 @@
+# Generated migration for miniapp models
+
+from django.db import migrations, models
+import django.db.models.deletion
+import uuid
+
+
+class Migration(migrations.Migration):
+    initial = True
+    dependencies = [
+        ("products", "0013_remove_product_likes_product_is_liked_and_more"),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name="MiniAppUser",
+            fields=[
+                ("id", models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ("zalo_id", models.CharField(max_length=100, unique=True)),
+                ("name", models.CharField(max_length=255)),
+                ("avatar", models.URLField(blank=True, max_length=500)),
+                ("phone", models.CharField(blank=True, max_length=20)),
+                ("is_phone_verified", models.BooleanField(default=False)),
+                ("loyalty_points", models.IntegerField(default=0)),
+                ("total_spent", models.DecimalField(decimal_places=0, default=0, max_digits=14)),
+                ("membership_tier", models.CharField(default="SILVER", max_length=20)),
+                ("is_active", models.BooleanField(default=True)),
+                ("last_login_at", models.DateTimeField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+            ],
+            options={"db_table": "miniapp_user"},
+        ),
+        migrations.CreateModel(
+            name="MembershipTier",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("tier_name", models.CharField(max_length=20, unique=True)),
+                ("tier_label", models.CharField(max_length=100)),
+                ("min_spent", models.DecimalField(decimal_places=0, max_digits=14)),
+                ("cashback_percent", models.DecimalField(decimal_places=1, max_digits=3)),
+            ],
+            options={"db_table": "miniapp_membership_tier"},
+        ),
+        migrations.CreateModel(
+            name="MiniappOrder",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("order_number", models.CharField(max_length=20, unique=True)),
+                ("full_name", models.CharField(max_length=255)),
+                ("phone", models.CharField(max_length=20)),
+                ("address", models.TextField()),
+                ("province", models.CharField(blank=True, max_length=100)),
+                ("district", models.CharField(blank=True, max_length=100)),
+                ("ward", models.CharField(blank=True, max_length=100)),
+                ("note", models.TextField(blank=True)),
+                ("subtotal", models.DecimalField(decimal_places=0, max_digits=14)),
+                ("shipping_fee", models.DecimalField(decimal_places=0, default=0, max_digits=14)),
+                ("discount_voucher", models.DecimalField(decimal_places=0, default=0, max_digits=14)),
+                ("discount_points", models.DecimalField(decimal_places=0, default=0, max_digits=14)),
+                ("final_amount", models.DecimalField(decimal_places=0, max_digits=14)),
+                ("status", models.CharField(choices=[("PENDING","Chờ xác nhận"),("CONFIRMED","Đã xác nhận"),("PROCESSING","Đang chuẩn bị"),("SHIPPING","Đang giao"),("DELIVERED","Hoàn thành"),("CANCELLED","Đã hủy"),("RETURNED","Trả hàng")], default="PENDING", max_length=20)),
+                ("payment_method", models.CharField(choices=[("COD","Tiền mặt"),("BANKING","Chuyển khoản"),("ZALOPAY","ZaloPay"),("VNPAY","VNPay")], max_length=20)),
+                ("payment_status", models.CharField(default="UNPAID", max_length=20)),
+                ("payment_txn_ref", models.CharField(blank=True, max_length=255)),
+                ("points_earned", models.IntegerField(default=0)),
+                ("shipping_carrier", models.CharField(default="GHN", max_length=20)),
+                ("tracking_number", models.CharField(blank=True, max_length=100)),
+                ("ghn_order_code", models.CharField(blank=True, max_length=100)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("user", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name="orders", to="miniapp.miniappuser")),
+            ],
+            options={"db_table": "miniapp_order"},
+        ),
+        migrations.CreateModel(
+            name="MiniAppAddress",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("full_name", models.CharField(max_length=255)),
+                ("phone", models.CharField(max_length=20)),
+                ("address", models.TextField()),
+                ("province", models.CharField(blank=True, max_length=100)),
+                ("district", models.CharField(blank=True, max_length=100)),
+                ("ward", models.CharField(blank=True, max_length=100)),
+                ("is_default", models.BooleanField(default=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("user", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name="addresses", to="miniapp.miniappuser")),
+            ],
+            options={"db_table": "miniapp_address"},
+        ),
+        migrations.CreateModel(
+            name="MiniAppCartItem",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("quantity", models.PositiveIntegerField(default=1)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("product", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="products.product")),
+                ("user", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name="cart_items", to="miniapp.miniappuser")),
+            ],
+            options={"db_table": "miniapp_cart_item", "unique_together": {("user", "product")}},
+        ),
+        migrations.CreateModel(
+            name="MiniappOrderItem",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("product_name", models.CharField(max_length=300)),
+                ("product_image", models.URLField(blank=True, max_length=500)),
+                ("quantity", models.PositiveIntegerField()),
+                ("unit_price", models.DecimalField(decimal_places=0, max_digits=14)),
+                ("total_price", models.DecimalField(decimal_places=0, max_digits=14)),
+                ("unit", models.CharField(blank=True, max_length=50)),
+                ("order", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name="items", to="miniapp.miniapporder")),
+                ("product", models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="products.product")),
+            ],
+            options={"db_table": "miniapp_order_item"},
+        ),
+        migrations.CreateModel(
+            name="MiniappPointTransaction",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("points", models.IntegerField()),
+                ("reason", models.CharField(choices=[("EARN_ORDER","Tích từ đơn hàng"),("REDEEM_ORDER","Dùng thanh toán"),("EARN_BONUS","Thưởng thêm"),("EXPIRE","Hết hạn")], max_length=20)),
+                ("description", models.CharField(blank=True, max_length=255)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("order", models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to="miniapp.miniapporder")),
+                ("user", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name="point_transactions", to="miniapp.miniappuser")),
+            ],
+            options={"db_table": "miniapp_point_transaction"},
+        ),
+        migrations.CreateModel(
+            name="MiniappChatThread",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("category", models.CharField(choices=[("PRODUCT_ADVICE","Tư vấn sản phẩm"),("PRESCRIPTION_ADVICE","Tư vấn đơn thuốc"),("COMPLAINT","Khiếu nại"),("ORDER_SUPPORT","Hỗ trợ đơn hàng")], max_length=30)),
+                ("subject", models.CharField(blank=True, max_length=255)),
+                ("status", models.CharField(default="OPEN", max_length=20)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("order", models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to="miniapp.miniapporder")),
+                ("user", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name="chat_threads", to="miniapp.miniappuser")),
+            ],
+            options={"db_table": "miniapp_chat_thread"},
+        ),
+        migrations.CreateModel(
+            name="MiniappChatMessage",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("sender_type", models.CharField(choices=[("USER","Khách hàng"),("PHARMACIST","Dược sĩ")], max_length=15)),
+                ("message", models.TextField(blank=True)),
+                ("attachment_url", models.URLField(blank=True, max_length=500)),
+                ("attachment_type", models.CharField(blank=True, max_length=50)),
+                ("is_read", models.BooleanField(default=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("thread", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name="messages", to="miniapp.miniappchatthread")),
+            ],
+            options={"db_table": "miniapp_chat_message"},
+        ),
+        migrations.CreateModel(
+            name="MiniappNotification",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("type", models.CharField(choices=[("ORDER_STATUS","Trạng thái đơn hàng"),("PROMO","Khuyến mãi"),("CHAT","Chat"),("SYSTEM","Hệ thống")], max_length=20)),
+                ("title", models.CharField(max_length=255)),
+                ("body", models.TextField(blank=True)),
+                ("data", models.JSONField(blank=True, default=dict)),
+                ("is_read", models.BooleanField(default=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("user", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name="notifications", to="miniapp.miniappuser")),
+            ],
+            options={"db_table": "miniapp_notification"},
+        ),
+        migrations.CreateModel(
+            name="MiniappSearchHistory",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("keyword", models.CharField(max_length=300)),
+                ("result_count", models.IntegerField(default=0)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("user", models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name="search_history", to="miniapp.miniappuser")),
+            ],
+            options={"db_table": "miniapp_search_history"},
+        ),
+    ]
