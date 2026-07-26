@@ -49,3 +49,9 @@ urlpatterns = [
     path("search/suggest/", views.SearchSuggestView.as_view(), name="search-suggest"),
     path("search/hotkey/", views.SearchHotkeyView.as_view(), name="search-hotkey"),
 ]
+
+# Admin routes for Mini App (registered under /api/admin/miniapp/)
+admin_urlpatterns = [
+    path("membership-tiers/", views.AdminMembershipTierView.as_view(), name="admin-tier-list"),
+    path("membership-tiers/<int:pk>/", views.AdminMembershipTierView.as_view(), name="admin-tier-detail"),
+]

@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TicketPercent, ExternalLink, Users } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { TicketPercent, Plus, RefreshCw, Search, Users, ShoppingBag, ExternalLink } from 'lucide-react';
 import { AdminHeader } from '@/src/features/admin/components/admin-header';
 import { toast } from 'sonner';
 
@@ -20,38 +23,54 @@ interface Voucher {
 }
 
 export default function MiniAppVouchersPage() {
+  const router = useRouter();
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem('accessToken');
-        const res = await fetch(`${API}/vouchers/manage/?page_size=100`, {
-          headers: { Authorization: `Bearer ${token || ''}` },
-        });
-        const data = await res.json();
-        setVouchers(data.results || []);
-      } catch { toast.error('Không thể tải voucher'); }
-      setLoading(false);
-    })();
-  }, []);
+  const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') || '' : '';
+  const headers = { Authorization: `Bearer ${token}` };
+
+  const fetchVouchers = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({ page_size: '100' });
+      if (search) params.set('search', search);
+      const res = await fetch(`${API}/vouchers/manage/?${params}`, { headers });
+      const data = await res.json();
+      setVouchers(data.results || []);
+    } catch { toast.error('Không thể tải voucher'); }
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchVouchers(); }, [search]);
 
   const b2cVouchers = vouchers.filter(v => v.applicable_user_type === 'B2C' || v.applicable_user_type === 'ALL');
-  const activeVouchers = b2cVouchers.filter(v => v.status === 'ACTIVE');
+  const activeB2C = b2cVouchers.filter(v => v.status === 'ACTIVE');
 
   return (
     <div className="space-y-6">
-      <AdminHeader title="Voucher Mini App" description="Quản lý mã giảm giá cho khách hàng B2C trên Zalo Mini App. Chỉ hiển thị voucher dành cho người dùng Mini App."
-        action={<Button variant="outline" size="sm" onClick={() => window.open('/admin/vouchers', '_blank')}><ExternalLink className="w-4 h-4 mr-1" /> Mở B2B Voucher</Button>}
+      <AdminHeader title="Voucher Mini App"
+        description="Quản lý mã giảm giá cho khách hàng B2C trên Zalo Mini App. Chỉ voucher có đối tượng B2C hoặc ALL mới hiển thị trên Mini App."
+        action={
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={fetchVouchers}><RefreshCw className="w-4 h-4 mr-1" /> Làm mới</Button>
+            <Button size="sm" className="bg-teal-600 hover:bg-teal-700" onClick={() => router.push('/admin/vouchers/create')}>
+              <Plus className="w-4 h-4 mr-1" /> Tạo voucher mới
+            </Button>
+          </div>
+        }
       />
 
       <div className="grid gap-4 md:grid-cols-4">
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Tổng voucher</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{vouchers.length}</div></CardContent></Card>
-        <Card className="border-teal-200 bg-teal-50"><CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-1"><Users className="w-3 h-3" /> B2C / ALL</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-teal-600">{b2cVouchers.length}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Đang active (B2C)</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-green-600">{activeVouchers.length}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">B2B only</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-gray-400">{vouchers.filter(v => v.applicable_user_type === 'B2B').length}</div></CardContent></Card>
+        <Card className="border-teal-200 bg-teal-50/50"><CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-1"><Users className="w-3 h-3" /> B2C / ALL</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-teal-600">{b2cVouchers.length}</div></CardContent></Card>
+        <Card className="border-green-200 bg-green-50/50"><CardHeader className="pb-2"><CardTitle className="text-sm">Đang active</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-green-600">{activeB2C.length}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-1"><ShoppingBag className="w-3 h-3" /> B2B only</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-gray-400">{vouchers.filter(v => v.applicable_user_type === 'B2B').length}</div></CardContent></Card>
+      </div>
+
+      <div className="flex gap-2">
+        <Input placeholder="Tìm mã/tên voucher..." value={search} onChange={e => setSearch(e.target.value)} className="max-w-xs" />
       </div>
 
       <Card>
@@ -62,28 +81,50 @@ export default function MiniAppVouchersPage() {
                 <tr>
                   <th className="text-left p-3 font-medium">Mã / Tên</th>
                   <th className="text-center p-3 font-medium">Loại</th>
-                  <th className="text-right p-3 font-medium">Giá trị</th>
+                  <th className="text-right p-3 font-medium">Giảm</th>
                   <th className="text-right p-3 font-medium">Đơn tối thiểu</th>
                   <th className="text-center p-3 font-medium">Đối tượng</th>
-                  <th className="text-center p-3 font-medium">Lượt dùng</th>
+                  <th className="text-center p-3 font-medium">Đã dùng</th>
                   <th className="text-center p-3 font-medium">Trạng thái</th>
+                  <th className="text-center p-3 font-medium">Thao tác</th>
                 </tr>
               </thead>
               <tbody>
-                {loading ? <tr><td colSpan={7} className="text-center py-12 text-gray-400">Đang tải...</td></tr> : b2cVouchers.map(v => (
-                  <tr key={v.id} className={`border-b hover:bg-gray-50 ${v.status !== 'ACTIVE' ? 'opacity-50' : ''}`}>
+                {loading ? (
+                  <tr><td colSpan={8} className="text-center py-12 text-gray-400">Đang tải...</td></tr>
+                ) : b2cVouchers.length === 0 ? (
+                  <tr><td colSpan={8} className="text-center py-12 text-gray-400">
+                    <TicketPercent className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                    <p className="font-medium">Chưa có voucher B2C nào</p>
+                    <p className="text-xs mt-1">Tạo voucher mới và chọn đối tượng "B2C" hoặc "ALL"</p>
+                  </td></tr>
+                ) : b2cVouchers.map(v => (
+                  <tr key={v.id} className="border-b hover:bg-gray-50" style={{ opacity: v.status !== 'ACTIVE' ? 0.5 : 1 }}>
                     <td className="p-3">
-                      <div className="font-medium">{v.code}</div>
+                      <div className="font-mono font-semibold text-teal-700">{v.code}</div>
                       <div className="text-xs text-gray-400">{v.name}</div>
                     </td>
-                    <td className="p-3 text-center"><Badge variant="outline">{v.discount_type === 'PERCENTAGE' ? '%' : 'đ'}</Badge></td>
+                    <td className="p-3 text-center"><Badge variant="outline">{v.discount_type === 'PERCENTAGE' ? '%' : 'VND'}</Badge></td>
                     <td className="p-3 text-right font-mono text-xs whitespace-nowrap">
-                      {v.discount_type === 'PERCENTAGE' ? `${v.discount_value}% (tối đa ${Number(v.max_discount).toLocaleString('vi')}đ)` : `${Number(v.discount_value).toLocaleString('vi')}đ`}
+                      {v.discount_type === 'PERCENTAGE'
+                        ? `${v.discount_value}% (tối đa ${Number(v.max_discount).toLocaleString('vi')}đ)`
+                        : `${Number(v.discount_value).toLocaleString('vi')}đ`}
                     </td>
                     <td className="p-3 text-right font-mono text-xs whitespace-nowrap">{Number(v.min_order_value).toLocaleString('vi')}đ</td>
-                    <td className="p-3 text-center"><Badge variant={v.applicable_user_type === 'B2C' ? 'default' : 'secondary'}>{v.applicable_user_type}</Badge></td>
+                    <td className="p-3 text-center">
+                      <Badge variant={v.applicable_user_type === 'B2C' ? 'default' : 'secondary'}>
+                        {v.applicable_user_type === 'B2C' ? '🎯 B2C' : '🌐 ALL'}
+                      </Badge>
+                    </td>
                     <td className="p-3 text-center text-xs">{v.used_count || 0}/{v.usage_limit || '∞'}</td>
-                    <td className="p-3 text-center"><Badge variant={v.status === 'ACTIVE' ? 'default' : 'destructive'}>{v.status}</Badge></td>
+                    <td className="p-3 text-center">
+                      <Badge variant={v.status === 'ACTIVE' ? 'default' : v.status === 'EXPIRED' ? 'destructive' : 'secondary'}>{v.status}</Badge>
+                    </td>
+                    <td className="p-3 text-center">
+                      <Button variant="ghost" size="sm" onClick={() => router.push(`/admin/vouchers/${v.id}`)}>
+                        <ExternalLink className="w-3 h-3 mr-1" /> Sửa
+                      </Button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

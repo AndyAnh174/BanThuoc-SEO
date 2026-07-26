@@ -327,6 +327,48 @@ class MembershipTierListView(APIView):
         return Response(list(MembershipTier.objects.all().values()))
 
 
+# ── Admin: Membership Tiers CRUD ──────────────────────────────────
+class AdminMembershipTierView(APIView):
+    """Admin CRUD for membership tiers. Requires admin auth (checked via Django permissions)."""
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, pk=None):
+        if pk:
+            tier = MembershipTier.objects.get(pk=pk)
+            return Response({
+                "id": tier.id, "tier_name": tier.tier_name,
+                "tier_label": tier.tier_label,
+                "min_spent": tier.min_spent,
+                "cashback_percent": tier.cashback_percent,
+            })
+        return Response(list(MembershipTier.objects.all().values()))
+
+    def post(self, request):
+        tier = MembershipTier.objects.create(
+            tier_name=request.data["tier_name"],
+            tier_label=request.data.get("tier_label", request.data["tier_name"]),
+            min_spent=request.data.get("min_spent", 0),
+            cashback_percent=request.data.get("cashback_percent", 1.0),
+        )
+        return Response({"id": tier.id, "tier_name": tier.tier_name}, status=201)
+
+    def put(self, request, pk=None):
+        tier = MembershipTier.objects.get(pk=pk)
+        for field in ["tier_name", "tier_label", "min_spent", "cashback_percent"]:
+            if field in request.data:
+                setattr(tier, field, request.data[field])
+        tier.save()
+        return Response({"id": tier.id, "tier_name": tier.tier_name, "tier_label": tier.tier_label})
+
+    def patch(self, request, pk=None):
+        return self.put(request, pk)
+
+    def delete(self, request, pk=None):
+        tier = MembershipTier.objects.get(pk=pk)
+        tier.delete()
+        return Response(status=204)
+
+
 class MembershipMyView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def get(self, request):
