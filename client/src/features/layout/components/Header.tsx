@@ -26,6 +26,7 @@ import {
   Pill,
 } from 'lucide-react';
 import { useAuthStore } from '@/src/features/auth/stores/auth.store';
+import { UserDropdownMenu } from '@/src/features/layout/components/UserDropdownMenu';
 import { getCategoryIcon } from '@/src/features/products/utils/category-icons';
 
 interface HeaderProps {
@@ -321,8 +322,7 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                   </div>
               </div> */}
 
-              {/* User menu - temporarily hidden */}
-              {/* <UserDropdownMenu /> */}
+              <UserDropdownMenu />
 
               {/* Mobile menu toggle */}
               <Button
@@ -595,10 +595,9 @@ export function Header({ cartItemCount: initialCount = 0 }: HeaderProps) {
                  <Link href="/auth/login" className="flex items-center justify-center h-10 rounded-lg border border-gray-200 font-medium text-sm text-gray-700">
                     Đăng nhập
                  </Link>
-                 {/* Register temporarily hidden */}
-                 {/* <Link href="/auth/register" className="flex items-center justify-center h-10 rounded-lg bg-primary font-medium text-sm text-white">
+                 <Link href="/auth/register" className="flex items-center justify-center h-10 rounded-lg bg-primary font-medium text-sm text-white">
                     Đăng ký
-                 </Link> */}
+                 </Link>
               </div>
             </ul>
           </nav>

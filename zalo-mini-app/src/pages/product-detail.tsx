@@ -4,7 +4,7 @@ import { useAppStore, formatPrice } from "@/stores/app.store";
 
 const STOCK_STYLE = (q: number) => q > 20 ? { color: "#16a34a", bg: "#dcfce7" } : q > 0 ? { color: "#ea580c", bg: "#fff7ed" } : { color: "#dc2626", bg: "#fef2f2" };
 const STOCK_LABEL = (q: number) => q > 20 ? `Con ${q} sp` : q > 0 ? `Sap het - con ${q}` : "Het hang";
-const IMG_PLACEHOLDERS = [1, 2, 3, 4]; // Simulated multiple images
+const IMG_PLACEHOLDERS = [1, 2, 3, 4]; // Simulated multiple images (fallback)
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
@@ -26,9 +26,10 @@ export default function ProductDetailPage() {
 
   // Auto-rotate images every 3s
   useEffect(() => {
+    const total = galleryImages ? galleryImages.length : IMG_PLACEHOLDERS.length;
     const t = setInterval(() => {
       setCurImg(prev => {
-        const next = (prev + 1) % IMG_PLACEHOLDERS.length;
+        const next = (prev + 1) % total;
         const el = imgRef.current;
         if (el) {
           const child = el.children[next] as HTMLElement;
@@ -38,9 +39,14 @@ export default function ProductDetailPage() {
       });
     }, 3000);
     return () => clearInterval(t);
-  }, []);
+  }, [galleryImages]);
 
   if (!product) return <Box style={{ padding: 40, textAlign: "center" }}><Text.Title>Khong tim thay san pham</Text.Title></Box>;
+
+  const productImages = (product.images && product.images.length > 0)
+    ? product.images
+    : product.imageUrl ? [{ image_url: product.imageUrl, is_primary: true }] : [];
+  const galleryImages = productImages.length > 0 ? productImages : null;
 
   const dp = product.salePrice ? Math.round((1 - product.salePrice / product.price) * 100) : 0;
   const cp = product.salePrice ?? product.price;
@@ -54,16 +60,19 @@ export default function ProductDetailPage() {
       {/* Product Image Gallery */}
       <Box style={{ position: "relative" }}>
         <Box ref={imgRef} style={{ display: "flex", overflowX: "hidden", scrollBehavior: "smooth", height: 300, background: "white" }}>
-          {IMG_PLACEHOLDERS.map((img, i) => (
+          {galleryImages ? galleryImages.map((img, i) => (
+            <Box key={i} style={{ minWidth: "100%", height: 300, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", flexShrink: 0, overflow: "hidden" }}>
+              <img src={img.image_url} alt={`${product.name} ${i + 1}`} style={{ width: "100%", height: "100%", objectFit: "contain", padding: 16 }} />
+            </Box>
+          )) : IMG_PLACEHOLDERS.map((img, i) => (
             <Box key={i} style={{ minWidth: "100%", height: 300, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", flexShrink: 0 }}>
               <Icon icon="zi-home" style={{ color: "#ccfbf1" }} size={120} />
-              <Text style={{ position: "absolute", bottom: 16, color: "#9ca3af", fontSize: 12 }}>Anh {i + 1}/{IMG_PLACEHOLDERS.length}</Text>
             </Box>
           ))}
         </Box>
         {/* Dot indicators */}
         <Box flex justifyContent="center" style={{ position: "absolute", bottom: 40, left: 0, right: 0, gap: 6 }}>
-          {IMG_PLACEHOLDERS.map((_, i) => (
+          {(galleryImages || IMG_PLACEHOLDERS).map((_, i) => (
             <Box key={i} style={{ width: i === curImg ? 20 : 6, height: 6, borderRadius: 3, background: i === curImg ? "#0d9488" : "rgba(255,255,255,0.6)", transition: "all 0.3s" }} onClick={() => scrollToImg(i)} />
           ))}
         </Box>
@@ -73,7 +82,7 @@ export default function ProductDetailPage() {
             <Icon icon="zi-chevron-left" style={{ color: "white" }} size={20} />
           </Box>
         )}
-        {curImg < IMG_PLACEHOLDERS.length - 1 && (
+        {curImg < (galleryImages || IMG_PLACEHOLDERS).length - 1 && (
           <Box onClick={() => scrollToImg(curImg + 1)} style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: 18, background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <Icon icon="zi-chevron-right" style={{ color: "white" }} size={20} />
           </Box>
@@ -86,12 +95,6 @@ export default function ProductDetailPage() {
         <Box flex alignItems="center" style={{ gap: 4, marginBottom: 6 }}>
           <Box style={{ border: "1px solid #fca5a5", borderRadius: 3, padding: "1px 5px" }}><Text style={{ fontSize: 10, fontWeight: 700, color: "#ef4444" }}>MALL</Text></Box>
           <Text.Title style={{ fontSize: 18 }}>{product.name}</Text.Title>
-        </Box>
-        <Box flex alignItems="center" style={{ gap: 8, marginBottom: 10 }}>
-          <Box flex alignItems="center" style={{ gap: 3 }}>
-            <Text style={{ color: "#eab308", fontSize: 13 }}>★★★★★</Text>
-            <Text style={{ color: "#9ca3af", fontSize: 12 }}>5.0 | 1,4k da ban</Text>
-          </Box>
         </Box>
         <Box flex alignItems="baseline" style={{ gap: 10, marginBottom: 10 }}>
           <Text style={{ color: "#f97316", fontSize: 28, fontWeight: 700 }}>{formatPrice(cp)}</Text>
@@ -133,8 +136,8 @@ export default function ProductDetailPage() {
           <Box style={{ display: "flex", gap: 10, overflowX: "auto" }}>
             {related.map((p) => (
               <Box key={p.id} onClick={() => nav("/product/" + p.slug, { animate: false })} style={{ background: "white", borderRadius: 12, padding: 10, minWidth: 140, flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-                <Box style={{ width: 70, height: 70, background: "#f3f4f6", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 8px" }}>
-                  <Icon icon="zi-home" style={{ color: "#0d9488" }} size={32} />
+                <Box style={{ width: 70, height: 70, background: "#f3f4f6", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 8px", overflow: "hidden" }}>
+                  {p.imageUrl ? <img src={p.imageUrl} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "contain" }} /> : <Icon icon="zi-home" style={{ color: "#0d9488" }} size={32} />}
                 </Box>
                 <Text style={{ fontSize: 12, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</Text>
                 <Text style={{ color: "#f97316", fontWeight: 700, fontSize: 13, marginTop: 4 }}>{formatPrice(p.salePrice ?? p.price)}</Text>

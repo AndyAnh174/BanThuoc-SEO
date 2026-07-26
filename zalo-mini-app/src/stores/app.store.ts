@@ -10,7 +10,7 @@ export interface Product {
   salePrice?: number | null; imageUrl?: string; unit: string;
   category: { name: string; slug: string }; stockQuantity: number;
   manufacturer?: { name: string }; description?: string;
-  images?: { image_url: string }[];
+  images?: { image_url: string; is_primary?: boolean }[];
 }
 
 export interface CartItem { product: Product; quantity: number; }
@@ -93,11 +93,13 @@ export const useAppStore = create<AppState>((set, get) => ({
       if (data.results?.length) {
         const mapped: Product[] = data.results.map((p: any) => ({
           id: p.id, name: p.name, slug: p.slug,
-          price: Number(p.price), salePrice: p.sale_price ? Number(p.sale_price) : null,
+          price: Number(p.retail_price || p.sale_price || p.price),
+          salePrice: p.sale_price && Number(p.sale_price) < Number(p.retail_price || p.price) ? Number(p.sale_price) : null,
           unit: p.unit || "Hộp", stockQuantity: p.stock_quantity || 0,
           category: p.category || { name: "", slug: "" },
-          imageUrl: p.primary_image?.image_url || p.image_url || "",
+          imageUrl: p.primary_image?.image_url || "",
           manufacturer: p.manufacturer,
+          images: p.images,
         }));
         set({ products: mapped });
       }
@@ -111,7 +113,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       const items: CartItem[] = (data.items || []).map((i: any) => ({
         product: {
           id: i.product?.id, name: i.product?.name, slug: i.product?.slug,
-          price: Number(i.product?.price || 0), salePrice: i.product?.sale_price ? Number(i.product.sale_price) : null,
+          price: Number(i.product?.retail_price || i.product?.sale_price || i.product?.price || 0),
+          salePrice: i.product?.sale_price && Number(i.product.sale_price) < Number(i.product?.retail_price || i.product?.price || 0) ? Number(i.product.sale_price) : null,
           unit: i.product?.unit || "Hộp", stockQuantity: 0,
           category: { name: "", slug: "" },
           imageUrl: i.product?.primary_image?.image_url || "",

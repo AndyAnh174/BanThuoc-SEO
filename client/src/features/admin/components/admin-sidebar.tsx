@@ -29,7 +29,9 @@ import {
     History,
     Bug,
     MonitorPlay,
-    TicketPercent
+    TicketPercent,
+    Smartphone,
+    Crown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -88,6 +90,21 @@ const sidebarSections: SidebarSection[] = [
         defaultOpen: true,
         items: [
             { label: "Tin tức", href: "/admin/blogs", icon: FileText },
+        ]
+    },
+    {
+        title: "Mini App",
+        icon: Smartphone,
+        defaultOpen: true,
+        items: [
+            { label: "Sản phẩm", href: "/admin/miniapp/products", icon: Package },
+            { label: "Danh mục", href: "/admin/miniapp/categories", icon: FolderTree },
+            { label: "Nhà sản xuất", href: "/admin/miniapp/manufacturers", icon: Factory },
+            { label: "Loại sản phẩm", href: "/admin/miniapp/product-types", icon: Boxes },
+            { label: "Banner", href: "/admin/miniapp/banners", icon: Image },
+            { label: "Flash Sale", href: "/admin/miniapp/flash-sales", icon: Zap },
+            { label: "Voucher", href: "/admin/miniapp/vouchers", icon: TicketPercent },
+            { label: "Hạng thành viên", href: "/admin/miniapp/membership-tiers", icon: Crown },
         ]
     },
     {

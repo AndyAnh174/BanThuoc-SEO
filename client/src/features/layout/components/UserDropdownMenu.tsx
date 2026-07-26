@@ -104,15 +104,14 @@ export function UserDropdownMenu() {
                             Đăng nhập
                         </Link>
                     </DropdownMenuItem>
-                    {/* Register temporarily hidden */}
-                    {/* <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
+                    <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
                         <Link href="/auth/register" className="flex items-center gap-2 font-medium">
                             <div className="w-6 h-6 rounded bg-teal-100 flex items-center justify-center">
                                 <span className="text-xs font-bold text-teal-600">+</span>
                             </div>
                             Đăng ký
                         </Link>
-                    </DropdownMenuItem> */}
+                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         );

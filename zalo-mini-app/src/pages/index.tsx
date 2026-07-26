@@ -159,8 +159,8 @@ export default function HomePage() {
         <Box ref={fS.r} style={{ display: "flex", gap: 10, overflowX: "hidden", scrollBehavior: "smooth" }}>
           {products.slice(0, 5).map((p, k) => (
             <Box key={k} onClick={() => nav("/product/" + p.slug)} style={{ background: "white", borderRadius: 12, padding: 10, minWidth: 140, flexShrink: 0 }}>
-              <Box style={{ height: 56, background: "#f3f4f6", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
-                <Icon icon="zi-home" style={{ color: "#0d9488" }} size={28} />
+              <Box style={{ height: 56, background: "#f3f4f6", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8, overflow: "hidden" }}>
+                {p.imageUrl ? <img src={p.imageUrl} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "contain" }} /> : <Icon icon="zi-home" style={{ color: "#0d9488" }} size={28} />}
               </Box>
               <Text style={{ fontSize: 12, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</Text>
               <Box flex justifyContent="space-between" alignItems="center" style={{ marginTop: 4 }}>
@@ -181,8 +181,8 @@ export default function HomePage() {
             const st = ST(p.stockQuantity);
             return (
               <Box key={k} onClick={() => nav("/product/" + p.slug)} style={{ background: "white", borderRadius: 14, overflow: "hidden", border: "1px solid #f3f4f6", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-                <Box style={{ height: 140, background: "#f9fafb", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-                  <Icon icon="zi-home" style={{ color: "#0d9488" }} size={48} />
+                <Box style={{ height: 140, background: "#f9fafb", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+                  {p.imageUrl ? <img src={p.imageUrl} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: 8 }} /> : <Icon icon="zi-home" style={{ color: "#0d9488" }} size={48} />}
                   {k === 0 && <Box style={{ position: "absolute", top: 8, right: 8, background: "#fef3c7", padding: "3px 8px", borderRadius: 50 }}><Text style={{ fontSize: 10, fontWeight: 700, color: "#a16207" }}>★ BEST SELLER</Text></Box>}
                 </Box>
                 <Box style={{ padding: 12 }}>
@@ -191,14 +191,8 @@ export default function HomePage() {
                     <Text style={{ fontSize: 13, fontWeight: 500, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</Text>
                   </Box>
                   <Text style={{ color: "#f97316", fontWeight: 700, fontSize: 16, marginBottom: 4 }}>{formatPrice(p.salePrice ?? p.price)}</Text>
-                  <Box style={{ marginBottom: 4 }}>
-                    <Text style={{ fontSize: 10, color: "#f97316", background: "#fff7ed", display: "inline-block", padding: "2px 8px", borderRadius: 50 }}>#SanPhamChinhHang</Text>
-                  </Box>
-                  <Box flex justifyContent="space-between" alignItems="center" style={{ marginBottom: 6 }}>
-                    <Box flex alignItems="center" style={{ gap: 4 }}>
-                      <Text style={{ color: "#eab308", fontSize: 11 }}>★★★★★</Text>
-                      <Text style={{ fontSize: 11, color: "#9ca3af" }}>5.0 | 1,4k da ban</Text>
-                    </Box>
+                  <Box style={{ marginBottom: 6 }}>
+                    <Text style={{ fontSize: 10, color: "#f97316", background: "#fff7ed", display: "inline-block", padding: "2px 8px", borderRadius: 50 }}>#ChinhHang</Text>
                   </Box>
                   <Box flex style={{ gap: 6 }}>
                     <Text style={{ fontSize: 10, color: "#f97316", background: "#fff7ed", padding: "2px 6px", borderRadius: 50 }}>🚚 Giao nhanh</Text>

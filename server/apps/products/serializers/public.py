@@ -103,7 +103,7 @@ class ProductListSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'id', 'sku', 'name', 'slug', 'short_description',
-            'price', 'sale_price', 'current_price', 'discount_percentage', 'is_on_sale',
+            'price', 'sale_price', 'retail_price', 'current_price', 'discount_percentage', 'is_on_sale',
             'primary_image', 'category', 'manufacturer',
             'product_type', 'unit', 'quantity_per_unit', 'stock_quantity',
             'requires_prescription', 'is_featured', 'status',
@@ -138,7 +138,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'id', 'sku', 'name', 'slug', 'description', 'short_description',
-            'price', 'sale_price', 'current_price', 'discount_percentage', 'is_on_sale',
+            'price', 'sale_price', 'retail_price', 'current_price', 'discount_percentage', 'is_on_sale',
             'category', 'manufacturer', 'images',
             'product_type', 'ingredients', 'dosage', 'usage',
             'contraindications', 'side_effects', 'storage',
