@@ -8,7 +8,7 @@ import { AdminHeader } from '@/src/features/admin/components/admin-header';
 
 export default function MiniAppCategoriesPage() {
   const {
-    categories, isLoading, totalCount, currentPage, pageSize,
+    categories, categoryTree, isLoading, totalCount, currentPage, pageSize,
     fetchCategories, fetchCategoryTree,
   } = useCategoriesStore();
 
@@ -35,7 +35,7 @@ export default function MiniAppCategoriesPage() {
         pageSize={pageSize}
         onSearch={handleSearch}
       />
-      <CategoryModal />
+      <CategoryModal categories={categories} categoryTree={categoryTree} />
     </div>
   );
 }
