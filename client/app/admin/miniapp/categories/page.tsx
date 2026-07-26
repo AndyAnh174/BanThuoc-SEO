@@ -8,7 +8,7 @@ import { AdminHeader } from '@/src/features/admin/components/admin-header';
 
 export default function MiniAppCategoriesPage() {
   const {
-    categories, isLoading, totalCount,
+    categories, isLoading, totalCount, currentPage, pageSize,
     fetchCategories, fetchCategoryTree,
   } = useCategoriesStore();
 
@@ -17,13 +17,24 @@ export default function MiniAppCategoriesPage() {
     fetchCategoryTree(false);
   }, [fetchCategories, fetchCategoryTree]);
 
+  const handleSearch = (query: string) => {
+    fetchCategories({ search: query });
+  };
+
   return (
     <div className="space-y-6">
       <AdminHeader
         title="Danh mục Mini App"
         description={`${totalCount} danh mục — Quản lý danh mục hiển thị trên Mini App Zalo`}
       />
-      <CategoryTable />
+      <CategoryTable
+        categories={categories}
+        isLoading={isLoading}
+        totalCount={totalCount}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        onSearch={handleSearch}
+      />
       <CategoryModal />
     </div>
   );
