@@ -7,15 +7,15 @@ import { ProductTypeModal } from '@/src/features/admin/components/product-type-m
 import { AdminHeader } from '@/src/features/admin/components/admin-header';
 
 export default function MiniAppProductTypesPage() {
-  const { productTypes, fetchProductTypes, isLoading, totalCount } = useProductTypesStore();
+  const { types, fetchTypes, isLoading } = useProductTypesStore();
 
-  useEffect(() => { fetchProductTypes(); }, [fetchProductTypes]);
+  useEffect(() => { fetchTypes(); }, [fetchTypes]);
 
   return (
     <div className="space-y-6">
       <AdminHeader
         title="Loại sản phẩm Mini App"
-        description={`${totalCount} loại sản phẩm — Phân loại sản phẩm cho Mini App`}
+        description={`${types.length} loại sản phẩm — Phân loại sản phẩm cho Mini App`}
       />
       <ProductTypeTable />
       <ProductTypeModal />
