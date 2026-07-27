@@ -151,14 +151,14 @@ export default function ProductDetailPage() {
       <Header title={detail.name} onBackClick={() => nav(-1)} />
 
       {/* Product Image Gallery */}
-      <Box style={{ position: "relative", background: "white" }}>
-        <Box ref={imgRef} style={{ display: "flex", overflowX: "hidden", scrollBehavior: "smooth", height: 320, background: "#f9fafb" }}>
+      <Box style={{ position: "relative", background: "white", paddingTop: 8 }}>
+        <Box ref={imgRef} style={{ display: "flex", overflowX: "hidden", scrollBehavior: "smooth", height: 340, background: "#f9fafb" }}>
           {galleryImages ? galleryImages.map((img, i) => (
-            <Box key={i} style={{ minWidth: "100%", height: 320, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <img src={img.image_url} alt={`${detail.name}`} style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", padding: 24 }} />
+            <Box key={i} style={{ minWidth: "100%", height: 340, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <img src={img.image_url} alt={`${detail.name}`} style={{ maxWidth: "90%", maxHeight: "90%", objectFit: "contain", padding: 20 }}</Box>
             </Box>
           )) : (
-            <Box style={{ minWidth: "100%", height: 320, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <Box style={{ minWidth: "100%", height: 340, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <Box style={{ width: 180, height: 180, borderRadius: 16, background: "#e5e7eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Icon icon="zi-home" style={{ color: "#9ca3af" }} size={80} />
               </Box>
