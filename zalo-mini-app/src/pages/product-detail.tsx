@@ -155,7 +155,7 @@ export default function ProductDetailPage() {
         <Box ref={imgRef} style={{ display: "flex", overflowX: "hidden", scrollBehavior: "smooth", height: 340, background: "#f9fafb" }}>
           {galleryImages ? galleryImages.map((img, i) => (
             <Box key={i} style={{ minWidth: "100%", height: 340, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <img src={img.image_url} alt={`${detail.name}`} style={{ maxWidth: "90%", maxHeight: "90%", objectFit: "contain", paddingTop: 20 }} />
+              <img src={img.image_url} alt={`${detail.name}`} style={{ maxWidth: "90%", maxHeight: "90%", objectFit: "contain", paddingTop: 40 }} />
             </Box>
           )) : (
             <Box style={{ minWidth: "100%", height: 340, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
