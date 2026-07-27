@@ -260,6 +260,10 @@ export default function MiniAppBannersPage() {
                 <div className="space-y-1"><Label>Màu nền</Label><div className="flex items-center gap-2"><input type="color" value={editing.background_color || '#0d9488'} onChange={e => setEditing({ ...editing, background_color: e.target.value })} className="w-8 h-8 rounded border cursor-pointer" /><Input value={editing.background_color || '#0d9488'} onChange={e => setEditing({ ...editing, background_color: e.target.value })} className="flex-1 text-xs" /></div></div>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1"><Label>Ngày bắt đầu</Label><Input type="datetime-local" value={editing.start_date ? editing.start_date.slice(0, 16) : ''} onChange={e => setEditing({ ...editing, start_date: e.target.value ? new Date(e.target.value).toISOString() : '' })} /></div>
+                <div className="space-y-1"><Label>Ngày kết thúc</Label><Input type="datetime-local" value={editing.end_date ? editing.end_date.slice(0, 16) : ''} onChange={e => setEditing({ ...editing, end_date: e.target.value ? new Date(e.target.value).toISOString() : '' })} /></div>
+              </div>
               <div className="flex items-center gap-6">
                 <label className="flex items-center gap-2"><Switch checked={editing.is_active || false} onCheckedChange={v => setEditing({ ...editing, is_active: v })} /> Active</label>
                 <label className="flex items-center gap-2"><Switch checked={editing.show_on_miniapp !== false} onCheckedChange={v => setEditing({ ...editing, show_on_miniapp: v })} /> 📱 Hiện trên Mini App</label>
