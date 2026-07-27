@@ -1,3 +1,13 @@
+/* Force light mode — disable dark mode */
+:root {
+  color-scheme: light only;
+}
+
+[data-theme="dark"], [data-zaui-theme="dark"] {
+  --zaui-text-color: #000 !important;
+  --zaui-bg-color: #fff !important;
+}
+
 .page {
   padding: 16px 16px 96px 16px;
 }
