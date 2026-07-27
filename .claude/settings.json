@@ -1,4 +1,5 @@
 {
+  "autoCompactEnabled": true,
   "enabledPlugins": {
     "fullstack-dev-skills@fullstack-dev-skills": true,
     "github@claude-plugins-official": true,

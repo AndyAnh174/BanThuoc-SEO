@@ -19,8 +19,14 @@ from .models import (
     MiniappChatThread, MiniappChatMessage, MiniappNotification,
     MiniappSearchHistory,
 )
-from products.models import Product
+from products.models import Product, Banner, FlashSaleSession, FlashSaleItem
 from products.serializers.public import ProductListSerializer, ProductDetailSerializer
+from products.serializers.banner import BannerSerializer
+from products.serializers.flash_sale import (
+    FlashSaleSessionListSerializer,
+    FlashSaleItemSerializer,
+    CurrentFlashSaleSerializer,
+)
 from vouchers.models import Voucher
 
 
@@ -458,3 +464,72 @@ class SearchHotkeyView(APIView):
     def get(self, request):
         keys = MiniappSearchHistory.objects.values("keyword").annotate(count=Count("id")).order_by("-count")[:10]
         return Response({"keywords": list(keys)})
+
+
+# ── Banner (Mini App) ────────────────────────────────────────────
+class MiniappBannerHeroView(APIView):
+    """Get visible HERO banners for Mini App"""
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        banners = Banner.get_visible_banners(position=Banner.Position.HERO).filter(show_on_miniapp=True)
+        serializer = BannerSerializer(banners, many=True)
+        return Response(serializer.data)
+
+
+class MiniappBannerRowView(APIView):
+    """Get visible ROW banners for Mini App"""
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        banners = Banner.get_visible_banners(position=Banner.Position.ROW).filter(show_on_miniapp=True)
+        serializer = BannerSerializer(banners, many=True)
+        return Response(serializer.data)
+
+
+# ── Flash Sale (Mini App) ────────────────────────────────────────
+class MiniappFlashSaleView(APIView):
+    """Get current flash sale for Mini App (only sessions with show_on_miniapp=True)"""
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        now = timezone.now()
+
+        candidate = FlashSaleSession.objects.filter(
+            is_active=True,
+            show_on_miniapp=True,
+            status__in=[FlashSaleSession.Status.ACTIVE, FlashSaleSession.Status.SCHEDULED],
+            end_time__gte=now,
+        ).prefetch_related(
+            'items', 'items__product', 'items__product__category',
+            'items__product__manufacturer', 'items__product__images',
+        ).order_by('start_time').first()
+
+        current_session = None
+        upcoming_session = None
+
+        if candidate:
+            if candidate.start_time <= now and candidate.status != FlashSaleSession.Status.ACTIVE:
+                candidate.status = FlashSaleSession.Status.ACTIVE
+                candidate.save(update_fields=['status', 'updated_at'])
+
+            if candidate.start_time <= now <= candidate.end_time:
+                current_session = candidate
+            elif candidate.start_time > now:
+                upcoming_session = candidate
+
+        featured_items = []
+        active_session = current_session or upcoming_session
+        if active_session:
+            featured_items = active_session.items.filter(is_active=True).select_related(
+                'product', 'product__category', 'product__manufacturer',
+            ).prefetch_related('product__images').order_by('sort_order', '-sold_quantity')[:8]
+
+        response_data = {
+            'current_session': current_session,
+            'upcoming_session': upcoming_session,
+            'featured_items': featured_items,
+            'server_time': now,
+        }
+        serializer = CurrentFlashSaleSerializer(response_data)
+        return Response(serializer.data)

@@ -49,6 +49,7 @@ class FlashSaleSession(models.Model):
     
     # Metadata
     is_active = models.BooleanField(default=True, help_text=_("Is this session active?"))
+    show_on_miniapp = models.BooleanField(default=False, help_text=_("Hiển thị trên Mini App"))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(

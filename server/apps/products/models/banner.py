@@ -37,6 +37,7 @@ class Banner(models.Model):
     # Ordering and status
     sort_order = models.PositiveIntegerField(default=0, verbose_name="Thứ tự")
     is_active = models.BooleanField(default=True, verbose_name="Đang hiển thị")
+    show_on_miniapp = models.BooleanField(default=False, verbose_name="Hiển thị trên Mini App")
     
     # Schedule
     start_date = models.DateTimeField(null=True, blank=True, verbose_name="Ngày bắt đầu")

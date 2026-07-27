@@ -1,6 +1,6 @@
 /** Product & Search API */
 
-import { api } from "./api";
+import { api, publicApi } from "./api";
 
 export interface ProductItem {
   id: string; name: string; slug: string;
@@ -28,6 +28,22 @@ export function searchProducts(query: string) {
 
 export function getSuggestions(query: string) {
   return api.get<{ suggestions: { text: string; type: string; slug: string }[] }>(`/search/suggest/?q=${encodeURIComponent(query)}`);
+}
+
+export function getFeatured() {
+  return publicApi.get<ProductItem[]>("/products/featured/");
+}
+
+export function getBestSelling() {
+  return publicApi.get<ProductItem[]>("/products/best-selling/");
+}
+
+export function getNewProducts() {
+  return publicApi.get<ProductItem[]>("/products/new/");
+}
+
+export function getOnSale() {
+  return publicApi.get<ProductItem[]>("/products/on-sale/");
 }
 
 export function getHotkeys() {

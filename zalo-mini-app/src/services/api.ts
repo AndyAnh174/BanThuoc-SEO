@@ -63,3 +63,30 @@ export const api = {
   patch: <T = any>(path: string, body?: any) => request<T>(path, { method: "PATCH", body: body ? JSON.stringify(body) : undefined }),
   delete: <T = any>(path: string) => request<T>(path, { method: "DELETE" }),
 };
+
+// Public API client (no /miniapp prefix — for banners, flash-sale, products/public...)
+const PUBLIC_BASE = import.meta.env.VITE_API_BASE_URL_PUBLIC || "https://banthuocsi.vn/api";
+
+async function publicRequest<T = any>(path: string, options: RequestInit = {}): Promise<T> {
+  const url = `${PUBLIC_BASE}${path}`;
+  const token = getToken();
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options.headers as Record<string, string> || {}),
+  };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  const res = await fetch(url, { ...options, headers });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw { status: res.status, ...err };
+  }
+  if (res.status === 204) return null as T;
+  return res.json();
+}
+
+export const publicApi = {
+  get: <T = any>(path: string) => publicRequest<T>(path),
+  post: <T = any>(path: string, body?: any) => publicRequest<T>(path, { method: "POST", body: body ? JSON.stringify(body) : undefined }),
+  patch: <T = any>(path: string, body?: any) => publicRequest<T>(path, { method: "PATCH", body: body ? JSON.stringify(body) : undefined }),
+  delete: <T = any>(path: string) => publicRequest<T>(path, { method: "DELETE" }),
+};

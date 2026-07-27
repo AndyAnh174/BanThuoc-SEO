@@ -44,6 +44,13 @@ urlpatterns = [
     path("chat/threads/", views.ChatThreadListView.as_view(), name="chat-thread-list"),
     path("chat/threads/<int:pk>/messages/", views.ChatMessageListView.as_view(), name="chat-message-list"),
 
+    # ── Banners (Mini App) ──────────────────────────
+    path("banners/hero/", views.MiniappBannerHeroView.as_view(), name="banner-hero"),
+    path("banners/row/", views.MiniappBannerRowView.as_view(), name="banner-row"),
+
+    # ── Flash Sale (Mini App) ───────────────────────
+    path("flash-sale/", views.MiniappFlashSaleView.as_view(), name="flash-sale"),
+
     # ── Search ──────────────────────────────────────
     path("search/", views.SearchView.as_view(), name="search"),
     path("search/suggest/", views.SearchSuggestView.as_view(), name="search-suggest"),
