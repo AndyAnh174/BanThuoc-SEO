@@ -211,14 +211,29 @@ export default async function BlogDetailPage({ params }: PageProps) {
           {/* Content */}
           <div
             className="prose prose-lg prose-teal max-w-none mb-12
-              prose-headings:text-gray-900
-              prose-p:text-gray-700 prose-p:leading-relaxed
+              prose-headings:text-gray-900 prose-headings:scroll-mt-20
+              prose-h2:text-2xl prose-h2:font-bold prose-h2:mt-10 prose-h2:mb-4 prose-h2:pb-2 prose-h2:border-b prose-h2:border-gray-200
+              prose-h3:text-xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-3
+              prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
               prose-a:text-teal-600 prose-a:no-underline hover:prose-a:underline
               prose-img:rounded-xl prose-img:shadow-md
               prose-strong:text-gray-900
-              prose-blockquote:border-teal-500 prose-blockquote:bg-teal-50 prose-blockquote:py-2 prose-blockquote:rounded-r-lg
+              prose-blockquote:border-teal-500 prose-blockquote:bg-teal-50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg
+              prose-li:text-gray-700 prose-li:leading-relaxed
+              prose-ul:list-disc prose-ol:list-decimal
+              prose-table:border-collapse prose-table:w-full
+              prose-th:border prose-th:border-gray-300 prose-th:bg-gray-100 prose-th:px-3 prose-th:py-2 prose-th:text-sm prose-th:font-semibold
+              prose-td:border prose-td:border-gray-300 prose-td:px-3 prose-td:py-2 prose-td:text-sm
+              prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:before:content-none prose-code:after:content-none
               [&_iframe]:max-w-full
-              [&_img]:max-w-full [&_img]:h-auto"
+              [&_img]:max-w-full [&_img]:h-auto
+              [&_figure]:my-6
+              [&_figcaption]:text-center [&_figcaption]:text-sm [&_figcaption]:text-gray-500 [&_figcaption]:mt-2
+              [&_.checklist]:list-none [&_.checklist_li]:flex [&_.checklist_li]:items-start [&_.checklist_li]:gap-2 [&_.checklist_li]:mb-1
+              [&_pre]:bg-gray-900 [&_pre]:text-gray-100 [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:text-sm
+              [&_pre_code]:bg-transparent [&_pre_code]:text-gray-100 [&_pre_code]:p-0
+              [&_hr]:my-8 [&_hr]:border-gray-200
+            "
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
