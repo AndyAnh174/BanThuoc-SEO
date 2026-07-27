@@ -189,7 +189,7 @@ export default function HomePage() {
       {/* ── MEMBERSHIP CARD ── */}
       <Box style={{ margin: "0 16px 16px", background: "white", borderRadius: 14, padding: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }}>
         <Box flex>
-          <Box flex={1} flex alignItems="center" style={{ gap: 10 }}>
+          <Box flex={1} alignItems="center" style={{ gap: 10 }}>
             <Box style={{ width: 44, height: 44, borderRadius: 22, background: "#f3f4f6", display: "flex", alignItems: "center", justifyContent: "center", color: "#9ca3af", fontSize: 20, fontWeight: 700 }}>{isAuthenticated ? (user?.name?.charAt(0) || "K") : "K"}</Box>
             <Box>
               <Text style={{ fontSize: 12, color: "#9ca3af" }}>Xin chào,</Text>
@@ -197,7 +197,7 @@ export default function HomePage() {
             </Box>
           </Box>
           <Box style={{ width: 1, alignSelf: "stretch", background: "#f3f4f6", margin: "0 12px" }} />
-          <Box flex={1} flex alignItems="center" style={{ gap: 8 }}>
+          <Box flex={1} alignItems="center" style={{ gap: 8 }}>
             <Box style={{ width: 36, height: 36, borderRadius: 18, background: tierColor + "20", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <Text style={{ fontSize: 16 }}>🥉</Text>
             </Box>

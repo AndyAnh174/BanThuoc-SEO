@@ -1,0 +1,78 @@
+- generic [ref=f2e2]:
+  - generic [ref=f2e3]:
+    - generic [ref=f2e4]:
+      - generic [ref=f2e5]: 
+      - generic [ref=f2e6]: 
+    - generic [ref=f2e7]: 12:00
+  - text:  
+  - generic [ref=f2e8]:
+    - generic [ref=f2e9]: 
+    - generic [ref=f2e10]: 
+  - iframe [active] [ref=f2e11]:
+    - generic [ref=f3e2]:
+      - generic [ref=f3e590]:
+        - generic [ref=f3e591]:
+          - button "zi_chevron_left" [ref=f3e593] [cursor=pointer]
+          - generic [ref=f3e596]: Dầu Phật Linh Trường Sơn 1.5ml (H/10C/1.5ml)
+        - img "Dầu Phật Linh Trường Sơn 1.5ml (H/10C/1.5ml) 1" [ref=f3e600]
+        - generic [ref=f3e601]:
+          - generic [ref=f3e602]:
+            - generic [ref=f3e603]: MALL
+            - generic [ref=f3e605]: Dầu Phật Linh Trường Sơn 1.5ml (H/10C/1.5ml)
+          - generic [ref=f3e606]: 9.600đ
+          - generic [ref=f3e608]:
+            - generic [ref=f3e609]: "Đơn vị: Hộp"
+            - generic [ref=f3e610]: Còn 1000 sp
+            - generic [ref=f3e612]: "NSX: Đông Nam Dược Trường Sơn"
+          - generic [ref=f3e613]:
+            - generic [ref=f3e614]: 🚚 Giao nhanh
+            - generic [ref=f3e616]: Giá tốt
+            - generic [ref=f3e618]: Chính hãng
+        - generic [ref=f3e620]:
+          - generic [ref=f3e621]: Thông tin sản phẩm
+          - generic [ref=f3e622]:
+            - generic [ref=f3e623]: Thành phần
+            - generic [ref=f3e624]: Hoạt chất chính đạt chuẩn GMP, đảm bảo chất lượng và an toàn cho người sử dụng.
+          - generic [ref=f3e625]:
+            - generic [ref=f3e626]: Đối tượng sử dụng
+            - generic [ref=f3e627]: Người lớn và trẻ em trên 12 tuổi. Tham khảo ý kiến bác sĩ trước khi dùng.
+          - generic [ref=f3e628]:
+            - generic [ref=f3e629]: Hướng dẫn sử dụng
+            - generic [ref=f3e630]: Uống 1-2 viên/lần, ngày 2 lần sau bữa ăn. Không vượt quá 8 viên/ngày.
+          - generic [ref=f3e631]:
+            - generic [ref=f3e632]: Bảo quản
+            - generic [ref=f3e633]: Nơi khô ráo, tránh ánh sáng trực tiếp. Nhiệt độ dưới 30°C.
+        - generic [ref=f3e634]:
+          - generic [ref=f3e635]: Sản phẩm liên quan
+          - generic [ref=f3e637]:
+            - img "Que thử thai Pregnancy HCG test" [ref=f3e639]
+            - generic [ref=f3e640]: Que thử thai Pregnancy HCG test
+            - generic [ref=f3e641]: 6.000đ
+        - generic [ref=f3e642]:
+          - generic [ref=f3e643]:
+            - generic [ref=f3e644]: zi_chat
+            - generic [ref=f3e645]: Chat
+          - generic [ref=f3e646]:
+            - generic [ref=f3e647]: zi_heart
+            - generic [ref=f3e648]: Thích
+          - generic [ref=f3e649]:
+            - generic [ref=f3e650]: −
+            - generic [ref=f3e651]: "1"
+            - generic [ref=f3e652]: +
+          - button "Thêm giỏ (9.600đ)" [ref=f3e653] [cursor=pointer]
+      - generic [ref=f3e380]:
+        - button "zi_home Trang chu" [ref=f3e381] [cursor=pointer]:
+          - generic [ref=f3e382]: zi_home
+          - generic [ref=f3e384]: Trang chu
+        - button "zi_list_1 Danh muc" [ref=f3e385] [cursor=pointer]:
+          - generic [ref=f3e386]: zi_list_1
+          - generic [ref=f3e388]: Danh muc
+        - button "zi_search Tim kiem" [ref=f3e389] [cursor=pointer]:
+          - generic [ref=f3e390]: zi_search
+          - generic [ref=f3e392]: Tim kiem
+        - button "🛒 Gio hang" [ref=f3e393] [cursor=pointer]:
+          - generic [ref=f3e394]: 🛒
+          - generic [ref=f3e396]: Gio hang
+        - button "zi_user Ca nhan" [ref=f3e397] [cursor=pointer]:
+          - generic [ref=f3e398]: zi_user
+          - generic [ref=f3e400]: Ca nhan

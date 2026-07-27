@@ -1,1 +1,79 @@
-[]
+[
+  {
+    "name": "gitleaks",
+    "description": "Detect hardcoded secrets (passwords, API keys, tokens, credentials) in codebases using Gitleaks. Use this skill whenever the user mentions secret scanning, credential leaks, gitleaks setup, .gitleaks.toml configuration, CI/CD security scanning, pre-commit hooks for secrets, Jenkins security stage, o...",
+    "path": "gitleaks",
+    "healthy": true,
+    "has_references": true
+  },
+  {
+    "name": "tavily-best-practices",
+    "description": "Build production-ready Tavily integrations with best practices baked in. Reference documentation for developers using coding assistants (Claude Code, Cursor, etc.) to implement web search, content extraction, crawling, and research in agentic workflows, RAG systems, or autonomous agents.",
+    "path": "tavily-best-practices",
+    "healthy": true,
+    "has_references": true
+  },
+  {
+    "name": "tavily-cli",
+    "description": "Web search, content extraction, crawling, and deep research via the Tavily CLI. Use this skill whenever the user wants to search the web, find articles, research a topic, look something up online, extract content from a URL, grab text from a webpage, crawl documentation, download a site's pages, dis...",
+    "path": "tavily-cli",
+    "healthy": true,
+    "has_references": false
+  },
+  {
+    "name": "tavily-crawl",
+    "description": "Crawl websites and extract content from multiple pages via the Tavily CLI. Use this skill when the user wants to crawl a site, download documentation, extract an entire docs section, bulk-extract pages, save a site as local markdown files, or says \"crawl\", \"get all the pages\", \"download the docs\", \"...",
+    "path": "tavily-crawl",
+    "healthy": true,
+    "has_references": false
+  },
+  {
+    "name": "tavily-dynamic-search",
+    "description": "Programmatic web search with context isolation. Use this skill for any research task where you need to search the web, filter results, and extract specific information — without polluting your context window with raw HTML and boilerplate. This is the default skill for web research. Triggered by \"sea...",
+    "path": "tavily-dynamic-search",
+    "healthy": true,
+    "has_references": false
+  },
+  {
+    "name": "tavily-extract",
+    "description": "Extract clean markdown or text content from specific URLs via the Tavily CLI. Use this skill when the user has one or more URLs and wants their content, says \"extract\", \"grab the content from\", \"pull the text from\", \"get the page at\", \"read this webpage\", or needs clean text from web pages. Handles ...",
+    "path": "tavily-extract",
+    "healthy": true,
+    "has_references": false
+  },
+  {
+    "name": "tavily-map",
+    "description": "Discover and list all URLs on a website without extracting content, via the Tavily CLI. Use this skill when the user wants to find a specific page on a large site, list all URLs, see the site structure, find where something is on a domain, or says \"map the site\", \"find the URL for\", \"what pages are ...",
+    "path": "tavily-map",
+    "healthy": true,
+    "has_references": false
+  },
+  {
+    "name": "tavily-research",
+    "description": "Conduct comprehensive AI-powered research with citations via the Tavily CLI. Use this skill when the user wants deep research, a detailed report, a comparison, market analysis, literature review, or says \"research\", \"investigate\", \"analyze in depth\", \"compare X vs Y\", \"what does the market look like...",
+    "path": "tavily-research",
+    "healthy": true,
+    "has_references": false
+  },
+  {
+    "name": "tavily-search",
+    "description": "Search the web with LLM-optimized results via the Tavily CLI. Use this skill when the user wants to search the web, find articles, look up information, get recent news, discover sources, or says \"search for\", \"find me\", \"look up\", \"what's the latest on\", \"find articles about\", or needs current infor...",
+    "path": "tavily-search",
+    "healthy": true,
+    "has_references": false
+  },
+  {
+    "name": "use-vibe-hnindex",
+    "description": "Guide for using vibe-hnindex MCP tools — indexing codebases, searching with keyword/semantic/hybrid modes, streaming, fuzzy matching, benchmarking, smart context, and code agent (code_session + code_apply). Use when the user asks to index a codebase, search code, benchmark search performance, or wor...",
+    "path": "use-vibe-hnindex",
+    "healthy": true,
+    "has_references": false
+  },
+  {
+    "name": "zalo-mini-app",
+    "description": "Build Zalo Mini Apps - lightweight web apps running inside Zalo super-app. This skill provides ZaUI components (Button, Input, Modal, Tabs, Avatar, etc.), JavaScript APIs (authorize, getUserInfo, getPhoneNumber, getLocation, Storage, Camera), Checkout SDK for payments, design guidelines, and develop...",
+    "path": "zalo-mini-app",
+    "healthy": true,
+    "has_references": true
+  }
+]
