@@ -38,8 +38,6 @@ const emptyBanner: Partial<Banner> = {
   start_date: '', end_date: '',
 };
 
-const POSITIONS = ['HERO', 'ROW', 'PROMO', 'POPUP'];
-
 export default function MiniAppBannersPage() {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,6 +46,7 @@ export default function MiniAppBannersPage() {
   const [deleteTarget, setDeleteTarget] = useState<Banner | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') || '' : '';
@@ -58,7 +57,8 @@ export default function MiniAppBannersPage() {
     try {
       const res = await fetch(`${API}/banners/?page_size=100`, { headers: authHeaders });
       const data = await res.json();
-      setBanners(Array.isArray(data) ? data : data.results || []);
+      const list = Array.isArray(data) ? data : data.results || [];
+      setBanners(list);
     } catch { toast.error('Không thể tải banner'); }
     setLoading(false);
   };
@@ -72,8 +72,6 @@ export default function MiniAppBannersPage() {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // Validate
     if (!file.type.startsWith('image/')) { toast.error('Vui lòng chọn file ảnh'); return; }
     if (file.size > 5 * 1024 * 1024) { toast.error('Ảnh quá lớn (tối đa 5MB)'); return; }
 
@@ -82,24 +80,26 @@ export default function MiniAppBannersPage() {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('folder', 'banners');
-
       const res = await fetch(`${API}/files/upload/`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.detail || 'Upload failed'); }
       const data = await res.json();
-      setEditing(prev => prev ? { ...prev, image_url: data.file_url } : null);
+      const imgUrl = data.file_url || data.url || '';
+      if (!imgUrl) { toast.error('Không lấy được URL ảnh từ response'); return; }
+      setEditing(prev => prev ? { ...prev, image_url: imgUrl } : null);
       toast.success('Tải ảnh lên thành công!');
-    } catch { toast.error('Tải ảnh lên thất bại'); }
+    } catch (err: any) { toast.error(err.message || 'Tải ảnh lên thất bại'); }
     setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const save = async () => {
     if (!editing) return;
     if (!editing.title?.trim()) { toast.error('Vui lòng nhập tiêu đề'); return; }
-    if (!editing.image_url) { toast.error('Vui lòng tải ảnh lên'); return; }
+    if (!editing.image_url?.trim()) { toast.error('Vui lòng tải ảnh lên hoặc nhập URL ảnh'); return; }
 
     setSaving(true);
     try {
@@ -139,10 +139,13 @@ export default function MiniAppBannersPage() {
     } catch { toast.error('Cập nhật thất bại'); }
   };
 
+  const miniAppBanners = banners.filter(b => b.show_on_miniapp);
+  const display = showAll ? banners : miniAppBanners;
+
   return (
     <div className="space-y-6">
       <AdminHeader title="Banner Mini App"
-        description={`${banners.length} banner — Quản lý banner hiển thị trên Mini App Zalo. Vị trí: HERO (carousel), ROW (dọc), PROMO (khuyến mãi), POPUP.`}
+        description={`${miniAppBanners.length} banner Mini App (${banners.length} tổng). Quản lý banner cho Mini App Zalo — chỉ hiển thị banner có toggle 📱 Mini App được bật.`}
         action={
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={fetchBanners}><RefreshCw className="w-4 h-4 mr-1" /> Làm mới</Button>
@@ -152,27 +155,36 @@ export default function MiniAppBannersPage() {
       />
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Tổng</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{banners.length}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Đang active</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-teal-600">{banners.filter(b => b.is_active).length}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">HERO</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-blue-600">{banners.filter(b => b.display_position === 'HERO').length}</div></CardContent></Card>
-        <Card className="border-orange-200 bg-orange-50/50"><CardHeader className="pb-2"><CardTitle className="text-sm">Mini App</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-orange-600">{banners.filter(b => b.show_on_miniapp).length}</div></CardContent></Card>
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card className="border-teal-200 bg-teal-50/50"><CardHeader className="pb-2"><CardTitle className="text-sm">📱 Banner Mini App</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-teal-600">{miniAppBanners.length}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Đang active</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{miniAppBanners.filter(b => b.is_active).length}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Tổng tất cả banner</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-gray-400">{banners.length}</div></CardContent></Card>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <label className="flex items-center gap-2 text-sm cursor-pointer">
+          <Switch checked={showAll} onCheckedChange={setShowAll} />
+          {showAll ? 'Đang hiện tất cả banner (B2B + Mini App)' : 'Chỉ hiện banner Mini App'}
+        </label>
       </div>
 
       {/* Banner Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {loading ? (
           <div className="col-span-full text-center py-16 text-gray-400"><RefreshCw className="w-6 h-6 mx-auto mb-2 animate-spin" /> Đang tải...</div>
-        ) : banners.length === 0 ? (
-          <div className="col-span-full text-center py-16 text-gray-400"><Image className="w-10 h-10 mx-auto mb-3 opacity-30" /><p>Chưa có banner nào</p></div>
-        ) : banners.map(b => (
-          <Card key={b.id} className={`overflow-hidden hover:shadow-md transition-shadow ${!b.is_active ? 'opacity-50' : ''}`}>
+        ) : display.length === 0 ? (
+          <div className="col-span-full text-center py-16 text-gray-400">
+            <Image className="w-10 h-10 mx-auto mb-3 opacity-30" />
+            <p className="font-medium">Chưa có banner Mini App nào</p>
+            <p className="text-sm mt-1">Nhấn "Tạo banner mới" để thêm, hoặc bật "Hiện tất cả" để xem banner B2B</p>
+          </div>
+        ) : display.map(b => (
+          <Card key={b.id} className={`overflow-hidden hover:shadow-md transition-shadow ${!b.is_active ? 'opacity-50' : ''} ${!b.show_on_miniapp ? 'border-gray-200' : 'border-teal-300 ring-1 ring-teal-100'}`}>
             <div className="h-36 bg-gray-100 flex items-center justify-center overflow-hidden relative">
               {b.image_url ? <img src={b.image_url} alt={b.title} className="w-full h-full object-cover" /> : <Image className="w-10 h-10 text-gray-300" />}
-              <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
+              <div className="absolute top-2 left-2 flex gap-1">
                 <Badge variant={b.is_active ? 'default' : 'secondary'} className="text-xs">{b.is_active ? 'Active' : 'Inactive'}</Badge>
-                <Badge variant="outline" className="text-xs bg-white">{b.display_position}</Badge>
-                {b.show_on_miniapp && <Badge className="text-xs bg-orange-500 text-white">Mini App</Badge>}
+                {b.show_on_miniapp && <Badge className="text-xs bg-orange-500 text-white">📱 Mini App</Badge>}
               </div>
             </div>
             <CardContent className="p-4">
@@ -197,13 +209,13 @@ export default function MiniAppBannersPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editing?.id ? 'Sửa banner' : 'Tạo banner mới'}</DialogTitle>
-            <DialogDescription>Upload ảnh banner để hiển thị trên Mini App Zalo.</DialogDescription>
+            <DialogTitle>{editing?.id ? 'Sửa banner' : 'Tạo banner Mini App mới'}</DialogTitle>
+            <DialogDescription>Upload ảnh banner để hiển thị trên Mini App Zalo (vị trí HERO carousel).</DialogDescription>
           </DialogHeader>
           {editing && (
             <div className="space-y-4">
               <div className="space-y-1"><Label>Tiêu đề <span className="text-red-500">*</span></Label><Input value={editing.title || ''} onChange={e => setEditing({ ...editing, title: e.target.value })} placeholder="VD: Khuyến mãi hè 2026" /></div>
-              <div className="space-y-1"><Label>Phụ đề</Label><Input value={editing.subtitle || ''} onChange={e => setEditing({ ...editing, subtitle: e.target.value })} placeholder="Mô tả ngắn cho banner" /></div>
+              <div className="space-y-1"><Label>Phụ đề</Label><Input value={editing.subtitle || ''} onChange={e => setEditing({ ...editing, subtitle: e.target.value })} placeholder="Mô tả ngắn" /></div>
 
               {/* ── UPLOAD ẢNH ── */}
               <div className="space-y-2">
@@ -211,7 +223,7 @@ export default function MiniAppBannersPage() {
                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
                 {editing.image_url ? (
                   <div className="relative">
-                    <img src={editing.image_url} alt="Preview" className="w-full h-40 rounded-lg border object-cover" />
+                    <img src={editing.image_url} alt="Preview" className="w-full h-40 rounded-lg border object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                     <Button variant="secondary" size="sm" className="absolute bottom-2 right-2" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
                       <Upload className="w-3 h-3 mr-1" /> Đổi ảnh
                     </Button>
@@ -222,22 +234,31 @@ export default function MiniAppBannersPage() {
                     <span className="text-sm text-gray-500">{uploading ? 'Đang tải lên...' : 'Nhấn để chọn ảnh (tối đa 5MB)'}</span>
                   </Button>
                 )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1"><Label>Link khi nhấn</Label><Input value={editing.link_url || ''} onChange={e => setEditing({ ...editing, link_url: e.target.value })} placeholder="Để trống nếu không cần" /></div>
-                <div className="space-y-1"><Label>Text nút</Label><Input value={editing.link_text || ''} onChange={e => setEditing({ ...editing, link_text: e.target.value })} placeholder="Mua ngay" /></div>
+                {/* Fallback: manual URL input */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400 whitespace-nowrap">hoặc URL:</span>
+                  <Input
+                    className="flex-1 text-xs h-8"
+                    value={editing.image_url || ''}
+                    onChange={e => setEditing({ ...editing, image_url: e.target.value })}
+                    placeholder="https://minio.banthuocsi.vn/..."
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-1"><Label>Vị trí</Label><select className="w-full border rounded-md px-3 py-2 text-sm bg-white" value={editing.display_position || 'HERO'} onChange={e => setEditing({ ...editing, display_position: e.target.value })}>{POSITIONS.map(p => <option key={p} value={p}>{p === 'HERO' ? 'HERO (carousel chính)' : p === 'ROW' ? 'ROW (banner dọc)' : p === 'PROMO' ? 'PROMO (khuyến mãi)' : 'POPUP (bật lên)'}</option>)}</select></div>
+                <div className="space-y-1"><Label>Vị trí</Label>
+                  <select className="w-full border rounded-md px-3 py-2 text-sm bg-white" value={editing.display_position || 'HERO'} onChange={e => setEditing({ ...editing, display_position: e.target.value })}>
+                    <option value="HERO">HERO (carousel)</option>
+                  </select>
+                </div>
                 <div className="space-y-1"><Label>Thứ tự</Label><Input type="number" value={editing.sort_order || 1} onChange={e => setEditing({ ...editing, sort_order: Number(e.target.value) })} /></div>
-                <div className="space-y-1"><Label>Màu nền</Label><div className="flex items-center gap-2"><input type="color" value={editing.background_color || '#0d9488'} onChange={e => setEditing({ ...editing, background_color: e.target.value })} className="w-8 h-8 rounded border cursor-pointer" /><Input value={editing.background_color || '#0d9488'} onChange={e => setEditing({ ...editing, background_color: e.target.value })} className="flex-1" /></div></div>
+                <div className="space-y-1"><Label>Màu nền</Label><div className="flex items-center gap-2"><input type="color" value={editing.background_color || '#0d9488'} onChange={e => setEditing({ ...editing, background_color: e.target.value })} className="w-8 h-8 rounded border cursor-pointer" /><Input value={editing.background_color || '#0d9488'} onChange={e => setEditing({ ...editing, background_color: e.target.value })} className="flex-1 text-xs" /></div></div>
               </div>
 
-              <div className="flex items-center gap-6 flex-wrap">
+              <div className="flex items-center gap-6">
                 <label className="flex items-center gap-2"><Switch checked={editing.is_active || false} onCheckedChange={v => setEditing({ ...editing, is_active: v })} /> Active</label>
-                <label className="flex items-center gap-2"><Switch checked={editing.show_on_miniapp !== false} onCheckedChange={v => setEditing({ ...editing, show_on_miniapp: v })} /> <span className="flex items-center gap-1">📱 Mini App</span></label>
+                <label className="flex items-center gap-2"><Switch checked={editing.show_on_miniapp !== false} onCheckedChange={v => setEditing({ ...editing, show_on_miniapp: v })} /> 📱 Hiện trên Mini App</label>
               </div>
             </div>
           )}
