@@ -27,7 +27,7 @@ export default function MiniAppManufacturersPage() {
       setLoading(true);
       try {
         const [mfrRes, prodRes] = await Promise.all([
-          fetch(`${API}/manufacturers/?page_size=500`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${API}/admin/manufacturers/?page_size=500`, { headers: { Authorization: `Bearer ${token}` } }),
           fetch(`${API}/products/?page_size=500&show_on_miniapp=true&fields=id,manufacturer`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
         const mfrs = (await mfrRes.json()).results || [];

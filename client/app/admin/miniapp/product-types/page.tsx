@@ -27,7 +27,7 @@ export default function MiniAppProductTypesPage() {
       setLoading(true);
       try {
         const [typeRes, prodRes] = await Promise.all([
-          fetch(`${API}/product-types/?page_size=200`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${API}/admin/product-types/?page_size=200`, { headers: { Authorization: `Bearer ${token}` } }),
           fetch(`${API}/products/?page_size=500&show_on_miniapp=true&fields=id,product_type`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
         const typeData = (await typeRes.json()).results || [];
