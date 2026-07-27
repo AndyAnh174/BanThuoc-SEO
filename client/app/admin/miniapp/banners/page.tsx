@@ -106,7 +106,11 @@ export default function MiniAppBannersPage() {
       const isNew = !editing.id;
       const method = isNew ? 'POST' : 'PUT';
       const url = isNew ? `${API}/banners/` : `${API}/banners/${editing.id}/`;
-      const res = await fetch(url, { method, headers: authHeaders, body: JSON.stringify(editing) });
+      // Clean: convert empty date strings to null
+      const payload = { ...editing };
+      if (!payload.start_date) payload.start_date = null as any;
+      if (!payload.end_date) payload.end_date = null as any;
+      const res = await fetch(url, { method, headers: authHeaders, body: JSON.stringify(payload) });
       if (res.ok) {
         toast.success(isNew ? 'Đã tạo banner' : 'Đã cập nhật banner');
         setDialogOpen(false);
