@@ -23,7 +23,7 @@ class ProductAdminListSerializer(serializers.ModelSerializer):
             'id', 'sku', 'name', 'slug', 'category', 'category_name',
             'manufacturer', 'manufacturer_name',
             'product_type', 'short_description',
-            'price', 'sale_price', 'stock_quantity',
+            'price', 'sale_price', 'retail_price', 'show_on_miniapp', 'stock_quantity',
             'status', 'is_featured', 'primary_image', 'created_at'
         ]
 
@@ -39,14 +39,14 @@ class ProductAdminListSerializer(serializers.ModelSerializer):
 class ProductAdminSerializer(serializers.ModelSerializer):
     """Serializer for Creating/Updating Product in Admin"""
     images = ProductImageSerializer(many=True, required=False)
-    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
-    manufacturer = serializers.PrimaryKeyRelatedField(queryset=Manufacturer.objects.all())
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), required=False, allow_null=True)
+    manufacturer = serializers.PrimaryKeyRelatedField(queryset=Manufacturer.objects.all(), required=False, allow_null=True)
 
     class Meta:
         model = Product
         fields = [
             'id', 'sku', 'name', 'slug', 'description', 'short_description',
-            'price', 'sale_price',
+            'price', 'sale_price', 'retail_price', 'show_on_miniapp',
             'category', 'manufacturer',
             'product_type', 'unit', 'quantity_per_unit',
             'stock_quantity', 'low_stock_threshold',
@@ -55,6 +55,7 @@ class ProductAdminSerializer(serializers.ModelSerializer):
             'meta_title', 'meta_description',
             'images'
         ]
+
 
     @transaction.atomic
     def create(self, validated_data):
