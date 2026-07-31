@@ -160,6 +160,7 @@ export default function MiniAppProductsPage() {
     setSaving(false);
   };
 
+  const displayedProducts = products.filter(p => filterMiniApp ? p.show_on_miniapp : true);
   const miniAppCount = products.filter(p => p.show_on_miniapp).length;
   const noRetailCount = products.filter(p => p.show_on_miniapp && !p.retail_price).length;
 
@@ -213,7 +214,7 @@ export default function MiniAppProductsPage() {
           <Input placeholder="Tìm theo tên, SKU..." value={search} onChange={e => setSearch(e.target.value)} className="w-64" />
           <Button type="submit" variant="outline" size="sm"><Search className="w-4 h-4 mr-1" /> Tìm</Button>
         </form>
-        <label className="flex items-center gap-2 text-sm cursor-pointer"><Switch checked={filterMiniApp} onCheckedChange={setFilterMiniApp} /> Chỉ hiện sản phẩm Mini App</label>
+        <label className="flex items-center gap-2 text-sm cursor-pointer"><Switch checked={filterMiniApp} onCheckedChange={setFilterMiniApp} /> Chỉ hiện sản phẩm Mini App ({miniAppCount})</label>
       </div>
 
       {/* Products Table */}
@@ -235,13 +236,14 @@ export default function MiniAppProductsPage() {
               <tbody>
                 {loading ? (
                   <tr><td colSpan={7} className="text-center py-16 text-gray-400"><RefreshCw className="w-6 h-6 mx-auto mb-2 animate-spin" /></td></tr>
-                ) : products.length === 0 ? (
+                ) : displayedProducts.length === 0 ? (
                   <tr><td colSpan={7} className="text-center py-16 text-gray-400">
                     <Package className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                    <p className="font-medium">Không có sản phẩm</p>
+                    <p className="font-medium">Không có sản phẩm phù hợp</p>
                   </td></tr>
-                ) : products.map(p => (
+                ) : displayedProducts.map(p => (
                   <tr key={p.id} className={`border-b hover:bg-gray-50 transition-colors ${!p.show_on_miniapp ? 'opacity-50' : ''}`}>
+
                     <td className="p-3">
                       <div className="font-medium text-gray-900 line-clamp-1 max-w-[220px]">{p.name}</div>
                       <div className="text-xs text-gray-400">SKU: {p.sku}{p.manufacturer ? ` · ${p.manufacturer.name}` : ''}</div>

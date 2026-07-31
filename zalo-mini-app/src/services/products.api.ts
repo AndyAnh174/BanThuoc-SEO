@@ -49,3 +49,7 @@ export function getOnSale() {
 export function getHotkeys() {
   return api.get<{ keywords: { keyword: string; count: number }[] }>("/search/hotkey/");
 }
+
+export const getHotSearchKeywords = getHotkeys;
+export const getSearchSuggestions = getSuggestions;
+

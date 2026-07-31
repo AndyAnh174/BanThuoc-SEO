@@ -61,4 +61,6 @@ urlpatterns = [
 admin_urlpatterns = [
     path("membership-tiers/", views.AdminMembershipTierView.as_view(), name="admin-tier-list"),
     path("membership-tiers/<int:pk>/", views.AdminMembershipTierView.as_view(), name="admin-tier-detail"),
+    path("users/", views.AdminMiniAppUserListView.as_view(), name="admin-user-list"),
 ]
+

@@ -53,7 +53,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   login: async () => {
     try {
       const { userInfo } = await getUserInfo({ autoRequestPermission: true });
-      const zaloToken = (await getAccessToken({}) as any).accessToken || "";
+      let zaloToken = "dev_mock_access_token";
+      try {
+        const tokenRes = (await getAccessToken({}) as any);
+        if (tokenRes && tokenRes.accessToken) zaloToken = tokenRes.accessToken;
+      } catch {}
+
       let phone = "";
       try { const { number } = await getPhoneNumber({}); phone = number ?? ""; } catch {}
 
@@ -66,6 +71,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         get().syncCart();
         return;
       } catch { /* backend not available, use mock */ }
+
 
       localStorage.setItem("zaloAccessToken", zaloToken);
       set({

@@ -105,6 +105,7 @@ const sidebarSections: SidebarSection[] = [
             { label: "Flash Sale", href: "/admin/miniapp/flash-sales", icon: Zap },
             { label: "Voucher", href: "/admin/miniapp/vouchers", icon: TicketPercent },
             { label: "Hạng thành viên", href: "/admin/miniapp/membership-tiers", icon: Crown },
+            { label: "Người dùng Mini App", href: "/admin/miniapp/users", icon: Users },
         ]
     },
     {

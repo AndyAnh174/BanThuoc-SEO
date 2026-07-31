@@ -10,13 +10,17 @@ from products.serializers.product import ProductAdminSerializer, ProductAdminLis
 from core.pagination import StandardResultsSetPagination
 
 
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, CharFilter, BooleanFilter
+
 class ProductAdminFilter(FilterSet):
     category = CharFilter(field_name='category__slug')
     manufacturer = CharFilter(field_name='manufacturer__slug')
+    show_on_miniapp = BooleanFilter(field_name='show_on_miniapp')
 
     class Meta:
         model = Product
-        fields = ['category', 'manufacturer', 'status', 'is_featured', 'requires_prescription']
+        fields = ['category', 'manufacturer', 'status', 'is_featured', 'requires_prescription', 'show_on_miniapp']
+
 
 
 class ProductListCreateView(generics.ListCreateAPIView):

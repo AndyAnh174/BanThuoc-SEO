@@ -4,22 +4,34 @@
  * Quick validation script for banthuoc-api MCP server
  * Run: node test.js  (after npm install && npm run build)
  */
-import { endpoints as auth } from "./src/apis/auth.js";
-import { endpoints as users } from "./src/apis/users.js";
-import { endpoints as products } from "./src/apis/products.js";
-import { endpoints as cart } from "./src/apis/cart.js";
-import { endpoints as orders } from "./src/apis/orders.js";
-import { endpoints as flashSale } from "./src/apis/flash-sale.js";
-import { endpoints as vouchers } from "./src/apis/vouchers.js";
-import { endpoints as reviews } from "./src/apis/reviews.js";
-import { endpoints as blog } from "./src/apis/blog.js";
-import { endpoints as shipping } from "./src/apis/shipping.js";
-import { endpoints as banners } from "./src/apis/banners.js";
-import { endpoints as admin } from "./src/apis/admin.js";
-import { endpoints as search } from "./src/apis/search.js";
-import { endpoints as files } from "./src/apis/files.js";
+import { endpoints as auth } from "./dist/apis/auth.js";
+import { endpoints as users } from "./dist/apis/users.js";
+import { endpoints as products } from "./dist/apis/products.js";
+import { endpoints as cart } from "./dist/apis/cart.js";
+import { endpoints as orders } from "./dist/apis/orders.js";
+import { endpoints as flashSale } from "./dist/apis/flash-sale.js";
+import { endpoints as vouchers } from "./dist/apis/vouchers.js";
+import { endpoints as reviews } from "./dist/apis/reviews.js";
+import { endpoints as blog } from "./dist/apis/blog.js";
+import { endpoints as shipping } from "./dist/apis/shipping.js";
+import { endpoints as banners } from "./dist/apis/banners.js";
+import { endpoints as admin } from "./dist/apis/admin.js";
+import { endpoints as search } from "./dist/apis/search.js";
+import { endpoints as files } from "./dist/apis/files.js";
+import { endpoints as miniappAuth } from "./dist/apis/miniapp-auth.js";
+import { endpoints as miniappProfile } from "./dist/apis/miniapp-profile.js";
+import { endpoints as miniappProducts } from "./dist/apis/miniapp-products.js";
+import { endpoints as miniappCart } from "./dist/apis/miniapp-cart.js";
+import { endpoints as miniappOrders } from "./dist/apis/miniapp-orders.js";
+import { endpoints as miniappMembership } from "./dist/apis/miniapp-membership.js";
+import { endpoints as miniappVouchers } from "./dist/apis/miniapp-vouchers.js";
+import { endpoints as miniappChat } from "./dist/apis/miniapp-chat.js";
+import { endpoints as miniappBanners } from "./dist/apis/miniapp-banners.js";
+import { endpoints as miniappFlashsale } from "./dist/apis/miniapp-flashsale.js";
+import { endpoints as miniappSearch } from "./dist/apis/miniapp-search.js";
+import { endpoints as miniappAdmin } from "./dist/apis/miniapp-admin.js";
 
-const all = [auth, users, products, cart, orders, flashSale, vouchers, reviews, blog, shipping, banners, admin, search, files];
+const all = [auth, users, products, cart, orders, flashSale, vouchers, reviews, blog, shipping, banners, admin, search, files, miniappAuth, miniappProfile, miniappProducts, miniappCart, miniappOrders, miniappMembership, miniappVouchers, miniappChat, miniappBanners, miniappFlashsale, miniappSearch, miniappAdmin];
 const flat = all.flat();
 
 console.log(`✅ ${all.length} domain files loaded`);
@@ -44,7 +56,7 @@ for (const ep of flat) {
 }
 
 console.log("\n📊 Endpoints by tag:");
-for (const [tag, count] of Object.entries(tags).sort((a, b) => (b[1] as number) - (a[1] as number))) {
+for (const [tag, count] of Object.entries(tags).sort((a, b) => Number(b[1]) - Number(a[1]))) {
   console.log(`  ${tag.padEnd(20)} ${count}`);
 }
 

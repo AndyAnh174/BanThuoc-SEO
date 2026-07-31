@@ -10,6 +10,8 @@ import SearchPage from "@/pages/search";
 import CartPage from "@/pages/cart";
 import ProfilePage from "@/pages/profile";
 import ProductDetailPage from "@/pages/product-detail";
+import BlogPage from "@/pages/blog";
+import BlogDetailPage from "@/pages/blog-detail";
 
 export default function Layout() {
   const { isAuthenticated, login } = useAppStore();
@@ -26,6 +28,8 @@ export default function Layout() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/product/:slug" element={<ProductDetailPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<BlogDetailPage />} />
           </AnimationRoutes>
           <BottomNav />
         </ZMPRouter>

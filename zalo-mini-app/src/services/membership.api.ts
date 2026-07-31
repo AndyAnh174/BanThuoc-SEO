@@ -29,3 +29,16 @@ export function getAddresses() {
 export function addAddress(data: any) {
   return api.post("/me/addresses/", data);
 }
+
+export function getAvailableVouchers() {
+  return api.get<any[]>("/vouchers/available/");
+}
+
+export function checkVoucher(code: string, orderTotal: number) {
+  return api.post("/vouchers/check/", { code, order_total: orderTotal });
+}
+
+export function applyVoucher(code: string, orderTotal: number) {
+  return api.post("/vouchers/apply/", { code, order_total: orderTotal });
+}
+

@@ -37,6 +37,18 @@ import { endpoints as bannerEndpoints } from "./apis/banners.js";
 import { endpoints as adminEndpoints } from "./apis/admin.js";
 import { endpoints as searchEndpoints } from "./apis/search.js";
 import { endpoints as fileEndpoints } from "./apis/files.js";
+import { endpoints as miniappAuthEndpoints } from "./apis/miniapp-auth.js";
+import { endpoints as miniappProfileEndpoints } from "./apis/miniapp-profile.js";
+import { endpoints as miniappProductsEndpoints } from "./apis/miniapp-products.js";
+import { endpoints as miniappCartEndpoints } from "./apis/miniapp-cart.js";
+import { endpoints as miniappOrdersEndpoints } from "./apis/miniapp-orders.js";
+import { endpoints as miniappMembershipEndpoints } from "./apis/miniapp-membership.js";
+import { endpoints as miniappVouchersEndpoints } from "./apis/miniapp-vouchers.js";
+import { endpoints as miniappChatEndpoints } from "./apis/miniapp-chat.js";
+import { endpoints as miniappBannersEndpoints } from "./apis/miniapp-banners.js";
+import { endpoints as miniappFlashsaleEndpoints } from "./apis/miniapp-flashsale.js";
+import { endpoints as miniappSearchEndpoints } from "./apis/miniapp-search.js";
+import { endpoints as miniappAdminEndpoints } from "./apis/miniapp-admin.js";
 
 const ALL_ENDPOINTS: ApiEndpoint[] = [
   ...authEndpoints,
@@ -53,6 +65,18 @@ const ALL_ENDPOINTS: ApiEndpoint[] = [
   ...adminEndpoints,
   ...searchEndpoints,
   ...fileEndpoints,
+  ...miniappAuthEndpoints,
+  ...miniappProfileEndpoints,
+  ...miniappProductsEndpoints,
+  ...miniappCartEndpoints,
+  ...miniappOrdersEndpoints,
+  ...miniappMembershipEndpoints,
+  ...miniappVouchersEndpoints,
+  ...miniappChatEndpoints,
+  ...miniappBannersEndpoints,
+  ...miniappFlashsaleEndpoints,
+  ...miniappSearchEndpoints,
+  ...miniappAdminEndpoints,
 ];
 
 // ── Utility ────────────────────────────────────────────────────────
@@ -103,7 +127,7 @@ server.tool(
   "list_endpoints",
   "List all BanThuoc API endpoints grouped by tag. Filter by tag or HTTP method.",
   {
-    tag: z.string().optional().describe("Filter by tag: Auth, Products, Orders, Cart, Users, Admin, Vouchers, Flash Sale, Reviews, Shipping, Blog, Banners, Search, Files"),
+    tag: z.string().optional().describe("Filter by tag: Auth, Products, Orders, Cart, Users, Admin, Vouchers, Flash Sale, Reviews, Shipping, Blog, Banners, Search, Files, Mini App, Membership, Chat"),
     method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]).optional().describe("Filter by HTTP method"),
   },
   async ({ tag, method }) => {
