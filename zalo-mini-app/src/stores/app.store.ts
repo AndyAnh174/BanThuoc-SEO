@@ -96,7 +96,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ loading: true });
     try {
       const data = await productApi.getProducts({ page_size: "20" });
-      if (data.results?.length) {
+      if (data.results && data.results.length > 0) {
         const mapped: Product[] = data.results.map((p: any) => ({
           id: p.id, name: p.name, slug: p.slug,
           price: Number(p.retail_price || p.sale_price || p.price),
@@ -108,10 +108,15 @@ export const useAppStore = create<AppState>((set, get) => ({
           images: p.images,
         }));
         set({ products: mapped });
+      } else {
+        set({ products: MOCK_PRODUCTS });
       }
-    } catch { /* keep mock */ }
+    } catch {
+      set({ products: MOCK_PRODUCTS });
+    }
     set({ loading: false });
   },
+
 
   syncCart: async () => {
     try {

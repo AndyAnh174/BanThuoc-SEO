@@ -40,7 +40,7 @@ export default function MiniAppProductsPage() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [filterMiniApp, setFilterMiniApp] = useState(true);
+  const [filterMiniApp, setFilterMiniApp] = useState(false);
 
   // Add dialog
   const [addOpen, setAddOpen] = useState(false);
@@ -64,13 +64,13 @@ export default function MiniAppProductsPage() {
     try {
       const params = new URLSearchParams({ page_size: '200', ordering: '-created_at' });
       if (search) params.set('search', search);
-      if (filterMiniApp) params.set('show_on_miniapp', 'true');
       const res = await fetch(`${API}/products/?${params}`, { headers });
       const data = await res.json();
       setProducts(data.results || []);
     } catch { toast.error('Không thể tải sản phẩm'); }
     setLoading(false);
-  }, [search, filterMiniApp]);
+  }, [search]);
+
 
   const fetchAllProducts = useCallback(async (q = '') => {
     try {
