@@ -103,12 +103,13 @@ class ProductListSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'id', 'sku', 'name', 'slug', 'short_description',
-            'price', 'sale_price', 'retail_price', 'current_price', 'discount_percentage', 'is_on_sale',
+            'price', 'sale_price', 'retail_price', 'show_on_miniapp', 'current_price', 'discount_percentage', 'is_on_sale',
             'primary_image', 'category', 'manufacturer',
             'product_type', 'unit', 'quantity_per_unit', 'stock_quantity',
             'requires_prescription', 'is_featured', 'status',
             'is_liked', 'likes_count'
         ]
+
 
     def get_primary_image(self, obj):
         """Get primary image URL from prefetched images to avoid extra queries"""
