@@ -95,7 +95,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   loadProducts: async () => {
     set({ loading: true });
     try {
-      const data = await productApi.getProducts({ page_size: "200" });
+      const data = await productApi.getProducts({ page_size: "500" });
+
       if (data.results && data.results.length > 0) {
 
         const mapped: Product[] = data.results.map((p: any) => ({

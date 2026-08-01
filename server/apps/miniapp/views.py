@@ -164,6 +164,8 @@ class NotificationListView(ListAPIView):
 class ProductListView(ListAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = ProductListSerializer
+    pagination_class = StandardResultsSetPagination
+
 
     def get_queryset(self):
         qs = Product.objects.filter(status="ACTIVE", show_on_miniapp=True).select_related("category", "manufacturer").prefetch_related("images")
