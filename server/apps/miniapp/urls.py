@@ -6,7 +6,9 @@ app_name = "miniapp"
 
 urlpatterns = [
     # ── Auth ────────────────────────────────────────
+    path("webhook/", views.ZaloWebhookView.as_view(), name="zalo-webhook"),
     path("auth/login/", views.LoginView.as_view(), name="auth-login"),
+
     path("auth/refresh/", views.RefreshTokenView.as_view(), name="auth-refresh"),
 
     # ── Profile ─────────────────────────────────────

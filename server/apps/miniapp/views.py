@@ -625,3 +625,16 @@ class AdminMiniAppUserListView(APIView):
         ]
         return Response(data)
 
+
+# ── Zalo Webhook ──────────────────────────────────────────────────
+class ZaloWebhookView(APIView):
+    """Webhook URL cho Zalo Platform xử lý sự kiện rút đồng ý & xóa dữ liệu"""
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        return Response({"status": "ok", "message": "Zalo Webhook Active"}, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        return Response({"status": "ok", "message": "Received"}, status=status.HTTP_200_OK)
+
+
