@@ -12,7 +12,7 @@ interface ShopeeProductCardProps {
 
 export function ShopeeProductCard({
   product,
-  discountPercentage = 35,
+  discountPercentage = 25,
   salesCount = "1.2k",
   rating = 5.0,
   isListMode = false,
@@ -21,12 +21,17 @@ export function ShopeeProductCard({
   const { addToCart } = useAppStore();
 
   const finalPrice = product.salePrice ?? product.price;
-  const originalPrice = product.price;
-  const hasDiscount = product.salePrice && product.salePrice < product.price;
 
-  const calculatedDiscount = hasDiscount
-    ? Math.round(((originalPrice - finalPrice) / originalPrice) * 100)
-    : discountPercentage;
+  // Determine original price & discount percentage
+  const realDiscount =
+    product.salePrice && product.price > product.salePrice
+      ? Math.round(((product.price - product.salePrice) / product.price) * 100)
+      : discountPercentage;
+
+  const displayOriginalPrice =
+    product.salePrice && product.price > product.salePrice
+      ? product.price
+      : Math.round((finalPrice * (1 + realDiscount / 100)) / 1000) * 1000;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -47,9 +52,9 @@ export function ShopeeProductCard({
         }}
       >
         {/* Discount Badge */}
-        {calculatedDiscount > 0 && (
+        {realDiscount > 0 && (
           <Box className="shopee-discount-badge">
-            Giảm {calculatedDiscount}%
+            Giảm {realDiscount}%
           </Box>
         )}
 
@@ -123,18 +128,16 @@ export function ShopeeProductCard({
           {/* Price & Cart Button */}
           <Box flex justifyContent="space-between" alignItems="flex-end" style={{ marginTop: 6 }}>
             <Box>
-              {hasDiscount && (
-                <Text style={{ fontSize: 11, color: "#94a3b8", textDecoration: "line-through" }}>
-                  {formatPrice(originalPrice)}
-                </Text>
-              )}
+              <Text style={{ fontSize: 11, color: "#94a3b8", textDecoration: "line-through", display: "block" }}>
+                {formatPrice(displayOriginalPrice)}
+              </Text>
               <Text style={{ fontSize: 16, fontWeight: 800, color: "#ee4d2d" }}>
                 {formatPrice(finalPrice)}
               </Text>
             </Box>
 
             <Box className="shopee-cart-btn" onClick={handleAddToCart}>
-              <Icon icon="zi-cart" size={16} />
+              <Icon icon="zi-cart" style={{ color: "#ee4d2d" }} size={16} />
             </Box>
           </Box>
         </Box>
@@ -148,9 +151,9 @@ export function ShopeeProductCard({
       onClick={() => nav(`/product/${product.slug}`)}
     >
       {/* Discount Tag */}
-      {calculatedDiscount > 0 && (
+      {realDiscount > 0 && (
         <Box className="shopee-discount-badge">
-          Giảm {calculatedDiscount}%
+          Giảm {realDiscount}%
         </Box>
       )}
 
@@ -242,11 +245,9 @@ export function ShopeeProductCard({
         {/* Price & Floating Cart Button */}
         <Box flex justifyContent="space-between" alignItems="flex-end" style={{ marginTop: 8 }}>
           <Box>
-            {hasDiscount && (
-              <Text style={{ fontSize: 10, color: "#94a3b8", textDecoration: "line-through", display: "block" }}>
-                {formatPrice(originalPrice)}
-              </Text>
-            )}
+            <Text style={{ fontSize: 10, color: "#94a3b8", textDecoration: "line-through", display: "block" }}>
+              {formatPrice(displayOriginalPrice)}
+            </Text>
             <Text style={{ fontSize: 15, fontWeight: 800, color: "#ee4d2d" }}>
               {formatPrice(finalPrice)}
             </Text>
@@ -254,7 +255,7 @@ export function ShopeeProductCard({
 
           {/* Cart Icon Round Button */}
           <Box className="shopee-cart-btn" onClick={handleAddToCart}>
-            <Icon icon="zi-cart" size={16} />
+            <Icon icon="zi-cart" style={{ color: "#ee4d2d" }} size={16} />
           </Box>
         </Box>
       </Box>
