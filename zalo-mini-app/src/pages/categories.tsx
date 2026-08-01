@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Box, Text, Icon, useNavigate } from "zmp-ui";
 import { useAppStore } from "@/stores/app.store";
 import { ShopeeProductCard } from "@/components/shopee-product-card";
@@ -13,35 +13,67 @@ import {
   IconKhac,
 } from "@/components/category-icons";
 
-const MAIN_CATEGORIES = [
-  { id: "all", name: "Tất cả danh mục", icon: IconKhac, bg: "#f1f5f9", color: "#475569" },
-  { id: "giam-dau", name: "Thuốc OTC", icon: IconOTC, bg: "#ecfdf5", color: "#059669" },
-  { id: "tpcn", name: "Thực phẩm chức năng", icon: IconTPCN, bg: "#ecfdf5", color: "#059669" },
-  { id: "vitamin", name: "Vitamin & Khoáng chất", icon: IconVitamin, bg: "#ecfdf5", color: "#059669" },
-  { id: "duoc-my-pham", name: "Dược Mỹ Phẩm", icon: IconDuocMyPham, bg: "#ecfdf5", color: "#059669" },
-  { id: "tb-yt", name: "Thiết Bị Y Tế", icon: IconTBYTe, bg: "#ecfdf5", color: "#059669" },
-  { id: "me-be", name: "Mẹ & Bé", icon: IconMeBe, bg: "#ecfdf5", color: "#059669" },
-  { id: "combo", name: "Combo Ưu Đãi", icon: IconCombo, bg: "#ecfdf5", color: "#059669" },
-];
+function getCategoryIcon(name: string) {
+  const n = name.toLowerCase();
+  if (n.includes("otc") || n.includes("thuốc") || n.includes("giảm đau")) return IconOTC;
+  if (n.includes("chức năng") || n.includes("tpcn")) return IconTPCN;
+  if (n.includes("vitamin") || n.includes("khoáng")) return IconVitamin;
+  if (n.includes("mỹ phẩm") || n.includes("chăm sóc")) return IconDuocMyPham;
+  if (n.includes("thiết bị") || n.includes("y tế") || n.includes("tb")) return IconTBYTe;
+  if (n.includes("mẹ") || n.includes("bé")) return IconMeBe;
+  if (n.includes("combo")) return IconCombo;
+  return IconKhac;
+}
 
 export default function CategoryPage() {
   const nav = useNavigate();
   const { products } = useAppStore();
-  const [selectedCatId, setSelectedCatId] = useState<string>("all");
+  const [selectedCatName, setSelectedCatName] = useState<string>("Tất cả danh mục");
 
-  const selectedCat = MAIN_CATEGORIES.find((c) => c.id === selectedCatId) || MAIN_CATEGORIES[0];
+  // Dynamic Categories built directly from products in DB
+  const dynamicCategories = useMemo(() => {
+    const map: Record<string, number> = {};
+    products.forEach((p) => {
+      const catName = p.category?.name?.trim() || "Khác";
+      map[catName] = (map[catName] || 0) + 1;
+    });
 
-  const filteredProducts = selectedCatId === "all"
-    ? products
-    : products.filter((p) => {
-        const catName = (p.category?.name || "").toLowerCase();
-        const catSlug = (p.category?.slug || "").toLowerCase();
-        return (
-          catName.includes(selectedCat.name.toLowerCase()) ||
-          catSlug.includes(selectedCatId) ||
-          selectedCat.name.includes(catName)
-        );
-      });
+    const list = Object.entries(map).map(([name, count]) => ({
+      name,
+      count,
+      icon: getCategoryIcon(name),
+      bg: "#ecfdf5",
+      color: "#059669",
+    }));
+
+    // Sort by product count descending
+    list.sort((a, b) => b.count - a.count);
+
+    // Prepend "Tất cả danh mục"
+    return [
+      {
+        name: "Tất cả danh mục",
+        count: products.length,
+        icon: IconKhac,
+        bg: "#f1f5f9",
+        color: "#475569",
+      },
+      ...list,
+    ];
+  }, [products]);
+
+  const selectedCategoryObj =
+    dynamicCategories.find((c) => c.name === selectedCatName) || dynamicCategories[0];
+
+  const filteredProducts = useMemo(() => {
+    if (selectedCatName === "Tất cả danh mục") return products;
+    return products.filter((p) => {
+      const catName = (p.category?.name || "").trim();
+      return catName.toLowerCase() === selectedCatName.toLowerCase();
+    });
+  }, [products, selectedCatName]);
+
+  const SelectedIcon = selectedCategoryObj.icon;
 
   return (
     <Box style={{ background: "#f5f5f5", height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
@@ -50,11 +82,11 @@ export default function CategoryPage() {
         style={{
           padding: "14px 16px",
           paddingTop: 50,
-          background: "white",
+          background: "linear-gradient(180deg, #064e3b 0%, #0d9488 100%)",
           display: "flex",
           alignItems: "center",
           gap: 12,
-          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
           zIndex: 10,
           flexShrink: 0,
         }}
@@ -65,52 +97,52 @@ export default function CategoryPage() {
             width: 36,
             height: 36,
             borderRadius: 18,
-            background: "#f1f5f9",
+            background: "rgba(255,255,255,0.2)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             cursor: "pointer",
           }}
         >
-          <Icon icon="zi-chevron-left" style={{ color: "#334155" }} size={20} />
+          <Icon icon="zi-chevron-left" style={{ color: "white" }} size={20} />
         </Box>
         <Box>
-          <Text style={{ fontSize: 18, fontWeight: 800, color: "#0f172a" }}>
+          <Text style={{ fontSize: 18, fontWeight: 800, color: "white" }}>
             Danh mục sản phẩm
           </Text>
-          <Text style={{ fontSize: 11, color: "#94a3b8" }}>
-            {MAIN_CATEGORIES.length - 1} nhóm ngành hàng • {products.length} sản phẩm
+          <Text style={{ fontSize: 11, color: "#e2e8f0" }}>
+            {dynamicCategories.length - 1} nhóm ngành hàng • {products.length} sản phẩm thực tế
           </Text>
         </Box>
       </Box>
 
       {/* Main 2-Column Sidebar + Content Layout */}
       <Box style={{ display: "flex", flex: 1, overflow: "hidden", position: "relative" }}>
-        {/* Left Category Sidebar (Fixed / Independently scrollable) */}
+        {/* Left Category Sidebar (Fixed width / Scrollable) */}
         <Box
           className="no-scrollbar"
           style={{
-            width: 100,
+            width: 105,
             background: "white",
             borderRight: "1px solid #e2e8f0",
             overflowY: "auto",
             flexShrink: 0,
-            paddingBottom: 80,
+            paddingBottom: 85,
           }}
         >
-          {MAIN_CATEGORIES.map((c) => {
-            const isSelected = c.id === selectedCatId;
+          {dynamicCategories.map((c) => {
+            const isSelected = c.name === selectedCatName;
             const IconComp = c.icon;
             return (
               <Box
-                key={c.id}
-                onClick={() => setSelectedCatId(c.id)}
+                key={c.name}
+                onClick={() => setSelectedCatName(c.name)}
                 style={{
-                  padding: "14px 8px",
+                  padding: "12px 6px",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  gap: 6,
+                  gap: 4,
                   cursor: "pointer",
                   background: isSelected ? "#ecfdf5" : "transparent",
                   borderLeft: isSelected ? "4px solid #059669" : "4px solid transparent",
@@ -119,8 +151,8 @@ export default function CategoryPage() {
               >
                 <Box
                   style={{
-                    width: 40,
-                    height: 40,
+                    width: 38,
+                    height: 38,
                     borderRadius: 14,
                     background: isSelected ? "white" : c.bg,
                     display: "flex",
@@ -129,19 +161,22 @@ export default function CategoryPage() {
                     boxShadow: isSelected ? "0 2px 6px rgba(5, 150, 105, 0.15)" : "none",
                   }}
                 >
-                  <IconComp size={22} color={c.color} />
+                  <IconComp size={20} color={c.color} />
                 </Box>
                 <Text
                   style={{
-                    fontSize: 11,
-                    fontWeight: isSelected ? 700 : 500,
+                    fontSize: 10,
+                    fontWeight: isSelected ? 800 : 600,
                     color: isSelected ? "#059669" : "#475569",
                     textAlign: "center",
-                    lineHeight: "1.2",
+                    lineHeight: "1.25",
                   }}
                 >
                   {c.name}
                 </Text>
+                {c.name !== "Tất cả danh mục" && (
+                  <Text style={{ fontSize: 9, color: "#94a3b8" }}>({c.count})</Text>
+                )}
               </Box>
             );
           })}
@@ -163,13 +198,13 @@ export default function CategoryPage() {
             }}
           >
             <Box flex alignItems="center" style={{ gap: 10 }}>
-              {React.createElement(selectedCat.icon, { size: 24, color: selectedCat.color })}
+              <SelectedIcon size={24} color={selectedCategoryObj.color} />
               <Box>
                 <Text style={{ fontSize: 15, fontWeight: 800, color: "#0f172a" }}>
-                  {selectedCat.name}
+                  {selectedCategoryObj.name}
                 </Text>
-                <Text style={{ fontSize: 11, color: "#94a3b8" }}>
-                  {filteredProducts.length} sản phẩm có sẵn
+                <Text style={{ fontSize: 11, color: "#059669", fontWeight: 700 }}>
+                  Hiển thị tất cả {filteredProducts.length} sản phẩm chính hãng
                 </Text>
               </Box>
             </Box>
@@ -179,7 +214,7 @@ export default function CategoryPage() {
           {filteredProducts.length === 0 ? (
             <Box style={{ background: "white", borderRadius: 14, padding: 24, textAlign: "center", marginTop: 10 }}>
               <Text style={{ fontSize: 32, marginBottom: 6 }}>📦</Text>
-              <Text style={{ fontSize: 14, color: "#64748b" }}>Đang cập nhật sản phẩm cho nhóm này</Text>
+              <Text style={{ fontSize: 14, color: "#64748b" }}>Chưa có sản phẩm nào cho danh mục này</Text>
             </Box>
           ) : (
             <Box style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -187,7 +222,7 @@ export default function CategoryPage() {
                 <ShopeeProductCard
                   key={p.id || k}
                   product={p}
-                  discountPercentage={30}
+                  discountPercentage={20 + (k % 4) * 5}
                   salesCount="1.2k"
                   rating={4.9}
                 />
