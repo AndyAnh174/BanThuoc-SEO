@@ -12,6 +12,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from core.pagination import StandardResultsSetPagination
+
 
 from .models import (
     MiniAppUser, MembershipTier, MiniAppAddress, MiniAppCartItem,
