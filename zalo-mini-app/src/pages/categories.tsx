@@ -18,24 +18,36 @@ function getCategoryIcon(name: string) {
   if (n.includes("otc") || n.includes("thuốc") || n.includes("giảm đau")) return IconOTC;
   if (n.includes("chức năng") || n.includes("tpcn")) return IconTPCN;
   if (n.includes("vitamin") || n.includes("khoáng")) return IconVitamin;
-  if (n.includes("mỹ phẩm") || n.includes("chăm sóc")) return IconDuocMyPham;
+  if (n.includes("mỹ phẩm") || n.includes("dược mỹ") || n.includes("chăm sóc")) return IconDuocMyPham;
   if (n.includes("thiết bị") || n.includes("y tế") || n.includes("tb")) return IconTBYTe;
   if (n.includes("mẹ") || n.includes("bé")) return IconMeBe;
   if (n.includes("combo")) return IconCombo;
   return IconKhac;
 }
 
+const MAIN_STANDARD_CATS = [
+  "OTC",
+  "Thực phẩm chức năng",
+  "Vitamin & Khoáng chất",
+  "Dược Mỹ Phẩm",
+  "Thiết Bị Y Tế",
+  "Mẹ & Bé",
+  "Combo Ưu Đãi",
+];
+
 export default function CategoryPage() {
   const nav = useNavigate();
   const { products } = useAppStore();
   const [selectedCatName, setSelectedCatName] = useState<string>("Tất cả danh mục");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Dynamic Categories built directly from products in DB
+  // Categories list built from products + standard 8 categories
   const dynamicCategories = useMemo(() => {
     const map: Record<string, number> = {};
+
     products.forEach((p) => {
-      const catName = p.category?.name?.trim() || "Khác";
-      map[catName] = (map[catName] || 0) + 1;
+      const rawCat = p.category?.name?.trim() || "Khác";
+      map[rawCat] = (map[rawCat] || 0) + 1;
     });
 
     const list = Object.entries(map).map(([name, count]) => ({
@@ -46,10 +58,26 @@ export default function CategoryPage() {
       color: "#059669",
     }));
 
-    // Sort by product count descending
+    // Ensure "Khác" category exists for miscellaneous items outside the main categories
+    if (!map["Khác"]) {
+      const otherCount = products.filter((p) => {
+        const c = (p.category?.name || "").toLowerCase();
+        return !MAIN_STANDARD_CATS.some((m) => c.includes(m.toLowerCase()));
+      }).length;
+
+      if (otherCount > 0) {
+        list.push({
+          name: "Khác",
+          count: otherCount,
+          icon: IconKhac,
+          bg: "#f1f5f9",
+          color: "#475569",
+        });
+      }
+    }
+
     list.sort((a, b) => b.count - a.count);
 
-    // Prepend "Tất cả danh mục"
     return [
       {
         name: "Tất cả danh mục",
@@ -66,53 +94,110 @@ export default function CategoryPage() {
     dynamicCategories.find((c) => c.name === selectedCatName) || dynamicCategories[0];
 
   const filteredProducts = useMemo(() => {
-    if (selectedCatName === "Tất cả danh mục") return products;
-    return products.filter((p) => {
-      const catName = (p.category?.name || "").trim();
-      return catName.toLowerCase() === selectedCatName.toLowerCase();
+    let list = [...products];
+
+    // Search filter
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          (p.category?.name || "").toLowerCase().includes(q)
+      );
+    }
+
+    // Category filter
+    if (selectedCatName === "Tất cả danh mục") return list;
+
+    if (selectedCatName === "Khác") {
+      return list.filter((p) => {
+        const c = (p.category?.name || "").toLowerCase();
+        return !MAIN_STANDARD_CATS.some((m) => c.includes(m.toLowerCase()));
+      });
+    }
+
+    return list.filter((p) => {
+      const catName = (p.category?.name || "").trim().toLowerCase();
+      return catName === selectedCatName.toLowerCase() || catName.includes(selectedCatName.toLowerCase());
     });
-  }, [products, selectedCatName]);
+  }, [products, selectedCatName, searchQuery]);
 
   const SelectedIcon = selectedCategoryObj.icon;
 
   return (
     <Box style={{ background: "#f5f5f5", height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-      {/* Header Bar */}
+      {/* Header Bar with Search Bar */}
       <Box
         style={{
-          padding: "14px 16px",
+          padding: "12px 16px 14px 16px",
           paddingTop: 50,
           background: "linear-gradient(180deg, #064e3b 0%, #0d9488 100%)",
           display: "flex",
-          alignItems: "center",
-          gap: 12,
+          flexDirection: "column",
+          gap: 10,
           boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
           zIndex: 10,
           flexShrink: 0,
         }}
       >
+        <Box flex alignItems="center" justifyContent="space-between">
+          <Box flex alignItems="center" style={{ gap: 10 }}>
+            <Box
+              onClick={() => nav("/")}
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: 17,
+                background: "rgba(255,255,255,0.2)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+              }}
+            >
+              <Icon icon="zi-chevron-left" style={{ color: "white" }} size={20} />
+            </Box>
+            <Text style={{ fontSize: 17, fontWeight: 800, color: "white" }}>
+              Danh mục sản phẩm
+            </Text>
+          </Box>
+          <Text style={{ fontSize: 11, color: "#e2e8f0" }}>
+            {dynamicCategories.length - 1} ngành hàng • {products.length} sản phẩm
+          </Text>
+        </Box>
+
+        {/* Integrated Search Bar */}
         <Box
-          onClick={() => nav("/")}
           style={{
-            width: 36,
-            height: 36,
-            borderRadius: 18,
-            background: "rgba(255,255,255,0.2)",
+            background: "white",
+            borderRadius: 20,
+            padding: "8px 14px",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
+            gap: 8,
+            boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
           }}
         >
-          <Icon icon="zi-chevron-left" style={{ color: "white" }} size={20} />
-        </Box>
-        <Box>
-          <Text style={{ fontSize: 18, fontWeight: 800, color: "white" }}>
-            Danh mục sản phẩm
-          </Text>
-          <Text style={{ fontSize: 11, color: "#e2e8f0" }}>
-            {dynamicCategories.length - 1} nhóm ngành hàng • {products.length} sản phẩm thực tế
-          </Text>
+          <Icon icon="zi-search" style={{ color: "#0d9488" }} size={18} />
+          <input
+            type="text"
+            placeholder="Tìm thuốc, sản phẩm trong danh mục..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              border: "none",
+              outline: "none",
+              width: "100%",
+              fontSize: 12,
+              color: "#1e293b",
+              background: "transparent",
+            }}
+          />
+          {searchQuery && (
+            <Box onClick={() => setSearchQuery("")} style={{ cursor: "pointer", color: "#94a3b8", fontSize: 12 }}>
+              ✕
+            </Box>
+          )}
         </Box>
       </Box>
 
@@ -214,7 +299,7 @@ export default function CategoryPage() {
           {filteredProducts.length === 0 ? (
             <Box style={{ background: "white", borderRadius: 14, padding: 24, textAlign: "center", marginTop: 10 }}>
               <Text style={{ fontSize: 32, marginBottom: 6 }}>📦</Text>
-              <Text style={{ fontSize: 14, color: "#64748b" }}>Chưa có sản phẩm nào cho danh mục này</Text>
+              <Text style={{ fontSize: 14, color: "#64748b" }}>Chưa có sản phẩm phù hợp</Text>
             </Box>
           ) : (
             <Box style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
