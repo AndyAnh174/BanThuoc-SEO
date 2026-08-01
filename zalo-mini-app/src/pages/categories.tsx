@@ -15,7 +15,7 @@ import {
 
 function getCategoryIcon(name: string) {
   const n = name.toLowerCase();
-  if (n.includes("otc") || n.includes("thuốc") || n.includes("giảm đau")) return IconOTC;
+  if (n.includes("otc") || n.includes("thuốc") || n.includes("giảm đau") || n.includes("dị ứng") || n.includes("da liễu") || n.includes("kháng sinh") || n.includes("tim mạch") || n.includes("nội tiết")) return IconOTC;
   if (n.includes("chức năng") || n.includes("tpcn")) return IconTPCN;
   if (n.includes("vitamin") || n.includes("khoáng")) return IconVitamin;
   if (n.includes("mỹ phẩm") || n.includes("dược mỹ") || n.includes("chăm sóc")) return IconDuocMyPham;
@@ -25,23 +25,13 @@ function getCategoryIcon(name: string) {
   return IconKhac;
 }
 
-const MAIN_STANDARD_CATS = [
-  "OTC",
-  "Thực phẩm chức năng",
-  "Vitamin & Khoáng chất",
-  "Dược Mỹ Phẩm",
-  "Thiết Bị Y Tế",
-  "Mẹ & Bé",
-  "Combo Ưu Đãi",
-];
-
 export default function CategoryPage() {
   const nav = useNavigate();
   const { products } = useAppStore();
   const [selectedCatName, setSelectedCatName] = useState<string>("Tất cả danh mục");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Categories list built from products + standard 8 categories
+  // Build dynamic categories list from real products in DB
   const dynamicCategories = useMemo(() => {
     const map: Record<string, number> = {};
 
@@ -50,7 +40,11 @@ export default function CategoryPage() {
       map[rawCat] = (map[rawCat] || 0) + 1;
     });
 
-    const list = Object.entries(map).map(([name, count]) => ({
+    const otherCount = map["Khác"] || 0;
+    delete map["Khác"];
+
+    // Main sorted category list
+    const mainList = Object.entries(map).map(([name, count]) => ({
       name,
       count,
       icon: getCategoryIcon(name),
@@ -58,27 +52,9 @@ export default function CategoryPage() {
       color: "#059669",
     }));
 
-    // Ensure "Khác" category exists for miscellaneous items outside the main categories
-    if (!map["Khác"]) {
-      const otherCount = products.filter((p) => {
-        const c = (p.category?.name || "").toLowerCase();
-        return !MAIN_STANDARD_CATS.some((m) => c.includes(m.toLowerCase()));
-      }).length;
+    mainList.sort((a, b) => b.count - a.count);
 
-      if (otherCount > 0) {
-        list.push({
-          name: "Khác",
-          count: otherCount,
-          icon: IconKhac,
-          bg: "#f1f5f9",
-          color: "#475569",
-        });
-      }
-    }
-
-    list.sort((a, b) => b.count - a.count);
-
-    return [
+    const list = [
       {
         name: "Tất cả danh mục",
         count: products.length,
@@ -86,8 +62,19 @@ export default function CategoryPage() {
         bg: "#f1f5f9",
         color: "#475569",
       },
-      ...list,
+      ...mainList,
     ];
+
+    // Always append "Khác" at the VERY LAST position
+    list.push({
+      name: "Khác",
+      count: otherCount || 0,
+      icon: IconKhac,
+      bg: "#f8fafc",
+      color: "#64748b",
+    });
+
+    return list;
   }, [products]);
 
   const selectedCategoryObj =
@@ -110,15 +97,12 @@ export default function CategoryPage() {
     if (selectedCatName === "Tất cả danh mục") return list;
 
     if (selectedCatName === "Khác") {
-      return list.filter((p) => {
-        const c = (p.category?.name || "").toLowerCase();
-        return !MAIN_STANDARD_CATS.some((m) => c.includes(m.toLowerCase()));
-      });
+      return list.filter((p) => !p.category?.name || p.category.name.trim() === "Khác");
     }
 
     return list.filter((p) => {
       const catName = (p.category?.name || "").trim().toLowerCase();
-      return catName === selectedCatName.toLowerCase() || catName.includes(selectedCatName.toLowerCase());
+      return catName === selectedCatName.toLowerCase();
     });
   }, [products, selectedCatName, searchQuery]);
 
@@ -166,7 +150,7 @@ export default function CategoryPage() {
           </Text>
         </Box>
 
-        {/* Integrated Search Bar */}
+        {/* Search Bar Input */}
         <Box
           style={{
             background: "white",
@@ -181,7 +165,7 @@ export default function CategoryPage() {
           <Icon icon="zi-search" style={{ color: "#0d9488" }} size={18} />
           <input
             type="text"
-            placeholder="Tìm thuốc, sản phẩm trong danh mục..."
+            placeholder="Tìm sản phẩm theo tên, danh mục..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
@@ -289,7 +273,7 @@ export default function CategoryPage() {
                   {selectedCategoryObj.name}
                 </Text>
                 <Text style={{ fontSize: 11, color: "#059669", fontWeight: 700 }}>
-                  Hiển thị tất cả {filteredProducts.length} sản phẩm chính hãng
+                  Hiển thị {filteredProducts.length} sản phẩm chính hãng
                 </Text>
               </Box>
             </Box>

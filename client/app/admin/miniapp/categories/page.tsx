@@ -32,8 +32,11 @@ export default function MiniAppCategoriesPage() {
           fetch(`${API}/categories/tree/`, { headers: { Authorization: `Bearer ${token}` } }),
           fetch(`${API}/products/?page_size=500&show_on_miniapp=true&fields=id,category`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
-        const cats: Category[] = await catRes.json();
-        const products = (await prodRes.json()).results || [];
+        const catResData = await catRes.json();
+        const cats: Category[] = Array.isArray(catResData) ? catResData : (catResData.results || []);
+        const prodData = await prodRes.json().catch(() => ({}));
+        const products = prodData.results || [];
+
 
         // Count Mini App products per category
         const counts: Record<string, number> = {};
