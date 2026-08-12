@@ -25,15 +25,16 @@ type MainTab = "home" | "products" | "categories";
 type SortFilter = "recommend" | "bestseller" | "newest" | "price_asc" | "price_desc";
 
 const CATEGORY_SHORTCUTS = [
-  { n: "OTC", icon: IconOTC, bg: "#ecfdf5", color: "#059669" },
   { n: "TPCN", icon: IconTPCN, bg: "#ecfdf5", color: "#059669" },
   { n: "Vitamin", icon: IconVitamin, bg: "#ecfdf5", color: "#059669" },
   { n: "D.MỹPhẩm", icon: IconDuocMyPham, bg: "#ecfdf5", color: "#059669" },
   { n: "TB Y Tế", icon: IconTBYTe, bg: "#ecfdf5", color: "#059669" },
+  { n: "Chăm Sóc", icon: IconDuocMyPham, bg: "#ecfdf5", color: "#059669" },
   { n: "Mẹ & Bé", icon: IconMeBe, bg: "#ecfdf5", color: "#059669" },
   { n: "Combo", icon: IconCombo, bg: "#ecfdf5", color: "#059669" },
   { n: "Khác", icon: IconKhac, bg: "#ecfdf5", color: "#059669" },
 ];
+
 
 const QUICK_ACTIONS = [
   { n: "Đơn hàng", d: "Xem đơn & theo dõi", icon: IconDonHang, nav: "/cart", bg: "#f0fdf4" },

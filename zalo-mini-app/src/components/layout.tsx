@@ -14,8 +14,7 @@ import BlogPage from "@/pages/blog";
 import BlogDetailPage from "@/pages/blog-detail";
 
 export default function Layout() {
-  const { isAuthenticated, login } = useAppStore();
-  useEffect(() => { if (!isAuthenticated) login(); }, []);
+
 
   return (
     <App theme={getSystemInfo().zaloTheme as AppProps["theme"]}>

@@ -99,17 +99,30 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       if (data.results && data.results.length > 0) {
 
-        const mapped: Product[] = data.results.map((p: any) => ({
-          id: p.id, name: p.name, slug: p.slug,
-          price: Number(p.retail_price || p.sale_price || p.price),
-          salePrice: p.sale_price && Number(p.sale_price) < Number(p.retail_price || p.price) ? Number(p.sale_price) : null,
-          unit: p.unit || "Hộp", stockQuantity: p.stock_quantity || 0,
-          category: p.category || { name: "", slug: "" },
-          imageUrl: p.primary_image?.image_url || "",
-          manufacturer: p.manufacturer,
-          images: p.images,
-        }));
+        const mapped: Product[] = data.results
+          .filter((p: any) => {
+            const catName = (p.category?.name || "").trim().toLowerCase();
+            if (catName.includes("thực phẩm chức năng") || catName.includes("tpcn")) return true;
+            if (catName.includes("dược mỹ phẩm") || catName.includes("mỹ phẩm")) return true;
+            if (catName.includes("thiết bị y tế") || catName.includes("tb y tế") || catName.includes("thiết bị")) return true;
+            if (catName.includes("chăm sóc cá nhân") || catName.includes("mẹ & bé") || catName.includes("mẹ và bé")) return true;
+            if (catName === "otc" || catName.includes("thuốc") || catName.includes("giảm đau") || catName.includes("dị ứng") || catName.includes("kháng sinh") || catName.includes("nội tiết") || catName.includes("tim mạch") || catName.includes("tiêu hóa") || catName.includes("da liễu")) {
+              return false;
+            }
+            return true;
+          })
+          .map((p: any) => ({
+            id: p.id, name: p.name, slug: p.slug,
+            price: Number(p.retail_price || p.sale_price || p.price),
+            salePrice: p.sale_price && Number(p.sale_price) < Number(p.retail_price || p.price) ? Number(p.sale_price) : null,
+            unit: p.unit || "Hộp", stockQuantity: p.stock_quantity || 0,
+            category: p.category || { name: "", slug: "" },
+            imageUrl: p.primary_image?.image_url || "",
+            manufacturer: p.manufacturer,
+            images: p.images,
+          }));
         set({ products: mapped });
+
       } else {
         set({ products: MOCK_PRODUCTS });
       }
