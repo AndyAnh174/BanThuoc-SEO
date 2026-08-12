@@ -36,7 +36,8 @@ const DEFAULT_VOUCHERS: VoucherItem[] = [
 ];
 
 // Small FontAwesome fa-gift style SVG icon
-const GiftIcon = ({ size = 15, color = "#8b5cf6" }: { size?: number; color?: string }) => (
+const GiftIcon = ({ size = 15, color = "#0d9488" }: { size?: number; color?: string }) => (
+
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
     <polyline points="20 12 20 22 4 22 4 12" />
     <rect x="2" y="7" width="20" height="5" />
@@ -92,8 +93,8 @@ export function VoucherBar() {
               <Box style={{ flex: 1, minWidth: 0 }}>
                 {/* Title Line with Small Gift Icon */}
                 <Box flex alignItems="center" style={{ gap: 6 }}>
-                  <GiftIcon size={15} color="#8b5cf6" />
-                  <Text style={{ fontSize: 13, fontWeight: 800, color: "#7e22ce", truncate: true }}>
+                  <GiftIcon size={15} color="#0d9488" />
+                  <Text style={{ fontSize: 13, fontWeight: 800, color: "#0f766e", truncate: true }}>
                     {v.name}
                   </Text>
                 </Box>
@@ -116,11 +117,11 @@ export function VoucherBar() {
                 </Box>
               </Box>
 
-              {/* Purple Pill Action Button: Nhận */}
+              {/* Green Teal Pill Action Button: Nhận */}
               <Box
                 onClick={() => handleClaim(v.id)}
                 style={{
-                  background: isClaimed ? "#cbd5e1" : "linear-gradient(135deg, #a855f7 0%, #9333ea 100%)",
+                  background: isClaimed ? "#cbd5e1" : "linear-gradient(135deg, #0d9488 0%, #0f766e 100%)",
                   color: isClaimed ? "#475569" : "white",
                   padding: "6px 16px",
                   borderRadius: 20,
@@ -128,12 +129,13 @@ export function VoucherBar() {
                   fontWeight: 800,
                   cursor: isClaimed ? "default" : "pointer",
                   flexShrink: 0,
-                  boxShadow: isClaimed ? "none" : "0 3px 10px rgba(147, 51, 234, 0.35)",
+                  boxShadow: isClaimed ? "none" : "0 3px 10px rgba(13, 148, 136, 0.35)",
                   transition: "all 0.2s",
                 }}
               >
                 {isClaimed ? "Đã nhận" : "Nhận"}
               </Box>
+
             </Box>
           );
         })}
