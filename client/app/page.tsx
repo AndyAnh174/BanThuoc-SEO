@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { MainLayout } from '@/src/features/layout';
-import { HeroSectionServer, BannerRow, BestSellers, PromoBanners, TrustBadges, CategoryShowcase, FeaturedProducts, NewProductsSection, FlashSaleSection, CategoryProductsSection, PartnerLogos } from '@/src/features/home';
+import { HeroSectionServer, BannerRow, BestSellers, PromoBanners, TrustBadges, CategoryShowcase, FeaturedProducts, NewProductsSection, FlashSaleSection, CategoryProductsSection, PartnerLogos, LegalComplianceSection } from '@/src/features/home';
+
 
 export const metadata: Metadata = {
   title: 'Bán Thuốc Sỉ - Ngọc Kim Ngân Pharma (NKN) | BanThuocSi.vn',
@@ -128,7 +129,11 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Thông tin pháp lý & Đăng ký TMĐT Dược phẩm (Luật TMĐT số 122/2025/QH15 & Nghị định 248/2026/NĐ-CP) */}
+      <LegalComplianceSection />
+
     </MainLayout>
+
   );
 }
 
